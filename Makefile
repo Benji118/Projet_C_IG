@@ -13,10 +13,9 @@ OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
-
+LIB             =  $(patsubst ${SRCDIR}/%.c, ${OBJLIB}/%.o, ${SRC_FILES})
 LIBEIOBJS       := $(wildcard ${OBJLIB}/*.o )
-
-
+SRC_FILES       = ${wildcard ${SRCDIR}/*.c}
 
 # Platform specific definitions (OS X, Linux, Windows)
 
@@ -138,16 +137,15 @@ ${OBJDIR}/two048.o : ${TESTS}/two048.c
 
 # Building of the library libei
 ${OBJLIB}/%.o: ${SRCDIR}/%.c ${INCLUDES}/%.h
-	${CC} ${CCFLAGS} $< -o $@
+	${CC} ${CCFLAGS} ${INCFLAGS} $< -o $@
 
 ${OBJLIB}/ei_widgetclass.o: ${INCLUDES}/ei_draw.h ${INCLUDES}/hw_interface.h
 ${OBJLIB}/ei_application.o: ${INCLUDES}/ei_types.h ${INCLUDES}/ei_widget.h
-${OBJLIB}/ei_draw.o: ${INCLUDES}/ei_draw.h
 ${OBJLIB}/ei_event.o: ${INCLUDES}/ei_types.h ${INCLUDES}/ei_widget.h
 ${OBJLIB}/ei_placer.o: ${INCLUDES}/ei_types.h
 ${OBJLIB}/ei_widget.o: ${INCLUDES}/ei_draw.h ${INCLUDES}/ei_widgetclass.h ${INCLUDES}/ei_placer.h
 
-${LIBEI} : ${LIBEIOBJS}
+${LIBEI} : ${LIB} ${LIBEIOBJS}
 	ar rcs ${LIBEI} ${LIBEIOBJS}
 
 
