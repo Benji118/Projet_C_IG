@@ -2,7 +2,9 @@
 
 PLATFORM	= $(shell uname)
 CC		= gcc
+SRCDIR 		= ./src
 OBJDIR		= ./objs
+OBJLIB		= ./objlib
 TESTS		= ./tests
 INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES} -I${TESTS}
@@ -12,7 +14,7 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	./src
+LIBEIOBJS       := ${OBJLIb}/*
 
 
 
@@ -135,6 +137,8 @@ ${OBJDIR}/two048.o : ${TESTS}/two048.c
 
 
 # Building of the library libei
+${OBJLIB}/%.o: ${SRCDIR}/%.c ${INCLUDES}/%.h
+	${CC} -c ${CCFLAGS} $< -o $@
 
 ${LIBEI} : ${LIBEIOBJS}
 	ar rcs ${LIBEI} ${LIBEIOBJS}
