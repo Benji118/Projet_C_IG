@@ -14,7 +14,7 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
 LIB             =  $(patsubst ${SRCDIR}/%.c, ${OBJLIB}/%.o, ${SRC_FILES})
-LIBEIOBJS       := $(wildcard ${OBJLIB}/*.o )
+LIBEIOBJS       := $(wildcard ${OBJLIB}/*.o)
 SRC_FILES       = ${wildcard ${SRCDIR}/*.c}
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -127,7 +127,7 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 
 # two048
 
-two048 : ${OBJDIR}/two048.o ${LIBEIBASE} ${LIBEI}
+two048 : ${OBJDIR}/two048.o ${LIBEIBASE}
 	${LINK} -o two048 ${LDFLAGS} ${OBJDIR}/two048.o ${LIBEI} ${LIBS}
 
 ${OBJDIR}/two048.o : ${TESTS}/two048.c
@@ -136,11 +136,13 @@ ${OBJDIR}/two048.o : ${TESTS}/two048.c
 
 
 # Building of the library libei
+
 ${OBJLIB}/%.o: ${SRCDIR}/%.c ${INCLUDES}/%.h
 	${CC} ${CCFLAGS} ${INCFLAGS} $< -o $@
 
 ${OBJLIB}/ei_widgetclass.o: ${INCLUDES}/ei_draw.h ${INCLUDES}/hw_interface.h
 ${OBJLIB}/ei_application.o: ${INCLUDES}/ei_types.h ${INCLUDES}/ei_widget.h
+${OBJLIB}/ei_draw.o: ${INCLUDES}/ei_types.h ${INCLUDES}/hw_interface.h
 ${OBJLIB}/ei_event.o: ${INCLUDES}/ei_types.h ${INCLUDES}/ei_widget.h
 ${OBJLIB}/ei_placer.o: ${INCLUDES}/ei_types.h
 ${OBJLIB}/ei_widget.o: ${INCLUDES}/ei_draw.h ${INCLUDES}/ei_widgetclass.h ${INCLUDES}/ei_placer.h
@@ -163,3 +165,4 @@ clean:
 	rm -f ${TARGETS}
 	rm -f *.exe
 	rm -f ${OBJDIR}/*
+	rm -f ${OBJLIB}/*
