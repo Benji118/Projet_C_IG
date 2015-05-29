@@ -12,7 +12,8 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
 LIB             =  $(patsubst ${SRCDIR}/%.c, ${OBJLIB}/%.o, ${SRC_FILES})
-LIBEIOBJS       := $(wildcard ${OBJLIB}/*.o)
+LIBEIOBJS	:= $(wildcard ${OBJLIB}/*.o)
+
 SRC_FILES       = ${wildcard ${SRCDIR}/*.c}
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -134,7 +135,7 @@ ${OBJDIR}/two048.o : ${TESTS}/two048.c
 
 
 # Building of the library libei
-
+# Creation des .o
 ${OBJLIB}/%.o: ${SRCDIR}/%.c ${INCLUDES}/%.h
 	${CC} ${CCFLAGS} ${INCFLAGS} $< -o $@
 
@@ -146,7 +147,7 @@ ${OBJLIB}/ei_placer.o: ${INCLUDES}/ei_types.h
 ${OBJLIB}/ei_widget.o: ${INCLUDES}/ei_draw.h ${INCLUDES}/ei_widgetclass.h ${INCLUDES}/ei_placer.h
 
 ${LIBEI} : ${LIB} ${LIBEIOBJS}
-	ar rcs ${LIBEI} ${LIBEIOBJS}
+	ar rcs ${LIBEI} ${LIB}
 
 
 
