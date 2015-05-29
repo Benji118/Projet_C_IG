@@ -3,6 +3,7 @@
 PLATFORM	= $(shell uname)
 CC		= gcc
 OBJDIR		= ./objs
+OBJLIB		= ./objlib
 TESTS		= ./tests
 INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES} -I${TESTS}
