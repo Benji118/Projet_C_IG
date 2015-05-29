@@ -25,6 +25,45 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 						 const ei_color_t		color,
 						 const ei_rect_t*		clipper) 
 {	
+	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
+	assert(sent!=NULL);
+	*sent=first_point;
+	ei_point_t p1, p2;
+
+	/* Variables pour l'algo */
+	int x1,x2,y1,y2;
+	int dx,dy,e;
+
+	/* Taille surface */
+	/* A utiliser pour vérifier */ 
+	ei_size_t taille=hw_surface_get_size(surface);
+
+	while (sent->next!=NULL) {		
+		p1=sent->point;
+		p2=sent->next->point;		
+		x1=p1.x;
+		x2=p2.x;
+		y1=p1.y;
+		y2=p2.y;
+		dx=x2-x1;
+		dy=y2-y1;
+		e=dx;
+		dx=2*e;
+		dy=2*dy;
+
+		/* Traitement */
+		while (x1!=x2) {
+			surface(x1,y1)=color;
+			x1=x1+1;
+			e=e+dy;
+			if (2*e>dx) {
+				y1=y1+1;
+				e=e-dx;
+			}
+		}
+		/* sent->next != NULL */
+		sent=sent->next;		
+	}
 }
 
 void			ei_draw_polygon		(ei_surface_t			surface,
