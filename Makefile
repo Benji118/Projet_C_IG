@@ -2,6 +2,7 @@
 
 PLATFORM	= $(shell uname)
 CC		= gcc
+SRCDIR 		= ./src
 OBJDIR		= ./objs
 OBJLIB		= ./objlib
 TESTS		= ./tests
