@@ -12,7 +12,7 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+LIBEIOBJS	:= 	./src
 
 
 
