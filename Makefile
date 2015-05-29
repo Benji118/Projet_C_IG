@@ -9,10 +9,11 @@ INCFLAGS	:= -I${INCLUDES} -I${TESTS}
 #OPTFLAGS	:= -Os -DNDEBUG
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
-
+SOURCE		:= ./src
+OBJLIB		:= ./obj_lib
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	./src
+LIBEIOBJS	:= ./obj_lib/ei_draw.o
 
 
 
@@ -132,13 +133,16 @@ two048 : ${OBJDIR}/two048.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/two048.o : ${TESTS}/two048.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/two048.c -o ${OBJDIR}/two048.o
 
+# .o des fichiers fonction
+
+${OBJLIB}/ei_draw.o : ${SOURCE}/ei_draw.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${SOURCE}/ei_draw.c -o ${LIBEIOBJ}/ei_draw.o
 
 
 # Building of the library libei
 
 ${LIBEI} : ${LIBEIOBJS}
 	ar rcs ${LIBEI} ${LIBEIOBJS}
-
 
 
 # Building of the doxygen documentation.
