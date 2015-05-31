@@ -27,12 +27,13 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 {	
 	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
 	assert(sent!=NULL);
-	*sent=first_point;
+	sent=first_point;
 	ei_point_t p1, p2;
 
 	/* Variables pour l'algo */
 	int x1,x2,y1,y2;
 	int dx,dy,e;
+	uint8_t *a;
 
 	/* Taille surface */
 	/* A utiliser pour vérifier */ 
@@ -53,7 +54,7 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 
 		/* Traitement */
 		while (x1!=x2) {
-			surface(x1,y1)=color;
+			/* Regarder le buffer */
 			x1=x1+1;
 			e=e+dy;
 			if (2*e>dx) {
