@@ -23,6 +23,8 @@ void test_line(ei_surface_t surface, ei_rect_t* clipper)
 	pts[0].point.x = 200; pts[0].point.y = 200; pts[0].next = &pts[1];
 	pts[1].point.x = 600; pts[1].point.y = 400; pts[1].next = NULL;
 	
+	uint32_t map = ei_map_rgba(surface, &color);
+	printf("color : %u\n",map);
 	ei_draw_polyline(surface, pts, color, clipper);
 }
 

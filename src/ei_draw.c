@@ -5,6 +5,7 @@
 #include "hw_interface.h"
 #include "ei_types.h"
 #include <stdint.h>
+#include <math.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 {
@@ -18,8 +19,16 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	assert(ib);
 	assert(ia);
 	hw_surface_get_channel_indices(surface,ir,ig,ib,ia);
-	printf("ir : %i\nig : %i\nib : %i\nia : %i\n",*ir, *ig, *ib, *ia);
-	uint32_t rgb = 1;
+	uint32_t rouge = (uint32_t) color->red;
+	uint32_t vert = (uint32_t) color->green;
+	uint32_t bleu = (uint32_t) color->blue;
+	uint32_t alpha = (uint32_t) color->alpha;
+	printf("rouge : %u\n",rouge<<(*ir+1)*8);
+	printf("vert : %u\n", vert<<(*ig+1)*8);
+	printf("bleu : %u\n", bleu<<(*ib+1)*8);
+	printf("alpha : %u\n", alpha<<(*ia+1)*8);
+					   
+	uint32_t rgb = (rouge<<(*ir+1)*8)+(vert<<(*ig+1)*8)+(bleu<<(*ib+1)*8)+(alpha<<(*ia+1)*8);
 	return rgb;
 }
 
@@ -27,12 +36,11 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 						 const ei_linked_point_t*	first_point,
 						 const ei_color_t		color,
 						 const ei_rect_t*		clipper) 
-{	
+{
 	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
 	assert(sent!=NULL);
 	sent=first_point;
 	ei_point_t p1, p2;
-
 	/* Variables pour l'algo */
 	int x1,x2,y1,y2;
 	int dx,dy,e;
