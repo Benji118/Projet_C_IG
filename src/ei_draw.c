@@ -13,10 +13,10 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	ig=malloc(sizeof(*ig));
 	ib=malloc(sizeof(*ib));
 	ia=malloc(sizeof(*ia));
-	assert(ir);
-	assert(ig);
-	assert(ib);
-	assert(ia);
+	assert(ir != NULL);
+	assert(ig != NULL);
+	assert(ib != NULL);
+	assert(ia != NULL);
 	hw_surface_get_channel_indices(surface,ir,ig,ib,ia);
 	printf("ir : %i\nig : %i\nib : %i\nia : %i\n",*ir, *ig, *ib, *ia);
 	uint32_t rgb = 1;
@@ -30,7 +30,7 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 {	
 	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
 	assert(sent!=NULL);
-	*sent=first_point;
+	*sent=*first_point;
 	ei_point_t p1, p2;
 
 	/* Variables pour l'algo */
