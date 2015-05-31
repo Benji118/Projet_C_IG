@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <hw_interface.h>
+#include "hw_interface.h"
+#include "ei_types.h"
+#include <stdint.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 {
@@ -82,7 +84,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		//Initialisation de la scanline
 		int y_cour = 0;
 		ei_linked_point_t* tmp = first_point;
-		while (tmp->(point).y != y_cour)
+		while ((tmp->point).y != y_cour)
 		{
 			y_cour++;
 		}
@@ -90,33 +92,32 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		while (tmp != NULL)
 		{
 			//Cas cote horizontal
-			if (tmp->(point).y==tmp->next->(point).y)
+			if ((tmp->point).y==(tmp->next->point).y)
 				y_cour++;
 
 			//Remplissage de TC
-			if (tmp->(point).y==y_cour || tmp->next->(point).y)
+			if ((tmp->point).y==y_cour || (tmp->next->point).y)
 			{
-				if (tmp->(point).y > tmp->next->(point).y)
+				if ((tmp->point).y > (tmp->next->point).y)
 				{
 
-					(TC[y_cour]).ymax = tmp->(point).y;
-					(TC[y_cour]).x_ymin = tmp->next->(point).x;
-					(TC[y_cour]).rec_pente = (tmp->next->(point).x-tmp->(point).x) / 
-											 (tmp->next->(point).y-tmp->(point).y);
+					TC[y_cour].ymax = (tmp->point).y;
+					TC[y_cour].x_ymin = (tmp->next->point).x;
+					TC[y_cour].rec_pente = ((tmp->next->point).x - (tmp->point).x) / 
+											 ((tmp->next->point).y - (tmp->point).y);
 				}
 				else
 				{
-					(TC[y_cour]).ymax = tmp->next->(point).y;
-					(TC[y_cour]).x_ymin = tmp->(point).x;
-					(TC[y_cour]).rec_pente = (tmp->next->(point).x-tmp->(point).x) / 
-											 (tmp->next->(point).y-tmp->(point).y);				
+					TC[y_cour].ymax = (tmp->next->point).y;
+					TC[y_cour].x_ymin = (tmp->point).x;
+					TC[y_cour].rec_pente = ((tmp->next->point).x - (tmp->point).x) / 
+											 ((tmp->next->point).y - (tmp->point).y);				
 		
 				}
 				tmp = tmp->next;
 				y_cour++;
 			}
 		else{
-				TC[y_cour]=NULL;
 				y_cour++;
 			}
 		}
