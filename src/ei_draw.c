@@ -42,8 +42,8 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 	assert(sent!=NULL);
 	sent=first_point;
 	/* Variables pour l'algo */
-	int x1,x2,y1,y2;
-	int dx,dy,e;
+	uint32_t x1,x2,y1,y2;
+	uint32_t dx,dy,e;
 
 	/* Taille surface */
 	/* A utiliser pour vérifier et parcourir le tableau */ 
@@ -56,10 +56,10 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 	/* Première boucle de parcours des points */
 	while (sent->next!=NULL) {
 		/* Initialisation des varibles pour chaque segment */
-		x1=sent->point.x;
-		x2=sent->next->point.x;
-		y1=sent->point.y;
-		y2=sent->next->point.y;
+		x1=(uint32_t)sent->point.x;
+		x2=(uint32_t)sent->next->point.x;
+		y1=(uint32_t)sent->point.y;
+		y2=(uint32_t)sent->next->point.y;
 		dx=x2-x1;
 		dy=y2-y1;
 		e=dx;
@@ -71,7 +71,7 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 		while (x1!=x2) {
 			/* Trouver comment acceder au tableau */
 			a=pixel_ptr;
-			*a=*a+y1*taille.width+x1;
+			a=a+y1*taille.width+x1;
 			*a=ei_map_rgba(surface,&color);
 			x1=x1+1;
 			e=e+dy;
