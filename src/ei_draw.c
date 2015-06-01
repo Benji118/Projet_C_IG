@@ -23,9 +23,11 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	uint32_t vert=(uint32_t) color->green;
 	uint32_t bleu=(uint32_t) color->blue;
 	uint32_t alpha=(uint32_t) color->alpha;
-	rouge=rouge<<(*ir)*8;
-	vert=vert<<(*ig)*8;
-	bleu=bleu<<(*ib)*8;
+	uint32_t rouge_final, vert_final, bleu_final;
+	rouge_final=rouge<<(*ir)*8;
+	vert_final=vert<<(*ig)*8;
+	bleu_final=bleu<<(*ib)*8;
+	/* Gestion de la transparence */
 	if (hw_surface_has_alpha(surface)==EI_TRUE) {
 		alpha=alpha<<(*ia)*8;
 	} else {
@@ -34,7 +36,7 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	/* Libération des pointeurs */
 	free(ig); free(ib); free(ir); free(ia);
 
-	return rouge+vert+bleu+alpha;
+	return rouge_final+vert_final+bleu_final+alpha;
 }
 
 void			ei_draw_polyline	(ei_surface_t			surface,
