@@ -147,7 +147,6 @@ ${OBJLIB}/ei_draw.o: ${INCLUDES}/ei_types.h ${INCLUDES}/hw_interface.h
 ${OBJLIB}/ei_event.o: ${INCLUDES}/ei_types.h ${INCLUDES}/ei_widget.h
 ${OBJLIB}/ei_placer.o: ${INCLUDES}/ei_types.h
 ${OBJLIB}/ei_widget.o: ${INCLUDES}/ei_draw.h ${INCLUDES}/ei_widgetclass.h ${INCLUDES}/ei_placer.h
-${OBJLIB}/hw_interface.o: ${INCLUDES}/ei_types.h
 
 ${LIBEI} : ${LIB} ${LIBEIOBJS}
 	ar rcs ${LIBEI} ${LIB}
