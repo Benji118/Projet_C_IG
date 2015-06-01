@@ -9,78 +9,100 @@
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 {
-	int *ir, *ig, *ib, *ia;
-	ir=malloc(sizeof(uint8_t));
-	ig=malloc(sizeof(uint8_t));
-	ib=malloc(sizeof(uint8_t));
-	ia=malloc(sizeof(uint8_t));
-	hw_surface_get_channel_indices(surface,ir,ig,ib,ia);
-/*	printf("ir : %i\nig : %i\nib : %i\nia : %i\n",*ir, *ig, *ib, *ia);
-*/	uint32_t rgb = 0 ;
-	rgb |= color->red << *ir * sizeof(uint8_t);
-	rgb |= color->green << *ig * sizeof(uint8_t);
-	rgb |= color->blue << *ib * sizeof(uint8_t);
-	rgb |= color->alpha << *ia * sizeof(uint8_t);
-	return rgb;
+        ir=malloc(sizeof(*ir));
+        ig=malloc(sizeof(*ig));
+        ib=malloc(sizeof(*ib));
+        ia=malloc(sizeof(*ia));
+        assert(ir != NULL);
+        assert(ig != NULL);
+        assert(ib != NULL);
+        assert(ia != NULL);
+        hw_surface_get_channel_indices(surface,ir,ig,ib,ia);
+        uint32_t rouge=(uint32_t) color->red;
+        uint32_t vert=(uint32_t) color->green;
+        uint32_t bleu=(uint32_t) color->blue;
+        uint32_t alpha=(uint32_t) color->alpha;
+        rouge=rouge<<(*ir)*8;
+        vert=vert<<(*ig)*8;
+        bleu=bleu<<(*ib)*8;
+        if (hw_surface_has_alpha(surface)==EI_TRUE) {
+                alpha=alpha<<(*ia)*8;
+        } else {
+                alpha=0;
+        }
+        /* Libération des pointeurs */
+        free(ig); free(ib); free(ir); free(ia);
+
+        return rouge+vert+bleu+alpha;
+
 }
 
 void draw_pixel(ei_surface_t surface,
-				int x,
-				int y,
-				ei_color_t color)
+                                int x,
+                                int y,
+                                ei_color_t color)
 {
-	uint32_t *pixel = (uint32_t*)(hw_surface_get_buffer(surface)
-					+ y * hw_surface_get_size(surface).width * sizeof(uint32_t)
-					+ x * sizeof(uint32_t));
-	*pixel = 	ei_map_rgba(surface,&color);
+        uint32_t *pixel = (uint32_t*)(hw_surface_get_buffer(surface)
+                                        + y * hw_surface_get_size(surface).width * sizeof(uint32_t)
+                                        + x * sizeof(uint32_t));
+        *pixel =        ei_map_rgba(surface,&color);
 
 }
 
-void			ei_draw_polyline	(ei_surface_t			surface,
-						 const ei_linked_point_t*	first_point,
-						 const ei_color_t		color,
-						 const ei_rect_t*		clipper) 
-{	
-	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
-	assert(sent!=NULL);
-	*sent=first_point;
-	ei_point_t p1, p2;
+void                    ei_draw_polyline        (ei_surface_t                   surface,
+                                                 const ei_linked_point_t*       first_point,
+                                                 const ei_color_t               color,
+                                                 const ei_rect_t*               clipper)
+{
+        ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
+        assert(sent!=NULL);
+        sent=first_point;
+        /* Variables pour l'algo */
+        uint32_t x1,x2,y1,y2;
+        uint32_t dx,dy,e;
 
-	/* Variables pour l'algo */
-	int x1,x2,y1,y2;
-	int dx,dy,e;
+        /* Taille surface */
+        /* A utiliser pour vérifier et parcourir le tableau */
+        ei_size_t taille=hw_surface_get_size(surface);
 
-	/* Taille surface */
-	/* A utiliser pour vérifier */ 
-	ei_size_t taille=hw_surface_get_size(surface);
+        /* Recuperer l'adresse du pixel (0,0) */
+        uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
+        uint32_t* a;
 
-	while (sent->next!=NULL) {		
-		p1=sent->point;
-		p2=sent->next->point;		
-		x1=p1.x;
-		x2=p2.x;
-		y1=p1.y;
-		y2=p2.y;
-		dx=x2-x1;
-		dy=y2-y1;
-		e=dx;
-		dx=2*e;
-		dy=2*dy;
+        /* Première boucle de parcours des points */
+        while (sent->next!=NULL) {
+                /* Initialisation des varibles pour chaque segment */
+                x1=(uint32_t)sent->point.x;
+                x2=(uint32_t)sent->next->point.x;
+                y1=(uint32_t)sent->point.y;
+                y2=(uint32_t)sent->next->point.y;
+                dx=x2-x1;
+                dy=y2-y1;
+                e=dx;
+                dx=2*e;
+                dy=2*dy;
 
-		/* Traitement */
-		while (x1!=x2) {
-			surface(x1,y1)=color;
-			x1=x1+1;
-			e=e+dy;
-			if (2*e>dx) {
-				y1=y1+1;
-				e=e-dx;
-			}
-		}
-		 sent->next != NULL 
-		sent=sent->next;		
-	}
+                /* Boucle de traitement, segment par segment */
+                /* Traitement */
+                while (x1!=x2) {
+                        /* Trouver comment acceder au tableau */
+                        a=pixel_ptr;
+                        a=a+y1*taille.width+x1;
+                        *a=ei_map_rgba(surface,&color);
+                        x1=x1+1;
+                        e=e+dy;
+                        if (2*e>dx) {
+                                y1=y1+1;
+                                e=e-dx;
+                        }
+                }
+                 sent->next != NULL
+                /* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
+
+                sent=sent->next;
+        }
 }
+
 
 void			ei_draw_polygon		(ei_surface_t			surface,
 	const ei_linked_point_t*	first_point,
