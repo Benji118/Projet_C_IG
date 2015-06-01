@@ -44,6 +44,7 @@ void draw_pixel(ei_surface_t surface,
                                 int y,
                                 ei_color_t color)
 {
+	
         uint32_t *pixel = (uint32_t*)(hw_surface_get_buffer(surface)
                                         + y * hw_surface_get_size(surface).width * sizeof(uint32_t)
                                         + x * sizeof(uint32_t));
@@ -56,53 +57,256 @@ void                    ei_draw_polyline        (ei_surface_t                   
                                                  const ei_color_t               color,
                                                  const ei_rect_t*               clipper)
 {
-        ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
-        assert(sent!=NULL);
-        sent=first_point;
-        /* Variables pour l'algo */
-        uint32_t x1,x2,y1,y2;
-        uint32_t dx,dy,e;
+	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
+	assert(sent!=NULL);
+	*sent=*first_point;
+	/* Variables pour l'algo */
+	uint32_t x1,x2,y1,y2;
+	int32_t dx,dy,e;
 
-        /* Taille surface */
-        /* A utiliser pour vérifier et parcourir le tableau */
-        ei_size_t taille=hw_surface_get_size(surface);
+	/* Taille surface */
+	/* A utiliser pour vérifier et parcourir le tableau */
+	ei_size_t taille=hw_surface_get_size(surface);
 
-        /* Recuperer l'adresse du pixel (0,0) */
-        uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
-        uint32_t* a;
+	/* Recuperer l'adresse du pixel (0,0) */
+	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
+	uint32_t* a;
 
-        /* Première boucle de parcours des points */
-        while (sent->next!=NULL) {
-                /* Initialisation des varibles pour chaque segment */
-                x1=(uint32_t)sent->point.x;
-                x2=(uint32_t)sent->next->point.x;
-                y1=(uint32_t)sent->point.y;
-                y2=(uint32_t)sent->next->point.y;
-                dx=x2-x1;
-                dy=y2-y1;
-                e=dx;
-                dx=2*e;
-                dy=2*dy;
+	/* Première boucle de parcours des points */
+	while (sent->next!=NULL) {
+		/* Initialisation des varibles pour chaque segment */
+		x1=(uint32_t)sent->point.x;
+		x2=(uint32_t)sent->next->point.x;
+		y1=(uint32_t)sent->point.y;
+		y2=(uint32_t)sent->next->point.y;
+		printf("droite entre ( %u ; %u ) et ( %u ; %u).",x1,y1,x2,y2);
+		dx=x2-x1;
+		if ( dx != 0 ){
+			if ( dx > 0 ){
+				dy = y2 - y1;
+				if ( dy != 0 ){
+					if ( dy > 0 ){
+						//Vecteur oblique 1er cadran
+						if ( dx >= dy ){ 
+							//1er octant
+							printf(" oct1 \n");
+							e=dx;
+							dx=2*e;
+							dy=2*dy;
 
-                /* Boucle de traitement, segment par segment */
-                /* Traitement */
-                while (x1!=x2) {
-                        /* Trouver comment acceder au tableau */
-                        a=pixel_ptr;
-                        a=a+y1*taille.width+x1;
-                        *a=ei_map_rgba(surface,&color);
-                        x1=x1+1;
-                        e=e+dy;
-                        if (2*e>dx) {
-                                y1=y1+1;
-                                e=e-dx;
-                        }
-                }
-                // sent->next != NULL
-                /* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (x1!=x2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								x1=x1+1;
+								e=e+dy;
+								if (2*e>dx) {
+									y1=y1+1;
+									e=e-dx;
+								}
+							}
+						} else {
+							//2eme octant
+							printf(" oct2 \n");
+							e=dy;
+							dx=2*dx;
+							dy=2*e;
 
-                sent=sent->next;
-        }
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (y1!=y2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								y1=y1+1;
+								e=e-dx;
+								if (e < 0) {
+									x1=x1+1;
+									e=e+dy;
+								}
+							}
+						}
+					} else {
+						//Vecteur oblique 4eme cadran
+						if ( dx + dy >= 0 ){
+							printf(" oct8 \n");
+							//8e octant
+							e=dx;
+							dx=2*e;
+							dy=2*dy;
+
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (x1!=x2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								x1=x1+1;
+								e=e+dy;
+								if ( e < 0 ) {
+									y1 = y1 - 1;
+									e = e + dx;
+								}
+							}
+						} else {
+							//7e octant
+							printf(" oct7 \n");
+							e=dy;
+							dx=2*dx;
+							dy=2*e;
+
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (y1!=y2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								y1=y1-1;
+								e=e+dx;
+								if ( e > 0 ) {
+									x1 = x1 + 1;
+									e = e + dy;
+								}
+							}
+						}
+					}
+				} else {
+					//Vecteur horizontal vers la droite
+					while ( x1 != x2 ){
+						a=pixel_ptr;
+						a=a+y1*taille.width+x1;
+						*a=ei_map_rgba(surface,&color);
+						x1 = x1 + 1;
+					}
+				
+				}
+			} else {
+				dy = y2 - y1;
+				if ( dy != 0 ){
+					if ( dy > 0 ){
+						//2e cadran
+						if ( dx + dy <= 0 ){
+							//4e octant
+							printf(" oct4 \n");
+							e = dx;
+							dx = 2*e;
+							dy = 2*dy;
+
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (x1!=x2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								x1=x1-1;
+								e=e+dy;
+								if ( e >= 0 ) {
+									y1 = y1 + 1;
+									e = e + dx;
+								}
+							}
+						} else {
+							//3e octant
+							printf(" oct3 \n");
+							e = dy;
+							dx = 2*dx;
+							dy = 2*e;
+
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (y1!=y2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								y1=y1+1;
+								e=e+dx;
+								if ( e <= 0 ) {
+									x1 = x1 - 1;
+									e = e + dy;
+								}
+							}	
+						}
+					} else {
+						//3e cadran
+						if ( dx <= dy ){
+							//5e octant
+							printf(" oct5 \n");
+							e = dx;
+							dx = 2*e;
+							dy = 2*dy;
+
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (x1!=x2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								x1=x1-1;
+								e=e-dy;
+								if ( e >= 0 ) {
+									y1 = y1 - 1;
+									e = e + dx;
+								}
+							}
+						} else {
+							//6e octant
+							printf(" oct6 \n");
+							e = dy;
+							dy = 2*e;
+							dx = 2*dx;
+
+							/* Boucle de traitement, segment par segment */
+							/* Traitement */
+							while (y1!=y2) {
+								a=pixel_ptr;
+								a=a+y1*taille.width+x1;
+								*a=ei_map_rgba(surface,&color);
+								y1=y1-1;
+								e=e-dx;
+								if ( e >= 0 ) {
+									x1 = x1 - 1;
+									e = e + dy;
+								}
+							}
+						}
+					} 
+				} else {
+					//Vecteur horizontal vers la gauche
+					while ( x1 != x2 ){
+						a=pixel_ptr;
+						a=a+y1*taille.width+x1;
+						*a=ei_map_rgba(surface,&color);
+						x1 = x1 - 1;
+					}
+				}
+			}
+		} else {
+			dy = y2 - y1;
+			if ( dy > 0 ){
+				//Vecteur vertical croissant
+				while ( y1 != y2 ){
+					a=pixel_ptr;
+					a=a+y1*taille.width+x1;
+					*a=ei_map_rgba(surface,&color);
+					y1 = y1 + 1;
+				}
+			} else {
+				//Vecteur vertical decroissant
+				while ( y1 != y2 ){
+					a=pixel_ptr;
+					a=a+y1*taille.width+x1;
+					*a=ei_map_rgba(surface,&color);
+					y1 = y1 - 1;
+				}
+			}
+		}
+		/* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
+		
+		/* sent->next != NULL */
+		sent=sent->next;
+	}
 }
 
 
