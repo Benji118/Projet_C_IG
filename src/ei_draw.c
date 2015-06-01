@@ -303,6 +303,9 @@ void                    ei_draw_polyline        (ei_surface_t                   
 			}
 		}
 		/* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
+		a=pixel_ptr;
+		a=a+y2*taille.width+x2;
+		*a=ei_map_rgba(surface,&color);
 		
 		/* sent->next != NULL */
 		sent=sent->next;
