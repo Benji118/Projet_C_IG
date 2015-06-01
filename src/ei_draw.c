@@ -23,10 +23,14 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	uint32_t vert=(uint32_t) color->green;
 	uint32_t bleu=(uint32_t) color->blue;
 	uint32_t alpha=(uint32_t) color->alpha;
-	rouge=rouge<<(*ir+1)*8;
-	vert=vert<<(*ig+1)*8;
-	bleu=bleu<<(*ib+1)*8;
-	alpha=alpha<<(*ia+1)*8;
+	rouge=rouge<<(*ir)*8;
+	vert=vert<<(*ig)*8;
+	bleu=bleu<<(*ib)*8;
+	if (hw_surface_has_alpha(surface)==EI_TRUE) {
+		alpha=alpha<<(*ia)*8;
+	} else {
+		alpha=0;
+	}
 	/* Libération des pointeurs */
 	free(ig); free(ib); free(ir); free(ia);
 
