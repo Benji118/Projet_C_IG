@@ -4,7 +4,7 @@
 #include "polygon.h"
 #include "ei_types.h"
 
-
+//test d'egalité entre 2 cotés
 bool Comp_side (ei_side_t c1, ei_side_t c2)
 {
 	if (c1.ymax==c2.ymax && c1.x_ymin==c2.x_ymin && c1.rec_pente==c2.rec_pente)
@@ -13,6 +13,7 @@ bool Comp_side (ei_side_t c1, ei_side_t c2)
 		return false;
 }
 
+//ajout en tete dans TCA
 TCA *add_TCA (TCA *a, ei_side_t c)
 {
 	if (a->head != NULL)
@@ -31,6 +32,8 @@ TCA *add_TCA (TCA *a, ei_side_t c)
 	}
 	return a;
 }
+
+//suppresion dans TCA
 TCA *del_TCA (TCA *a, ei_side_t c)
 {
 	if (a->head == NULL)
