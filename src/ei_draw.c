@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "hw_interface.h"
 #include "ei_types.h"
-#include "polygon.h"
+//#include "polygon.h"
 #include <stdint.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
@@ -98,7 +98,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
                                 e=e-dx;
                         }
                 }
-                 sent->next != NULL
+                // sent->next != NULL
                 /* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
 
                 sent=sent->next;
@@ -176,6 +176,12 @@ void			ei_fill			(ei_surface_t		surface,
 						 const ei_color_t*	color,
 						 const ei_rect_t*	clipper)
 {
+	ei_size_t size=hw_surface_get_size(surface);
+	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
+
+	for (int i=0; i<(size.width*size.height) ;i++) {
+		*pixel_ptr++=ei_map_rgba(surface,color);
+	}
 }
 
 int			ei_copy_surface		(ei_surface_t		destination,
