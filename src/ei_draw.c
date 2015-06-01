@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include "hw_interface.h"
 #include "ei_types.h"
+//#include "polygon.h"
 #include <stdint.h>
-#include <math.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 {
@@ -23,9 +23,11 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	uint32_t vert=(uint32_t) color->green;
 	uint32_t bleu=(uint32_t) color->blue;
 	uint32_t alpha=(uint32_t) color->alpha;
-	rouge=rouge<<(*ir)*8;
-	vert=vert<<(*ig)*8;
-	bleu=bleu<<(*ib)*8;
+	uint32_t rouge_final, vert_final, bleu_final;
+	rouge_final=rouge<<(*ir)*8;
+	vert_final=vert<<(*ig)*8;
+	bleu_final=bleu<<(*ib)*8;
+	/* Gestion de la transparence */
 	if (hw_surface_has_alpha(surface)==EI_TRUE) {
 		alpha=alpha<<(*ia)*8;
 	} else {
@@ -34,13 +36,26 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	/* Libération des pointeurs */
 	free(ig); free(ib); free(ir); free(ia);
 
-	return rouge+vert+bleu+alpha;
+	return rouge_final+vert_final+bleu_final+alpha;
 }
 
-void			ei_draw_polyline	(ei_surface_t			surface,
-						 const ei_linked_point_t*	first_point,
-						 const ei_color_t		color,
-						 const ei_rect_t*		clipper) 
+void draw_pixel(ei_surface_t surface,
+                                int x,
+                                int y,
+                                ei_color_t color)
+{
+	
+        uint32_t *pixel = (uint32_t*)(hw_surface_get_buffer(surface)
+                                        + y * hw_surface_get_size(surface).width * sizeof(uint32_t)
+                                        + x * sizeof(uint32_t));
+        *pixel =        ei_map_rgba(surface,&color);
+
+}
+
+void                    ei_draw_polyline        (ei_surface_t                   surface,
+                                                 const ei_linked_point_t*       first_point,
+                                                 const ei_color_t               color,
+                                                 const ei_rect_t*               clipper)
 {
 	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
 	assert(sent!=NULL);
@@ -50,7 +65,7 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 	int32_t dx,dy,e;
 
 	/* Taille surface */
-	/* A utiliser pour vérifier et parcourir le tableau */ 
+	/* A utiliser pour vérifier et parcourir le tableau */
 	ei_size_t taille=hw_surface_get_size(surface);
 
 	/* Recuperer l'adresse du pixel (0,0) */
@@ -294,63 +309,61 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 	}
 }
 
+
 void			ei_draw_polygon		(ei_surface_t			surface,
-						 const ei_linked_point_t*	first_point,
-						 const ei_color_t		color,
-						 const ei_rect_t*		clipper)
+	const ei_linked_point_t*	first_point,
+	const ei_color_t		color,
+	const ei_rect_t*		clipper)
 {	
-	if (first_point != NULL && first_point->next!=NULL)
+	if (first_point!=NULL && first_point->next!=NULL)
 	{
-		//hw_surface_lock(surface);
-
-		int taille_TC = hw_surface_get_size(surface).height;
-		ei_side_t* TC= calloc(taille_TC,sizeof(ei_side_t));
-
-		//Initialisation de la scanline
-		int y_cour = 0;
-		ei_linked_point_t* tmp = first_point;
-		while ((tmp->point).y != y_cour)
+		ei_side_t*** TC = calloc(hw_surface_get_size(surface).height,sizeof(ei_side_t*));
+		TC[(first_point->point).y][0] = malloc(sizeof(ei_side_t));
+		if ((first_point->point).y!=(first_point->next->point).y)
 		{
-			y_cour++;
+			if ((first_point->point).y > (first_point->next->point).y)
+			{
+				TC[(first_point->point).y][0]->ymax = (first_point->point).y;
+				TC[(first_point->point).y][0]->x_ymin = (first_point->next->point).x;
+			}
+			else if ((first_point->point).y < (first_point->next->point).y)
+			{
+				TC[(first_point->point).y][0]->ymax = (first_point->next->point).y;
+				TC[(first_point->point).y][0]->x_ymin = (first_point->point).x;
+			}
+			TC[(first_point->point).y][0]->rec_pente = ((first_point->next->point).x - (first_point->point).x) /
+												 ((first_point->next->point).y - (first_point->point).y);
 		}
-		tmp = first_point;
+		int inc =0;
+		ei_linked_point_t* tmp = first_point->next;
 		while (tmp != NULL)
 		{
-			//Cas cote horizontal
-			if ((tmp->point).y==(tmp->next->point).y)
-				y_cour++;
-
-			//Remplissage de TC
-			if ((tmp->point).y==y_cour || (tmp->next->point).y)
+			if (TC[(tmp->point).y][inc]==NULL)
 			{
-				if ((tmp->point).y > (tmp->next->point).y)
+				TC[(tmp->point).y][inc] = malloc(sizeof(ei_side_t));
+				if ((tmp->point).y!=(tmp->next->point).y)
 				{
-
-					TC[y_cour].ymax = (tmp->point).y;
-					TC[y_cour].x_ymin = (tmp->next->point).x;
-					TC[y_cour].rec_pente = ((tmp->next->point).x - (tmp->point).x) / 
-											 ((tmp->next->point).y - (tmp->point).y);
+					if ((tmp->point).y > (tmp->next->point).y)
+					{
+						TC[(tmp->point).y][inc]->ymax = (tmp->point).y;
+						TC[(tmp->point).y][inc]->x_ymin = (tmp->next->point).x;
+					}
+					else if ((tmp->point).y < (tmp->next->point).y)
+					{
+						TC[(tmp->point).y][inc]->ymax = (tmp->next->point).y;
+						TC[(tmp->point).y][inc]->x_ymin = (tmp->point).x;
+					}
+					TC[(tmp->point).y][inc]->rec_pente = ((tmp->next->point).x - (tmp->point).x) /
+					((tmp->next->point).y - (tmp->point).y);
 				}
-				else
-				{
-					TC[y_cour].ymax = (tmp->next->point).y;
-					TC[y_cour].x_ymin = (tmp->point).x;
-					TC[y_cour].rec_pente = ((tmp->next->point).x - (tmp->point).x) / 
-											 ((tmp->next->point).y - (tmp->point).y);				
-		
-				}
+				inc = 0;
 				tmp = tmp->next;
-				y_cour++;
 			}
-		else{
-				y_cour++;
+			else
+			{
+				inc++;
 			}
 		}
-		free(tmp);
-		//Initialisation de TCA
-		ei_side_t* TCA = malloc(sizeof(ei_side_t));
-		TCA = NULL;
-		//Debut de l'algo
 	}
 }
 
