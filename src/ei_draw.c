@@ -19,17 +19,18 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	assert(ib != NULL);
 	assert(ia != NULL);
 	hw_surface_get_channel_indices(surface,ir,ig,ib,ia);
-	uint32_t rouge = (uint32_t) color->red;
-	uint32_t vert = (uint32_t) color->green;
-	uint32_t bleu = (uint32_t) color->blue;
-	uint32_t alpha = (uint32_t) color->alpha;
-	printf("rouge : %u\n",rouge<<(*ir+1)*8);
-	printf("vert : %u\n", vert<<(*ig+1)*8);
-	printf("bleu : %u\n", bleu<<(*ib+1)*8);
-	printf("alpha : %u\n", alpha<<(*ia+1)*8);
-					   
-	uint32_t rgb = (rouge<<(*ir+1)*8)+(vert<<(*ig+1)*8)+(bleu<<(*ib+1)*8)+(alpha<<(*ia+1)*8);
-	return rgb;
+	uint32_t rouge=(uint32_t) color->red;
+	uint32_t vert=(uint32_t) color->green;
+	uint32_t bleu=(uint32_t) color->blue;
+	uint32_t alpha=(uint32_t) color->alpha;
+	rouge=rouge<<(*ir+1)*8;
+	vert=vert<<(*ig+1)*8;
+	bleu=bleu<<(*ib+1)*8;
+	alpha=alpha<<(*ia+1)*8;
+	/* Libération des pointeurs */
+	free(ig); free(ib); free(ir); free(ia);
+
+	return rouge+vert+bleu+alpha;
 }
 
 void			ei_draw_polyline	(ei_surface_t			surface,
@@ -39,33 +40,39 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 {
 	ei_linked_point_t *sent=malloc(sizeof(ei_linked_point_t));
 	assert(sent!=NULL);
-	*sent=*first_point;
-	ei_point_t p1, p2;
+	sent=first_point;
 	/* Variables pour l'algo */
 	int x1,x2,y1,y2;
 	int dx,dy,e;
-	uint8_t *a;
 
 	/* Taille surface */
-	/* A utiliser pour vérifier */ 
+	/* A utiliser pour vérifier et parcourir le tableau */ 
 	ei_size_t taille=hw_surface_get_size(surface);
 
-	while (sent->next!=NULL) {		
-		p1=sent->point;
-		p2=sent->next->point;		
-		x1=p1.x;
-		x2=p2.x;
-		y1=p1.y;
-		y2=p2.y;
+	/* Recuperer l'adresse du pixel (0,0) */
+	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
+	uint32_t* a;
+	
+	/* Première boucle de parcours des points */
+	while (sent->next!=NULL) {
+		/* Initialisation des varibles pour chaque segment */
+		x1=sent->point.x;
+		x2=sent->next->point.x;
+		y1=sent->point.y;
+		y2=sent->next->point.y;
 		dx=x2-x1;
 		dy=y2-y1;
 		e=dx;
 		dx=2*e;
 		dy=2*dy;
 
+		/* Boucle de traitement, segment par segment */
 		/* Traitement */
 		while (x1!=x2) {
-			/* Regarder le buffer */
+			/* Trouver comment acceder au tableau */
+			a=pixel_ptr;
+			*a=*a+y1*taille.width+x1;
+			*a=ei_map_rgba(surface,&color);
 			x1=x1+1;
 			e=e+dy;
 			if (2*e>dx) {
@@ -73,6 +80,8 @@ void			ei_draw_polyline	(ei_surface_t			surface,
 				e=e-dx;
 			}
 		}
+		/* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
+
 		/* sent->next != NULL */
 		sent=sent->next;		
 	}
@@ -85,7 +94,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 {	
 	if (first_point != NULL && first_point->next!=NULL)
 	{
-		hw_surface_lock(surface);
+		//hw_surface_lock(surface);
 
 		int taille_TC = hw_surface_get_size(surface).height;
 		ei_side_t* TC= calloc(taille_TC,sizeof(ei_side_t));
