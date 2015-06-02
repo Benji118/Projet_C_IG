@@ -51,4 +51,9 @@ void draw_pixel (ei_surface_t surface,
 		 const ei_color_t color,
 		 uint32_t* pixel_ptr,
 		 const ei_rect_t* clipper);
+
+uint32_t alpha_effect(ei_surface_t surface_source,
+					  ei_surface_t surface_dest,
+ 					  uint32_t *pixel_source,
+ 					  uint32_t *pixel_dest);
 #endif 
