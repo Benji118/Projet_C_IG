@@ -37,7 +37,6 @@ typedef struct {
 	int				y; ///< The ordinate of the point, the origin is at the top of the image, ordinates increase towards the bottom.
 } ei_point_t;
 
-
 /**
  * @brief	A 2-D size with integer dimensions.
  */
