@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "hw_interface.h"
 #include "ei_types.h"
-//#include "polygon.h"
+#include "polygon.h"
 #include <stdint.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
