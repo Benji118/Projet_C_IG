@@ -44,4 +44,6 @@ TCA *del_TCA (TCA *a, ei_side_t c);
 
 
 TCA *sort_TCA (TCA *a);
+
+void draw_pixel(ei_surface_t surface, const ei_color_t color, const ei_rect_t* clipper);
 #endif

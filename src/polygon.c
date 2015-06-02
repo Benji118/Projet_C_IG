@@ -90,3 +90,7 @@ TCA *sort_TCA (TCA* a)
 		return NULL;
 	}
 }
+
+void draw_pixel(ei_surface_t surface, const ei_color_t color, const ei_rect_t* clipper)
+{
+}
