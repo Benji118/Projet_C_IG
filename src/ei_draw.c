@@ -87,7 +87,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 				if ( dy != 0 ){
 					if ( dy > 0 ){
 						//Vecteur oblique 1er cadran
-						if ( dx >= dy ){ 
+						if ( dx >= dy ){
 							//1er octant
 							printf(" oct1 \n");
 							e=dx;
