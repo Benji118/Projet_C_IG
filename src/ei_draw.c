@@ -39,19 +39,6 @@ uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
 	return rouge_final+vert_final+bleu_final+alpha;
 }
 
-void draw_pixel(ei_surface_t surface,
-                                int x,
-                                int y,
-                                ei_color_t color)
-{
-	
-        uint32_t *pixel = (uint32_t*)(hw_surface_get_buffer(surface)
-                                        + y * hw_surface_get_size(surface).width * sizeof(uint32_t)
-                                        + x * sizeof(uint32_t));
-        *pixel =        ei_map_rgba(surface,&color);
-
-}
-
 void                    ei_draw_polyline        (ei_surface_t                   surface,
                                                  const ei_linked_point_t*       first_point,
                                                  const ei_color_t               color,
@@ -64,13 +51,8 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	uint32_t x1,x2,y1,y2;
 	int32_t dx,dy,e;
 
-	/* Taille surface */
-	/* A utiliser pour vérifier et parcourir le tableau */
-	ei_size_t taille=hw_surface_get_size(surface);
-
 	/* Recuperer l'adresse du pixel (0,0) */
 	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
-	uint32_t* a;
 
 	/* Première boucle de parcours des points */
 	while (sent->next!=NULL) {
@@ -79,7 +61,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 		x2=(uint32_t)sent->next->point.x;
 		y1=(uint32_t)sent->point.y;
 		y2=(uint32_t)sent->next->point.y;
-		printf("droite entre ( %u ; %u ) et ( %u ; %u).",x1,y1,x2,y2);
+		//printf("droite entre ( %u ; %u ) et ( %u ; %u).",x1,y1,x2,y2);
 		dx=x2-x1;
 		if ( dx != 0 ){
 			if ( dx > 0 ){
@@ -87,9 +69,8 @@ void                    ei_draw_polyline        (ei_surface_t                   
 				if ( dy != 0 ){
 					if ( dy > 0 ){
 						//Vecteur oblique 1er cadran
-						if ( dx >= dy ){ 
+						if ( dx >= dy ){
 							//1er octant
-							printf(" oct1 \n");
 							e=dx;
 							dx=2*e;
 							dy=2*dy;
@@ -97,9 +78,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1+1;
 								e=e+dy;
 								if (2*e>dx) {
@@ -109,7 +88,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//2eme octant
-							printf(" oct2 \n");
 							e=dy;
 							dx=2*dx;
 							dy=2*e;
@@ -117,9 +95,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1+1;
 								e=e-dx;
 								if (e < 0) {
@@ -131,7 +107,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 					} else {
 						//Vecteur oblique 4eme cadran
 						if ( dx + dy >= 0 ){
-							printf(" oct8 \n");
 							//8e octant
 							e=dx;
 							dx=2*e;
@@ -140,9 +115,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1+1;
 								e=e+dy;
 								if ( e < 0 ) {
@@ -152,7 +125,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//7e octant
-							printf(" oct7 \n");
 							e=dy;
 							dx=2*dx;
 							dy=2*e;
@@ -160,9 +132,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1-1;
 								e=e+dx;
 								if ( e > 0 ) {
@@ -175,9 +145,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 				} else {
 					//Vecteur horizontal vers la droite
 					while ( x1 != x2 ){
-						a=pixel_ptr;
-						a=a+y1*taille.width+x1;
-						*a=ei_map_rgba(surface,&color);
+						draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 						x1 = x1 + 1;
 					}
 				
@@ -189,7 +157,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 						//2e cadran
 						if ( dx + dy <= 0 ){
 							//4e octant
-							printf(" oct4 \n");
 							e = dx;
 							dx = 2*e;
 							dy = 2*dy;
@@ -197,9 +164,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1-1;
 								e=e+dy;
 								if ( e >= 0 ) {
@@ -209,7 +174,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//3e octant
-							printf(" oct3 \n");
 							e = dy;
 							dx = 2*dx;
 							dy = 2*e;
@@ -217,9 +181,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1+1;
 								e=e+dx;
 								if ( e <= 0 ) {
@@ -232,7 +194,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 						//3e cadran
 						if ( dx <= dy ){
 							//5e octant
-							printf(" oct5 \n");
 							e = dx;
 							dx = 2*e;
 							dy = 2*dy;
@@ -240,9 +201,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1-1;
 								e=e-dy;
 								if ( e >= 0 ) {
@@ -252,7 +211,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//6e octant
-							printf(" oct6 \n");
 							e = dy;
 							dy = 2*e;
 							dx = 2*dx;
@@ -260,9 +218,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
-								a=pixel_ptr;
-								a=a+y1*taille.width+x1;
-								*a=ei_map_rgba(surface,&color);
+								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1-1;
 								e=e-dx;
 								if ( e >= 0 ) {
@@ -275,9 +231,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 				} else {
 					//Vecteur horizontal vers la gauche
 					while ( x1 != x2 ){
-						a=pixel_ptr;
-						a=a+y1*taille.width+x1;
-						*a=ei_map_rgba(surface,&color);
+						draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 						x1 = x1 - 1;
 					}
 				}
@@ -287,25 +241,19 @@ void                    ei_draw_polyline        (ei_surface_t                   
 			if ( dy > 0 ){
 				//Vecteur vertical croissant
 				while ( y1 != y2 ){
-					a=pixel_ptr;
-					a=a+y1*taille.width+x1;
-					*a=ei_map_rgba(surface,&color);
+					draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 					y1 = y1 + 1;
 				}
 			} else {
 				//Vecteur vertical decroissant
 				while ( y1 != y2 ){
-					a=pixel_ptr;
-					a=a+y1*taille.width+x1;
-					*a=ei_map_rgba(surface,&color);
+					draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 					y1 = y1 - 1;
 				}
 			}
 		}
 		/* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
-		a=pixel_ptr;
-		a=a+y2*taille.width+x2;
-		*a=ei_map_rgba(surface,&color);
+		draw_pixel(surface,x2,y2,color,pixel_ptr,clipper);
 		
 		/* sent->next != NULL */
 		sent=sent->next;
@@ -451,7 +399,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				}			}
 
 		}
-	}
+		}
 }
 
 void			ei_draw_text		(ei_surface_t		surface,
