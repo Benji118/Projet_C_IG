@@ -37,15 +37,6 @@ typedef struct {
 	int				y; ///< The ordinate of the point, the origin is at the top of the image, ordinates increase towards the bottom.
 } ei_point_t;
 
-/**
-* @brief Structure d'un cote pour TC dans la fonction ei_draw_polygon
-*/
-typedef struct {
-  int                             ymax; ///< ordonnee maximale du cote
-  int                             x_ymin; ///< abscisse du point d'ordonnee minimale du cote
-  float                           rec_pente; ///<pente reciproque du cote
-  struct ei_side_t*                 next; ///<pointeur vers le cote suivant
-} ei_side_t;
 
 /**
  * @brief	A 2-D size with integer dimensions.
