@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "SDL_keysym.h"
 #include <stdint.h>
+#include "ei_draw.h"
 #include "ei_types.h"
 
 
@@ -26,7 +27,7 @@ typedef struct cel_TCA cel_TCA;
 
 struct cel_TCA {
 	ei_side_t side;
-	cel_TCA* next;
+	cel_TCA* nex
 	int x_inter;
 };
 
@@ -39,11 +40,15 @@ bool  Comp_side (ei_side_t c1, ei_side_t c2);
 //ajout en tete dans TCA
 TCA *add_TCA(TCA *a, ei_side_t c);
 
-//suppresion dans TCA
+//suppresion dans TC
 TCA *del_TCA (TCA *a, ei_side_t c);
-
 
 TCA *sort_TCA (TCA *a);
 
-void draw_pixel(ei_surface_t surface, const ei_color_t color, const ei_rect_t* clipper);
-#endif
+void draw_pixel (ei_surface_t surface,
+		 uint32_t x,
+		 uint32_t y,
+		 const ei_color_t color,
+		 uint32_t* pixel_ptr,
+		 const ei_rect_t* clipper);
+#endif 

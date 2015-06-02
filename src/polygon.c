@@ -91,6 +91,30 @@ TCA *sort_TCA (TCA* a)
 	}
 }
 
-void draw_pixel(ei_surface_t surface, const ei_color_t color, const ei_rect_t* clipper)
+void draw_pixel(ei_surface_t surface,
+		uint32_t x,
+		uint32_t y,
+		const ei_color_t color,
+		uint32_t* pixel_ptr_origin,
+		const ei_rect_t* clipper)
 {
+	/* Clipper "brut" 
+	   4 tests */
+	if (clipper!=NULL) 
+	{
+		if ((x>clipper->top_left.x) &
+		    (y>clipper->top_left.y) &
+		    (x<(clipper->top_left.x+clipper->size.width)) &
+		    (y<(clipper->top_left.y+clipper->size.height)))
+		{    
+			ei_size_t taille=hw_surface_get_size(surface);
+			uint32_t* pixel_ptr=pixel_ptr_origin+y*taille.width+x;
+			*pixel_ptr=ei_map_rgba(surface,&color);
+		}
+	} else {
+		ei_size_t taille=hw_surface_get_size(surface);
+		uint32_t* pixel_ptr=pixel_ptr_origin+y*taille.width+x;
+		*pixel_ptr=ei_map_rgba(surface,&color);
+	}
+		
 }
