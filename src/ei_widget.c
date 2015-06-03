@@ -1,5 +1,7 @@
 #include "ei_draw.h"
 #include "ei_widgetclass.h"
+#include "ei_widget.h"
+#include "widget.h"
 #include "ei_placer.h"
 
 
@@ -13,11 +15,43 @@ void		ei_callback_t	(ei_widget_t*		widget,
 ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 							 ei_widget_t*		parent)
 {
+	ei_widgetclass_t *class = ei_widget_class_from_name(class_name);
+	void * memsize = class->allocfunc();
+	ei_widget_t *new_widget = malloc(*memsize);
+	new_widget->parent = parent;
+	if (parent->children_head = NULL)
+	{
+		parent->children_head = new_widget;
+		parent->children_tail = new_widget;
+	}
+	else
+	{
+		ei_widget_t *tmp1 = parent_>children_head; 
+		while (tmp1->next_sibling != NULL)
+		{
+			tmp1 = tmp1->next_sibling;
+		}
+		parent->children_tail = new_widget;
+		tmp1->next_sibling = new_widget;
+	}
+	ei_wiget_t *tmp = parent->next_sibling;
+	while(tmp != NULL)
+	{
+		tmp = tmp->next_sibling;
+	}
+	tmp->next_sibling = new_widget;
 }
-
 
 void			ei_widget_destroy		(ei_widget_t*		widget)
 {
+	if (widget->childhead = NULL)
+	{
+		free(widget);
+		else
+		{
+			ei_widget_destroy (widget->childhead);
+		}
+	}
 }
 
 
