@@ -1,94 +1,110 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include <stdbool.h>
 #include "polygon.h"
 #include "ei_types.h"
 
 
-bool Comp_side (ei_side_t c1, ei_side_t c2)
+ei_bool_t comp_side (ei_side_t c1, int y) 
 {
-	if (c1.ymax==c2.ymax && c1.x_ymin==c2.x_ymin && c1.rec_pente==c2.rec_pente)
-		return true;
-	else
-		return false;
-}
-
-
-TCA *add_TCA (TCA *a, ei_side_t c)
-{
-	if (a->head != NULL)
-	{
-		cel_TCA* newcel = malloc(sizeof(cel_TCA));
-		newcel->side = c;
-		newcel->x_inter = c.x_ymin;
-		newcel->next = a->head;
-		a->head = newcel;
-
-	}
-	else
-	{
-		a->head = malloc(sizeof(cel_TCA));
-		a->head->side = c;
-		a->head->next = NULL;
-	}
-	return a;
-}
-
-
-TCA *del_TCA (TCA *a, ei_side_t c)
-{
-	if (a->head == NULL)
-		return NULL;
-
-	TCA* tmp;
-	if (Comp_side(a->head->side,c))	
-	{
-			tmp->head = a->head->next;
-			free(a->head);
-			tmp = del_TCA(tmp, c);
-			return tmp;
-	}
-	else
-	{
-		a->head = a->head->next;
-		a = del_TCA(a,c);
-		return a;
+	if (c1.ymax==y)/* && c1.x_ymin==c2.x_ymin && c1.rec_pente==c2.rec_pente*/ {
+		return EI_TRUE;
+	} else {
+		return EI_FALSE;
 	}
 }
 
-void swap_TCA (cel_TCA *cel1, cel_TCA *cel2)
+TCA *create_TCA()
 {
-	cel_TCA *tmp = cel1->next;
-	cel1->next =cel2->next;
-	cel2->next = tmp;
+	TCA *new_TCA=malloc(sizeof(TCA));
+	assert(new_TCA!=NULL);
+	new_TCA->head=NULL;
+	return new_TCA;
+}
+
+void add_TCA (TCA *a, ei_side_t c)
+{
+	if (a->head!=NULL) {
+		cell_TCA *new_cell=malloc(sizeof(cell_TCA));
+		new_cell->side=c;
+		new_cell->x_inter=c.x_ymin;
+		new_cell->next=a->head;
+		a->head=new_cell;
+	} else {
+		cell_TCA *new_cell=malloc(sizeof(cell_TCA));
+		new_cell->side=c;
+		new_cell->x_inter=c.x_ymin;
+		new_cell->next=NULL;
+		a->head=new_cell;
+	}
+}
+
+void del_TCA (TCA *a, int y)
+{
+	cell_TCA *cour=a->head;
+	cell_TCA *prec=a->head;
+	while (cour!=NULL) {
+		if (cour->side.ymax==y) {
+			if (prec==cour) {
+				a->head=a->head->next;
+				cour=a->head;
+				prec=a->head;
+			} else {
+				prec->next=cour->next;
+				cour=cour->next;
+			}
+		} else {
+			if (prec!=cour) {
+				prec=prec->next;
+			}
+			cour=cour->next;
+		}
+	}
 }
 
 TCA *sort_TCA (TCA* a)
 {
-	if (a !=NULL)
-	{
-		cel_TCA *tmp3;
-		int min;
-		for (cel_TCA *tmp=a->head;tmp!=NULL;tmp=tmp->next)
-		{
-			tmp3=tmp;
-			min=tmp->x_inter;
-			for (cel_TCA *tmp1=tmp->next; tmp1!=NULL;tmp1=tmp1->next)
-			{
-				if(min >tmp1->x_inter)
-				{
-					tmp3=tmp1;
-					min=tmp3->x_inter;
+	// Création d'une nouvelle TCA
+	TCA *tri=create_TCA();
+	cell_TCA *sent_TCA=a->head;
+	while (sent_TCA!=NULL) {
+		cell_TCA *new=malloc(sizeof(cell_TCA));
+		assert(new!=NULL);
+		*new=*sent_TCA;
+		//printf("sent_TCA : %d\n",sent_TCA->x_inter);
+		if (tri->head!=NULL) {
+			//	printf("tri head : %d\n",tri->head->x_inter);
+		}
+		if (tri->head==NULL) {			
+			new->next=NULL;
+			tri->head=new;
+		} else if ((tri->head->x_inter)>=(sent_TCA->x_inter)) {
+			//printf("tete\n");
+			// Insertion en tete
+			new->next=tri->head;
+			tri->head=new;
+		} else {
+			cell_TCA *sent_tri=tri->head;
+			ei_bool_t find=EI_FALSE;
+			while (find!=EI_TRUE) {
+				if (sent_tri->next==NULL) {
+					// Insertion en queue
+					new->next=NULL;
+					sent_tri->next=new;
+					find=EI_TRUE;
+				} else if (sent_tri->next->x_inter>=sent_TCA->x_inter) {
+					find=EI_TRUE;
+					new->next=sent_tri->next;
+					sent_tri->next=new;
+				} else {
+					sent_tri=sent_tri->next;
 				}
 			}
-			swap_TCA(tmp3,tmp);
 		}
-		return a;
+		sent_TCA=sent_TCA->next;
 	}
-	else
-	{
-		return NULL;
-	}
+	return tri;
 }
 
 void draw_pixel(ei_surface_t surface,
@@ -98,8 +114,7 @@ void draw_pixel(ei_surface_t surface,
 		uint32_t* pixel_ptr_origin,
 		const ei_rect_t* clipper)
 {
-	/* Clipper "brut" 
-	   4 tests */
+	// Clipper "brut" 4 tests
 	if (clipper!=NULL) 
 	{
 		if ((x>clipper->top_left.x) &
