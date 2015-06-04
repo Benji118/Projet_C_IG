@@ -133,3 +133,35 @@ void draw_pixel(ei_surface_t surface,
 	}
 		
 }
+
+uint32_t alpha_effect(ei_surface_t surface_source,
+					  ei_surface_t surface_dest,
+	 				  uint32_t *pixel_source,
+	 				  uint32_t *pixel_dest)
+{
+	int irs,igs,ibs,ias, ird,igd,ibd,iad;
+	hw_surface_get_channel_indices(surface_source,&irs,&igs,&ibs,&ias);
+	hw_surface_get_channel_indices(surface_dest,&ird,&igd,&ibd,&iad);
+
+	uint32_t Sr,Sg,Sb,Sa, Pr,Pg,Pb,Pa;
+	Pr = *pixel_source << irs*8;
+	Pg = *pixel_source << igs*8;
+	Pb = *pixel_source << ibs*8;
+	Pa = *pixel_source << ias << 8*ias;
+
+	Sr = *pixel_dest << ird*8;
+	Sg = *pixel_dest << igd*8;
+	Sb = *pixel_dest << ibd*8;
+	Sa = 0xF << iad*8;
+
+	uint32_t Sr_final,Sg_final,Sb_final,Sa_final;
+	Sr_final = (Pa*Pr + (255-Pa)*Sr)/255;
+	Sg_final = (Pa*Pg + (255-Pa)*Sg)/255;
+	Sb_final = (Pa*Pb + (255-Pa)*Sb)/255;
+	Sa_final = Sa;
+
+	return Sr_final+Sg_final+Sb_final+Sa_final;
+
+
+
+}
