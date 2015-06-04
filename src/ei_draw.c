@@ -261,6 +261,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	}
 }
 
+
 void			ei_draw_polygon		(ei_surface_t			surface,
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
@@ -578,12 +579,18 @@ void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_color_t*	color,
 						 const ei_rect_t*	clipper)
 {
-
-	ei_surface_t surface_text = hw_text_create_surface(text,font,color);
-	hw_surface_set_origin(surface_text,*where);
+	ei_surface_t *surface_text;
+	int *h_t,*w_t;
+	//if (font == NULL)
+	//{
+	surface_text = hw_text_create_surface(text,ei_default_font,color);
+	hw_text_compute_size(text,ei_default_font,w_t,h_t);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
+	ei_rect_t rect_source = rect_text;
+	rect_source.top_left = *where;
+	//}
 	ei_bool_t alpha;
-	if (hw_surface_has_alpha(surface_text)==EI_TRUE)
+	if (hw_surface_has_alpha(surface)==EI_TRUE)
 	{
 		alpha = EI_TRUE;
 	}
@@ -591,7 +598,7 @@ void			ei_draw_text		(ei_surface_t		surface,
 	{
 		alpha=EI_FALSE;
 	}
-	ei_copy_surface(surface,NULL,surface_text,&rect_text,alpha);
+	ei_copy_surface(surface,&rect_source,surface_text,&rect_text,alpha);
 
 }
 
@@ -621,57 +628,39 @@ int			ei_copy_surface		(ei_surface_t		destination,
 
 	ei_size_t taille_source;
 	ei_size_t taille_dest;
-
-	if(src_rect == NULL)
+	if (dst_rect==NULL && src_rect==NULL)
 	{
-		taille_source.height = hw_surface_get_size(source).height;
-		taille_source. width = hw_surface_get_size(source). width;
+			taille_source.width = hw_surface_get_size(source).width;
+			taille_source.height = hw_surface_get_size(source).height;
+
+			taille_dest.width = hw_surface_get_size(destination).width;
+			taille_dest.height = hw_surface_get_size(destination).height;
+
+	}
+	else if ((dst_rect->size.width!=src_rect->size.width) && 
+		(dst_rect->size.height!=src_rect->size.height))
+	{
+			return 1;
+	}
+	else if (dst_rect==NULL && src_rect!=NULL)
+	{
+		return 1;
+	}
+	else if (dst_rect!=NULL && src_rect==NULL)
+	{
+		return 1;
 	}
 	else
 	{
-		if (src_rect->size.height > hw_surface_get_size(source).height)
-		{
-			return 1;
-		}
-		else
-		{
-			taille_source.height = src_rect->size.height;
-		}
-		if (src_rect->size. width > hw_surface_get_size(source). width)
-		{
-		return 1;
-		}
-		else
-		{
-			taille_source. width = src_rect->size. width;
-		}
-	}
+		taille_source.width = src_rect->size.width;
+		taille_source.height = src_rect->size.height;
 
-if(dst_rect == NULL)
-	{
-		taille_dest.height = hw_surface_get_size(destination).height;
-		taille_dest. width = hw_surface_get_size(destination). width;
-	}
-	else
-	{
-		if (dst_rect->size.height > hw_surface_get_size(destination).height)
-		{
-			return 1;
-		}
-		else
-		{
-			taille_dest.height = dst_rect->size.height;
-		}
-		if (dst_rect->size. width > hw_surface_get_size(destination). width)
-		{
-		return 1;
-		}
-		else
-		{
-			taille_dest. width = dst_rect->size. width;
-		}
-	}
+		taille_dest.width = dst_rect->size.width;
+		taille_dest.height = dst_rect->size.height;
 
+		*px_source_origin ++= src_rect->size.width*src_rect->top_left.y+src_rect->top_left.x;
+		*px_dest_origin ++= dst_rect->size.width*dst_rect->top_left.y+dst_rect->top_left.x;
+	}
 	if(taille_source.height > taille_dest.height)
 	{
 		for(int y = 0; y<= taille_dest.height; y++)
@@ -680,8 +669,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_dest.width; x++)
 				{
-					px_source = px_source_origin + y*taille_dest.height + x;
-					px_dest = px_dest_origin + y*taille_dest.height + x;
+					px_source = px_source_origin + y*taille_dest.width + x;
+					px_dest = px_dest_origin + y*taille_dest.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
@@ -696,8 +685,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_source.width; x++)
 				{
-					px_source = px_source_origin + y*taille_dest.height + x;
-					px_dest = px_dest_origin + y*taille_dest.height + x;
+					px_source = px_source_origin + y*taille_dest.width + x;
+					px_dest = px_dest_origin + y*taille_dest.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
@@ -718,8 +707,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_dest.width; x++)
 				{
-					px_source = px_source_origin + y*taille_source.height + x;
-					px_dest = px_dest_origin + y*taille_source.height + x;
+					px_source = px_source_origin + y*taille_source.width + x;
+					px_dest = px_dest_origin + y*taille_source.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
@@ -734,8 +723,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_source.width; x++)
 				{
-					px_source = px_source_origin + y*taille_source.height + x;
-					px_dest = px_dest_origin + y*taille_source.height + x;
+					px_source = px_source_origin + y*taille_source.width + x;
+					px_dest = px_dest_origin + y*taille_source.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
