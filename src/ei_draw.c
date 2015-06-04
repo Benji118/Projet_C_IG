@@ -350,7 +350,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 	// Boucle des scanlines
 	for (int k=0; k<size.height; k++) {
 		ei_side_t *sent_tab=TC[k];
-		printf("Scan numero : %d\n", k);
+		//printf("Scan numero : %d\n", k);
 		while (sent_tab!=NULL) {
 			// A FAIRE : Supression dans TC 
 			// A FAIRE : Gérer la libération 
@@ -369,13 +369,13 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		// Affichage de TCA par scanline 
 		cell_TCA *sent_TCA2=TCA->head;
 		while (sent_TCA2!=NULL) {
-			printf("ymax : %d xymin : %d x_inter : %d\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
+			//printf("ymax : %d xymin : %d x_inter : %d\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
 			sent_TCA2=sent_TCA2->next;
 		}
 
 		// Remplissage de la scanline
 		cell_TCA *senti_TCA=TCA->head;
-		while (senti_TCA!=NULL) {
+		while (senti_TCA!=NULL && senti_TCA->next != NULL) {
 			int inter1=senti_TCA->x_inter;
 			int inter2=senti_TCA->next->x_inter;
 			// Dessin entre deux intersections successives intersections
@@ -424,7 +424,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 								dy=2*e;
 								// Boucle de traitement, segment par segment
 								// Traitement 
-								while (x1!=maj_x_inter->x_inter && y1!=k) {
+								while (y1!=k) {
 									y1=y1+1;
 									e=e-dx;
 									if (e < 0) {
@@ -442,7 +442,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 								dy=2*dy;
 								// Boucle de traitement, segment par segment
 								// Traitement
-								while (x1!=maj_x_inter->x_inter && y1!=k) {
+								while (y1!=k) {
 									x1=x1+1;
 									e=e+dy;
 									if ( e < 0 ) {
@@ -457,7 +457,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 								dy=2*e;
 								// Boucle de traitement, segment par segment
 								// Traitement
-								while (x1!=maj_x_inter->x_inter && y1!=k) {
+								while (y1!=k) {
 									y1=y1-1;
 									e=e+dx;
 									if ( e > 0 ) {
@@ -469,7 +469,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 						}
 					} else {
 						// Vecteur horizontal vers la droite
-						while (x1!=maj_x_inter->x_inter && y1!=k){
+						while (y1!=k){
 							x1 = x1 + 1;
 						}
 				
@@ -518,7 +518,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 								dy = 2*dy;
 								// Boucle de traitement, segment par segment
 								// Traitement
-								while (x1!=maj_x_inter->x_inter && y1!=k) {
+								while (y1!=k) {
 									x1=x1-1;
 									e=e-dy;
 									if ( e >= 0 ) {
@@ -533,7 +533,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 								dx = 2*dx;
 								// Boucle de traitement, segment par segment
 								// Traitement
-								while (x1!=maj_x_inter->x_inter && y1!=k) {
+								while (y1!=k) {
 									y1=y1-1;
 									e=e-dx;
 									if ( e >= 0 ) {
@@ -545,7 +545,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 						} 
 					} else {
 						// Vecteur horizontal vers la gauche
-						while (x1!=maj_x_inter->x_inter && y1!=k){
+						while (y1!=k){
 							x1 = x1 - 1;
 						}
 					}
@@ -553,12 +553,12 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 			} else {
 				if ( dy > 0 ){
 					// Vecteur vertical croissant
-					while (x1!=maj_x_inter->x_inter && y1!=k){
+					while (y1!=k){
 						y1 = y1 + 1;
 					}
 				} else {
 					// Vecteur vertical decroissant
-					while (x1!=maj_x_inter->x_inter && y1!=k){
+					while (y1!=k){
 						y1 = y1 - 1;
 					}
 				}
