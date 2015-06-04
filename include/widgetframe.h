@@ -1,5 +1,5 @@
-#ifndef WIDGETFRAME_H
-#define WIDGETFRAME_H
+#ifndef WIDGET_H
+#define WIDGET_H
 
 #include "SDL_keysym.h"
 #include "hw_interface.h"

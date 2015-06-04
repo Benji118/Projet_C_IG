@@ -46,12 +46,12 @@ void ei_app_run()
 
 	while (quit_app == EI_FALSE)
 	{
-		if (&ei_app_quit_request())
+		if (ei_app_quit_request())
 		{
 			quit_app = EI_TRUE;
 		}
 		//gestion de l'affichage : TODO
-		hw_event_wait_next();
+		//hw_event_wait_next();
 		//gestion des evenements : TODO
 	}
 }
