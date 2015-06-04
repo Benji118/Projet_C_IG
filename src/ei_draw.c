@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "hw_interface.h"
 #include "ei_types.h"
-//#include "polygon.h"
+#include "polygon.h"
 #include <stdint.h>
 
 uint32_t ei_map_rgba(ei_surface_t surface, const ei_color_t* color)
@@ -79,7 +79,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 		x2=(uint32_t)sent->next->point.x;
 		y1=(uint32_t)sent->point.y;
 		y2=(uint32_t)sent->next->point.y;
-		printf("droite entre ( %u ; %u ) et ( %u ; %u).",x1,y1,x2,y2);
+		//printf("droite entre ( %u ; %u ) et ( %u ; %u).",x1,y1,x2,y2);
 		dx=x2-x1;
 		if ( dx != 0 ){
 			if ( dx > 0 ){
@@ -89,7 +89,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 						//Vecteur oblique 1er cadran
 						if ( dx >= dy ){ 
 							//1er octant
-							printf(" oct1 \n");
+							//printf(" oct1 \n");
 							e=dx;
 							dx=2*e;
 							dy=2*dy;
@@ -109,7 +109,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//2eme octant
-							printf(" oct2 \n");
+							//printf(" oct2 \n");
 							e=dy;
 							dx=2*dx;
 							dy=2*e;
@@ -131,7 +131,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 					} else {
 						//Vecteur oblique 4eme cadran
 						if ( dx + dy >= 0 ){
-							printf(" oct8 \n");
+							//printf(" oct8 \n");
 							//8e octant
 							e=dx;
 							dx=2*e;
@@ -152,7 +152,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//7e octant
-							printf(" oct7 \n");
+							//printf(" oct7 \n");
 							e=dy;
 							dx=2*dx;
 							dy=2*e;
@@ -189,7 +189,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 						//2e cadran
 						if ( dx + dy <= 0 ){
 							//4e octant
-							printf(" oct4 \n");
+							//printf(" oct4 \n");
 							e = dx;
 							dx = 2*e;
 							dy = 2*dy;
@@ -209,7 +209,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//3e octant
-							printf(" oct3 \n");
+							//printf(" oct3 \n");
 							e = dy;
 							dx = 2*dx;
 							dy = 2*e;
@@ -232,7 +232,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 						//3e cadran
 						if ( dx <= dy ){
 							//5e octant
-							printf(" oct5 \n");
+							//printf(" oct5 \n");
 							e = dx;
 							dx = 2*e;
 							dy = 2*dy;
@@ -252,7 +252,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							}
 						} else {
 							//6e octant
-							printf(" oct6 \n");
+							//printf(" oct6 \n");
 							e = dy;
 							dy = 2*e;
 							dx = 2*dx;
@@ -317,141 +317,6 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 	const ei_color_t		color,
 	const ei_rect_t*		clipper)
 {	
-	if (first_point!=NULL && first_point->next!=NULL)
-	{
-		TC_t TC;
-		TC.nbre_cote=0;
-		TC.table = calloc(hw_surface_get_size(surface).height,sizeof(ei_side_t*));
-		TC.table[(first_point->point).y][0] = malloc(sizeof(ei_side_t));
-		if ((first_point->point).y!=(first_point->next->point).y)
-		{
-			if ((first_point->point).y > (first_point->next->point).y)
-			{
-				TC.table [(first_point->point).y][0]->ymax = (first_point->point).y;
-				TC.table [(first_point->point).y][0]->x_ymin = (first_point->next->point).x;
-				TC.table [(first_point->point).y][ 0]->dx = (first_point->next->point).x-(first_point->point).x;				
-				TC.table [(first_point->point).y][ 0]->dy = (first_point->next->point).y-(first_point->point).y;
-				TC.table [(first_point->point).y][ 0]->e = TC.table [(first_point->point).y][ 0]->dy;
-			}
-			else if ((first_point->point).y < (first_point->next->point).y)
-			{
-				TC.table [(first_point->point).y][0]->ymax = (first_point->next->point).y;
-				TC.table [(first_point->point).y][0]->x_ymin = (first_point->point).x;
-				TC.table [(first_point->point).y][ 0]->dx = (first_point->next->point).x-(first_point->point).x;
-				TC.table [(first_point->point).y][ 0]->dy = (first_point->next->point).x-(first_point->point).y;
-				TC.table [(first_point->point).y][ 0]->e = TC.table [(first_point->point).y][ 0]->dy;
-			}
-			TC.table [(first_point->point).y][0]->rec_pente = ((first_point->next->point).x - (first_point->point).x) /
-												 ((first_point->next->point).y - (first_point->point).y);
-			TC.nbre_cote++;
-
-		}
-		int inc =0;
-		ei_linked_point_t* tmp = first_point->next;
-		while (tmp != NULL)
-		{
-			if (TC.table [(tmp->point).y][inc]==NULL)
-			{
-				TC.table [(tmp->point).y][inc] = malloc(sizeof(ei_side_t));
-				if ((tmp->point).y!=(tmp->next->point).y)
-				{
-					if ((tmp->point).y > (tmp->next->point).y)
-					{
-						TC.table [(tmp->point).y][inc]->ymax = (tmp->point).y;
-						TC.table [(tmp->point).y][inc]->x_ymin = (tmp->next->point).x;
-						TC.table [(tmp->point).y][inc]->dx = (tmp->next->point).x-(tmp->point).x;
-						TC.table [(tmp->point).y][inc]->dy = (tmp->next->point).y-(tmp->point).y;
-						TC.table [(tmp->point).y][inc]->e = TC.table [(tmp->point).y][inc]->dy;
-
-					}
-					else if ((tmp->point).y < (tmp->next->point).y)
-					{
-						TC.table [(tmp->point).y][inc]->ymax = (tmp->next->point).y;
-						TC.table [(tmp->point).y][inc]->x_ymin = (tmp->point).x;
-						TC.table [(tmp->point).y][inc]->dx = (tmp->next->point).x-(tmp->point).x;
-						TC.table [(tmp->point).y][inc]->dy = (tmp->next->point).y-(tmp->point).y;
-						TC.table [(tmp->point).y][inc]->e = TC.table [(tmp->point).y][inc]->dy;
-					}
-					TC.table [(tmp->point).y][inc]->rec_pente = ((tmp->next->point).x - (tmp->point).x) /
-					((tmp->next->point).y - (tmp->point).y);
-					TC.nbre_cote++;
-				}
-				inc = 0;
-				tmp = tmp->next;
-			}
-			else
-			{
-				inc++;
-			}
-		}
-		TCA *Actifs = NULL;
-		tmp = first_point->next;
-		int scanline = (first_point->point).y;
-		while (tmp!= NULL)
-		{
-			if ((tmp->point).y < scanline)
-			{
-				scanline = (tmp->point).y;
-			}
-			tmp = tmp->next;
-		}
-		free(tmp);
-		while (TC.nbre_cote != 0 && Actifs->head != NULL)
-		{
-			int ind = 0;
-			ei_side_t *tmp1 = TC.table [scanline][ind];
-			while (tmp1 != NULL)
-			{
-				add_TCA(Actifs,*tmp1);
-				ind++;
-				tmp1 = TC.table [scanline][ind];
-				TC.nbre_cote--;
-			}
-			free(tmp1);
-			cel_TCA *tmp3 = Actifs->head;
-			while (tmp3 != NULL)
-			{
-				if((tmp3->side).ymax == scanline)
-				{
-					del_TCA (Actifs,tmp3->side);
-				}
-				tmp3 = tmp3->next;
-			}
-			sort_TCA (Actifs);
-			int remplir = 2;
-			tmp3 = Actifs->head;
-			int x = 0;
-			while(x <= hw_surface_get_size(surface).width)
-			{
-				while(x <= (tmp3->side).x_ymin)
-				{
-					if(x == (tmp3->side).x_ymin)
-					{
-						remplir = 1;
-					}
-					if(remplir % 2 == 1)
-					{
-						draw_pixel(surface,x,scanline,color);
-					}
-					x++;
-				}
-			}
-			scanline++;
-			//calcule des nouvelles intersections
-			tmp3=Actifs->head;
-			while(tmp3!=NULL)
-			{
-				int e = (tmp3->side).dy;
-				int dy = e*2;
-				int dx = (tmp3->side).dx;
-				if (e-dx<=0)
-				{
-					tmp3->x_inter++;
-
-				}			}
-
-		}
-	}
 }
 
 void			ei_draw_text		(ei_surface_t		surface,
