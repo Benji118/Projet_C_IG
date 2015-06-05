@@ -228,25 +228,60 @@ void                    draw_button        ( ei_surface_t                   surf
 					     const ei_rect_t                rectangle,
 					     const double                   rayon,
 					     const double                   edge,
-					     const ei_color_t               light,
-					     const ei_color_t               shadow,
 					     const ei_color_t               color,
 					     const ei_relief_t              relief,
 					     const ei_rect_t*               clipper)
 {
 	ei_linked_point_t *first_point_top = rounded_frame(rectangle, rayon, true, false);
 	ei_linked_point_t *first_point_bot = rounded_frame(rectangle, rayon, false, true);
+	
+	/* On définit l'ombre et la lumière a partir de la couleur voulue pour le bouton */
+	ei_color_t light, shadow;
+	light.red = 2*color.red;
+	if (light.red > 255)
+		light.red = 255;
+	light.green = 2*color.green;
+	if (light.green > 255)
+		light.green = 255;
+	light.blue = 2*color.blue;
+	if (light.blue > 255)
+		light.blue = 255;
+	light.alpha = color.alpha;
 
-	/* Rectangle du main (dessus du bouton) */
+
+	shadow.red = color.red/2;
+	shadow.green =color.green/2;
+	shadow.blue = color.blue/2;
+	shadow.alpha = color.alpha;
+	
+
+	/* Rectangle principal (dessus du bouton) */
+	/* Avec décalage si le bouton est enfoncé */
 	ei_rect_t mid_rect;
-	mid_rect.top_left.x = rectangle.top_left.x + edge;
-	mid_rect.top_left.y = rectangle.top_left.y + edge;
+	if ( relief == ei_relief_sunken ){
+		mid_rect.top_left.x = rectangle.top_left.x + (4/3)*edge;
+		mid_rect.top_left.y = rectangle.top_left.y + (4/3)*edge;
+	} else {
+		mid_rect.top_left.x = rectangle.top_left.x + edge;
+		mid_rect.top_left.y = rectangle.top_left.y + edge;
+	}
 	mid_rect.size.width = rectangle.size.width - 2*edge;
 	mid_rect.size.height = rectangle.size.height - 2*edge;
 	double mid_ray = rayon - edge;
 
+	/* Couleurs choisies selon le type de relief */
+	ei_color_t color_top, color_bot;
+	if ( relief == ei_relief_sunken ){
+		color_top = shadow;
+		color_bot = light;
+	} else {
+		color_top = light;
+		color_bot = shadow;
+	}
+		
+
 	ei_linked_point_t *first_point_main = rounded_frame(mid_rect, mid_ray, true, true);
-	ei_draw_polygon(surface, first_point_top,  light, clipper);
-	ei_draw_polygon(surface, first_point_bot,  shadow, clipper);
+	ei_draw_polygon(surface, first_point_top,  color_top, clipper);
+	ei_draw_polygon(surface, first_point_bot,  color_bot, clipper);
 	ei_draw_polygon(surface, first_point_main,  color, clipper);
 }

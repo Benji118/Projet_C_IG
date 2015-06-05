@@ -19,8 +19,6 @@ void                    draw_button        ( ei_surface_t                   surf
 					     const ei_rect_t                rectangle,
 					     const double                   rayon,
 					     const double                   edge,
-					     const ei_color_t               light,
-					     const ei_color_t               shadow,
 					     const ei_color_t               color,
 					     const ei_relief_t              relief,
 					     const ei_rect_t*               clipper);
