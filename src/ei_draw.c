@@ -55,7 +55,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
 
 	/* Première boucle de parcours des points */
-	while (sent->next!=NULL) {
+	while (sent->next != NULL) {
 		/* Initialisation des varibles pour chaque segment */
 		x1=(uint32_t)sent->point.x;
 		x2=(uint32_t)sent->next->point.x;

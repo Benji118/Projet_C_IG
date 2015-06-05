@@ -134,7 +134,7 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 	ei_linked_point_t *coin = NULL;
 
        	ei_linked_point_t **frame = malloc(sizeof(ei_linked_point_t*));
-	assert(frame != NULL);
+	*frame = NULL;
 
 	/* On définit les points du milieu */
 	double h;
@@ -213,13 +213,13 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 	*courant = **frame;
 	*frame = coin;
 
-	if ( bottom && (top == false)){
+	if ( bottom && (!top)){
 		ajoute_en_tete(mid1.x, mid1.y, frame);
 	}
 	/* On rajoute en tête le dernier point pour boucler */
 	if ( top )
 		ajoute_en_tete(rectangle.top_left.x, rectangle.top_left.y + rayon, frame);
-	if ( bottom && (top == false))
+	if ( bottom && (!top))
 		ajoute_en_tete(mid2.x, mid2.y, frame);
 	return *frame;	
 }
