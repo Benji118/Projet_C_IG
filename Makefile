@@ -142,6 +142,14 @@ circles : ${OBJDIR}/circles.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/circles.o : ${TESTS}/circles.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/circles.c -o ${OBJDIR}/circles.o
 
+# polygon 
+
+polygon: ${OBJDIR}/polygon.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o polygon ${LDFLAGS} ${OBJDIR}/polygon.o ${LIBEI} ${LIBS} 
+
+${OBJDIR}/polygon.o : ${TESTS}/polygon.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/polygon.c -o ${OBJDIR}/polygon.o
+
 # Building of the library libei
 # Creation des .o
 ${OBJLIB}/%.o: ${SRCDIR}/%.c ${INCLUDES}/%.h
