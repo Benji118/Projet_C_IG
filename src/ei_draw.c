@@ -257,150 +257,325 @@ void                    ei_draw_polyline        (ei_surface_t                   
 		
 		/* sent->next != NULL */
 		sent=sent->next;
+       
 	}
 }
 
+<<<<<<< HEAD
 /*void			ei_draw_polygon		(ei_surface_t			surface,
+=======
+
+void			ei_draw_polygon		(ei_surface_t			surface,
+>>>>>>> 6f1b887cc32f7d8bff9dde23161dc1e3a2475690
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
 	const ei_rect_t*		clipper)
 {	
-	if (first_point!=NULL && first_point->next!=NULL)
-	{
-		TC_t TC;
-		TC.nbre_cote=0;
-		TC.table = calloc(hw_surface_get_size(surface).height,sizeof(ei_side_t*));
-		TC.table[(first_point->point).y][0] = malloc(sizeof(ei_side_t));
-		if ((first_point->point).y!=(first_point->next->point).y)
-		{
-			if ((first_point->point).y > (first_point->next->point).y)
-			{
-				TC.table [(first_point->point).y][0]->ymax = (first_point->point).y;
-				TC.table [(first_point->point).y][0]->x_ymin = (first_point->next->point).x;
-				TC.table [(first_point->point).y][ 0]->dx = (first_point->next->point).x-(first_point->point).x;				
-				TC.table [(first_point->point).y][ 0]->dy = (first_point->next->point).y-(first_point->point).y;
-				TC.table [(first_point->point).y][ 0]->e = TC.table [(first_point->point).y][ 0]->dy;
+	// A FAIRE : Gérer le problème du polygone nul
+        // Création d'un tableau de pointeurs vers des cotés (TC)
+	ei_size_t size=hw_surface_get_size(surface);
+	ei_side_t* TC[size.height];	
+	for (int i=0; i<size.height; i++) {
+		TC[i]=NULL;
+	}
+	ei_linked_point_t *sent;
+	sent=malloc(sizeof(ei_linked_point_t));
+	assert(sent!=NULL);
+	*sent=*first_point;
+	ei_point_t p1,p2;
+	int y_max,x_ymin;
+	// num_scan représente la première scanline d'intersection 
+	int num_scan;
+	//float pente_rec;
+	while (sent->next!=NULL) {
+		p1=sent->point;
+		p2=sent->next->point;
+		// Si le segment est horizontal on ne l'ajoute pas dans TC 
+		if (p1.y!=p2.y) {
+			// On cherche y_max 
+			if (p1.y<p2.y) {
+				y_max=p2.y;
+				x_ymin=p1.x;
+				num_scan=p1.y;
+			} else {
+				y_max=p1.y;
+				x_ymin=p2.x;
+				num_scan=p2.y;
 			}
-			else if ((first_point->point).y < (first_point->next->point).y)
-			{
-				TC.table [(first_point->point).y][0]->ymax = (first_point->next->point).y;
-				TC.table [(first_point->point).y][0]->x_ymin = (first_point->point).x;
-				TC.table [(first_point->point).y][ 0]->dx = (first_point->next->point).x-(first_point->point).x;
-				TC.table [(first_point->point).y][ 0]->dy = (first_point->next->point).x-(first_point->point).y;
-				TC.table [(first_point->point).y][ 0]->e = TC.table [(first_point->point).y][ 0]->dy;
-			}
-			TC.table [(first_point->point).y][0]->rec_pente = ((first_point->next->point).x - (first_point->point).x) /
-												 ((first_point->next->point).y - (first_point->point).y);
-			TC.nbre_cote++;
-
-		}
-		int inc =0;
-		ei_linked_point_t* tmp = first_point->next;
-		while (tmp != NULL)
-		{
-			if (TC.table [(tmp->point).y][inc]==NULL)
-			{
-				TC.table [(tmp->point).y][inc] = malloc(sizeof(ei_side_t));
-				if ((tmp->point).y!=(tmp->next->point).y)
-				{
-					if ((tmp->point).y > (tmp->next->point).y)
-					{
-						TC.table [(tmp->point).y][inc]->ymax = (tmp->point).y;
-						TC.table [(tmp->point).y][inc]->x_ymin = (tmp->next->point).x;
-						TC.table [(tmp->point).y][inc]->dx = (tmp->next->point).x-(tmp->point).x;
-						TC.table [(tmp->point).y][inc]->dy = (tmp->next->point).y-(tmp->point).y;
-						TC.table [(tmp->point).y][inc]->e = TC.table [(tmp->point).y][inc]->dy;
-
-					}
-					else if ((tmp->point).y < (tmp->next->point).y)
-					{
-						TC.table [(tmp->point).y][inc]->ymax = (tmp->next->point).y;
-						TC.table [(tmp->point).y][inc]->x_ymin = (tmp->point).x;
-						TC.table [(tmp->point).y][inc]->dx = (tmp->next->point).x-(tmp->point).x;
-						TC.table [(tmp->point).y][inc]->dy = (tmp->next->point).y-(tmp->point).y;
-						TC.table [(tmp->point).y][inc]->e = TC.table [(tmp->point).y][inc]->dy;
-					}
-					TC.table [(tmp->point).y][inc]->rec_pente = ((tmp->next->point).x - (tmp->point).x) /
-					((tmp->next->point).y - (tmp->point).y);
-					TC.nbre_cote++;
+			// On remplit TC avec les informations que l'on a 
+			//ei_side_t *sent_tab=TC[num_scan];
+			if (TC[num_scan]!=NULL) {
+				ei_side_t *sent_tab=TC[num_scan];
+				while (sent_tab->next!=NULL) {
+					sent_tab=sent_tab->next;               
 				}
-				inc = 0;
-				tmp = tmp->next;
+				// Création du nouveau coté dans TC
+				ei_side_t *new_side=malloc(sizeof(ei_side_t));
+				assert(new_side!=NULL);
+				new_side->ymax=y_max;
+				new_side->x_ymin=x_ymin;
+				new_side->begin=p1;
+			        new_side->end=p2;
+				new_side->next=NULL;
+				sent_tab->next=new_side;
+				//printf("ajout dans %d\n",num_scan);
+			} else {
+				// Création du nouveau coté dans TC
+				ei_side_t *new_side=malloc(sizeof(ei_side_t));
+				assert(new_side!=NULL);
+				new_side->ymax=y_max;
+				new_side->x_ymin=x_ymin;
+				new_side->begin=p1;
+				new_side->end=p2;
+				new_side->next=NULL;
+				TC[num_scan]=new_side;
+				//printf("premier dans %d\n",num_scan);
 			}
-			else
-			{
-				inc++;
-			}
-		}
-		TCA *Actifs = NULL;
-		tmp = first_point->next;
-		int scanline = (first_point->point).y;
-		while (tmp!= NULL)
-		{
-			if ((tmp->point).y < scanline)
-			{
-				scanline = (tmp->point).y;
-			}
-			tmp = tmp->next;
-		}
-		free(tmp);
-		while (TC.nbre_cote != 0 && Actifs->head != NULL)
-		{
-			int ind = 0;
-			ei_side_t *tmp1 = TC.table [scanline][ind];
-			while (tmp1 != NULL)
-			{
-				add_TCA(Actifs,*tmp1);
-				ind++;
-				tmp1 = TC.table [scanline][ind];
-				TC.nbre_cote--;
-			}
-			free(tmp1);
-			cel_TCA *tmp3 = Actifs->head;
-			while (tmp3 != NULL)
-			{
-				if((tmp3->side).ymax == scanline)
-				{
-					del_TCA (Actifs,tmp3->side);
-				}
-				tmp3 = tmp3->next;
-			}
-			sort_TCA (Actifs);
-			int remplir = 2;
-			tmp3 = Actifs->head;
-			int x = 0;
-			while(x <= hw_surface_get_size(surface).width)
-			{
-				while(x <= (tmp3->side).x_ymin)
-				{
-					if(x == (tmp3->side).x_ymin)
-					{
-						remplir = 1;
-					}
-					if(remplir % 2 == 1)
-					{
-						draw_pixel(surface,x,scanline,color);
-					}
-					x++;
-				}
-			}
-			scanline++;
-			//calcule des nouvelles intersections
-			tmp3=Actifs->head;
-			while(tmp3!=NULL)
-			{
-				int e = (tmp3->side).dy;
-				int dy = e*2;
-				int dx = (tmp3->side).dx;
-				if (e-dx<=0)
-				{
-					tmp3->x_inter++;
+		}		
+		// On change de coté
+		sent=sent->next;
+	}
 
-				}			}
+	/* Verification */ 
+	/*
+	for (int j=0; j<size.height; j++) {
+		printf("Scan numero : %d\n",j);
+		ei_side_t *sent_verif=TC[j];
+		while (sent_verif!=NULL) {
+			printf("ymax : %d xymin : %d\n",sent_verif->ymax, sent_verif->x_ymin);
+			sent_verif=sent_verif->next;
+		}
+	}
+	*/
+	// Recuperer l'adresse du pixel (0,0)
+	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
 
+	//Creation de la TCA
+	TCA *TCA=create_TCA();
+	// Boucle des scanlines
+	for (int k=0; k<size.height; k++) {
+		ei_side_t *sent_tab=TC[k];
+		//printf("Scan numero : %d\n", k);
+		while (sent_tab!=NULL) {
+			// A FAIRE : Supression dans TC 
+			// A FAIRE : Gérer la libération 
+			// Ajout en tete de TCA 
+			add_TCA(TCA,*sent_tab);		      
+			//printf("c");
+			sent_tab=sent_tab->next;
 		}
+		//free(TC[k]);
+		// On supprime les éléments tels que y_max=k
+		del_TCA(TCA,k);
+		// On trie la TCA 
+		TCA=sort_TCA(TCA);		
+
+		// Verification 
+		// Affichage de TCA par scanline 
+		cell_TCA *sent_TCA2=TCA->head;
+		while (sent_TCA2!=NULL) {
+			//printf("ymax : %d xymin : %d x_inter : %d\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
+			sent_TCA2=sent_TCA2->next;
 		}
-}*/
+
+		// Remplissage de la scanline
+		cell_TCA *senti_TCA=TCA->head;
+		while (senti_TCA!=NULL && senti_TCA->next != NULL) {
+			int inter1=senti_TCA->x_inter;
+			int inter2=senti_TCA->next->x_inter;
+			// Dessin entre deux intersections successives intersections
+			for (int m=inter1; m<=inter2; m++) {
+				// A FAIRE : Gerer les règles de remplissage
+				draw_pixel(surface,m,k,color,pixel_ptr,clipper);
+			}
+			senti_TCA=senti_TCA->next->next;
+		}
+		cell_TCA *maj_x_inter=TCA->head;
+		while (maj_x_inter!=NULL) {
+			// Mise a jour des intersections
+			// Initialisation des variables
+			int x1=maj_x_inter->side.begin.x;
+			int x2=maj_x_inter->side.end.x;
+			int y1=maj_x_inter->side.begin.y;
+			int y2=maj_x_inter->side.end.y;
+			int dx=x2-x1;
+			int dy=y2-y1;
+			int e;
+			// On réutilise Bresenham 
+			if (dx !=0) {
+				if (dx>0) {
+					if (dy!=0) {
+						if (dy>0) {
+							// Vecteur oblique 1er cadran
+							if (dx>=dy) {
+								// 1er octant
+								e=dx;
+								dx=2*e;
+								dy=2*dy;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									x1=x1+1;
+									e=e+dy;
+									if (2*e>dx) {
+										y1=y1+1;
+										e=e-dx;
+									}
+								}
+							} else {
+								// 2eme octant
+								e=dy;
+								dx=2*dx;
+								dy=2*e;
+								// Boucle de traitement, segment par segment
+								// Traitement 
+								while (y1!=k) {
+									y1=y1+1;
+									e=e-dx;
+									if (e < 0) {
+										x1=x1+1;
+										e=e+dy;
+									}
+								}
+							}
+						} else {
+							// Vecteur oblique 4eme cadran
+							if ( dx + dy >= 0 ){
+								//8e octant
+								e=dx;
+								dx=2*e;
+								dy=2*dy;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									x1=x1+1;
+									e=e+dy;
+									if ( e < 0 ) {
+										y1 = y1 - 1;
+										e = e + dx;
+									}
+								}
+							} else {
+								// 7e octant
+								e=dy;
+								dx=2*dx;
+								dy=2*e;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									y1=y1-1;
+									e=e+dx;
+									if ( e > 0 ) {
+										x1 = x1 + 1;
+										e = e + dy;
+									}
+								}
+							}
+						}
+					} else {
+						// Vecteur horizontal vers la droite
+						while (y1!=k){
+							x1 = x1 + 1;
+						}
+				
+					}
+				} else {
+					if ( dy != 0 ){
+						if ( dy > 0 ){
+							// 2e cadran
+							if ( dx + dy <= 0 ){
+								// 4e octant
+								e = dx;
+								dx = 2*e;
+								dy = 2*dy;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									x1=x1-1;
+									e=e+dy;
+									if ( e >= 0 ) {
+										y1 = y1 + 1;
+										e = e + dx;
+									}
+								}
+							} else {
+								// 3e octant
+								e = dy;
+								dx = 2*dx;
+								dy = 2*e;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									y1=y1+1;
+									e=e+dx;
+									if ( e <= 0 ) {
+										x1 = x1 - 1;
+										e = e + dy;
+									}
+								}	
+							}
+						} else {
+							// 3e cadran
+							if ( dx <= dy ){
+								// 5e octant
+								e = dx;
+								dx = 2*e;
+								dy = 2*dy;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									x1=x1-1;
+									e=e-dy;
+									if ( e >= 0 ) {
+										y1 = y1 - 1;
+										e = e + dx;
+									}
+								}
+							} else {
+								// 6e octant
+								e = dy;
+								dy = 2*e;
+								dx = 2*dx;
+								// Boucle de traitement, segment par segment
+								// Traitement
+								while (y1!=k) {
+									y1=y1-1;
+									e=e-dx;
+									if ( e >= 0 ) {
+										x1 = x1 - 1;
+										e = e + dy;
+									}
+								}
+							}
+						} 
+					} else {
+						// Vecteur horizontal vers la gauche
+						while (y1!=k){
+							x1 = x1 - 1;
+						}
+					}
+				}
+			} else {
+				if ( dy > 0 ){
+					// Vecteur vertical croissant
+					while (y1!=k){
+						y1 = y1 + 1;
+					}
+				} else {
+					// Vecteur vertical decroissant
+					while (y1!=k){
+						y1 = y1 - 1;
+					}
+				}
+			}
+			maj_x_inter->x_inter=x1;
+			maj_x_inter=maj_x_inter->next;
+		}
+
+		//maj_x_inter->x_inter=x1;
+	}
+
+}
 
 void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_point_t*	where,
@@ -409,12 +584,18 @@ void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_color_t*	color,
 						 const ei_rect_t*	clipper)
 {
-
-	ei_surface_t surface_text = hw_text_create_surface(text,font,color);
-	hw_surface_set_origin(surface_text,*where);
+	ei_surface_t *surface_text;
+	int *h_t,*w_t;
+	//if (font == NULL)
+	//{
+	surface_text = hw_text_create_surface(text,ei_default_font,color);
+	hw_text_compute_size(text,ei_default_font,w_t,h_t);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
+	ei_rect_t rect_source = rect_text;
+	rect_source.top_left = *where;
+	//}
 	ei_bool_t alpha;
-	if (hw_surface_has_alpha(surface_text)==EI_TRUE)
+	if (hw_surface_has_alpha(surface)==EI_TRUE)
 	{
 		alpha = EI_TRUE;
 	}
@@ -422,7 +603,7 @@ void			ei_draw_text		(ei_surface_t		surface,
 	{
 		alpha=EI_FALSE;
 	}
-	ei_copy_surface(surface,NULL,surface_text,&rect_text,alpha);
+	ei_copy_surface(surface,&rect_source,surface_text,&rect_text,alpha);
 
 }
 
@@ -452,57 +633,39 @@ int			ei_copy_surface		(ei_surface_t		destination,
 
 	ei_size_t taille_source;
 	ei_size_t taille_dest;
-
-	if(src_rect == NULL)
+	if (dst_rect==NULL && src_rect==NULL)
 	{
-		taille_source.height = hw_surface_get_size(source).height;
-		taille_source. width = hw_surface_get_size(source). width;
+			taille_source.width = hw_surface_get_size(source).width;
+			taille_source.height = hw_surface_get_size(source).height;
+
+			taille_dest.width = hw_surface_get_size(destination).width;
+			taille_dest.height = hw_surface_get_size(destination).height;
+
+	}
+	else if ((dst_rect->size.width!=src_rect->size.width) && 
+		(dst_rect->size.height!=src_rect->size.height))
+	{
+			return 1;
+	}
+	else if (dst_rect==NULL && src_rect!=NULL)
+	{
+		return 1;
+	}
+	else if (dst_rect!=NULL && src_rect==NULL)
+	{
+		return 1;
 	}
 	else
 	{
-		if (src_rect->size.height > hw_surface_get_size(source).height)
-		{
-			return 1;
-		}
-		else
-		{
-			taille_source.height = src_rect->size.height;
-		}
-		if (src_rect->size. width > hw_surface_get_size(source). width)
-		{
-		return 1;
-		}
-		else
-		{
-			taille_source. width = src_rect->size. width;
-		}
-	}
+		taille_source.width = src_rect->size.width;
+		taille_source.height = src_rect->size.height;
 
-if(dst_rect == NULL)
-	{
-		taille_dest.height = hw_surface_get_size(destination).height;
-		taille_dest. width = hw_surface_get_size(destination). width;
-	}
-	else
-	{
-		if (dst_rect->size.height > hw_surface_get_size(destination).height)
-		{
-			return 1;
-		}
-		else
-		{
-			taille_dest.height = dst_rect->size.height;
-		}
-		if (dst_rect->size. width > hw_surface_get_size(destination). width)
-		{
-		return 1;
-		}
-		else
-		{
-			taille_dest. width = dst_rect->size. width;
-		}
-	}
+		taille_dest.width = dst_rect->size.width;
+		taille_dest.height = dst_rect->size.height;
 
+		*px_source_origin ++= src_rect->size.width*src_rect->top_left.y+src_rect->top_left.x;
+		*px_dest_origin ++= dst_rect->size.width*dst_rect->top_left.y+dst_rect->top_left.x;
+	}
 	if(taille_source.height > taille_dest.height)
 	{
 		for(int y = 0; y<= taille_dest.height; y++)
@@ -511,8 +674,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_dest.width; x++)
 				{
-					px_source = px_source_origin + y*taille_dest.height + x;
-					px_dest = px_dest_origin + y*taille_dest.height + x;
+					px_source = px_source_origin + y*taille_dest.width + x;
+					px_dest = px_dest_origin + y*taille_dest.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
@@ -527,8 +690,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_source.width; x++)
 				{
-					px_source = px_source_origin + y*taille_dest.height + x;
-					px_dest = px_dest_origin + y*taille_dest.height + x;
+					px_source = px_source_origin + y*taille_dest.width + x;
+					px_dest = px_dest_origin + y*taille_dest.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
@@ -549,8 +712,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_dest.width; x++)
 				{
-					px_source = px_source_origin + y*taille_source.height + x;
-					px_dest = px_dest_origin + y*taille_source.height + x;
+					px_source = px_source_origin + y*taille_source.width + x;
+					px_dest = px_dest_origin + y*taille_source.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
@@ -565,8 +728,8 @@ if(dst_rect == NULL)
 			{
 				for (int x = 0; x<= taille_source.width; x++)
 				{
-					px_source = px_source_origin + y*taille_source.height + x;
-					px_dest = px_dest_origin + y*taille_source.height + x;
+					px_source = px_source_origin + y*taille_source.width + x;
+					px_dest = px_dest_origin + y*taille_source.width + x;
 					if(alpha==EI_FALSE)
 					{
 						*px_dest = *px_source;
