@@ -176,7 +176,7 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 		courant = courant->next;
 	*courant = **frame;
 	*frame = coin;
-	if ( top ) {
+	if ( top && (bottom == false)) {
 		ajoute_en_tete(mid2.x, mid2.y, frame);
 		ajoute_en_tete(mid1.x, mid1.y, frame);
 	}
@@ -213,13 +213,13 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 	*courant = **frame;
 	*frame = coin;
 
-	if ( bottom ){
+	if ( bottom && (top == false)){
 		ajoute_en_tete(mid1.x, mid1.y, frame);
 	}
 	/* On rajoute en tête le dernier point pour boucler */
 	if ( top )
 		ajoute_en_tete(rectangle.top_left.x, rectangle.top_left.y + rayon, frame);
-	if ( bottom )
+	if ( bottom && (top == false))
 		ajoute_en_tete(mid2.x, mid2.y, frame);
 	return *frame;	
 }
@@ -245,7 +245,7 @@ void                    draw_button        ( ei_surface_t                   surf
 	mid_rect.size.height = rectangle.size.height - 2*edge;
 	double mid_ray = rayon - edge;
 
-	ei_linked_point_t *first_point_main = rounded_frame(rectangle, mid_ray, true, true);
+	ei_linked_point_t *first_point_main = rounded_frame(mid_rect, mid_ray, true, true);
 	ei_draw_polygon(surface, first_point_top,  light, clipper);
 	ei_draw_polygon(surface, first_point_bot,  shadow, clipper);
 	ei_draw_polygon(surface, first_point_main,  color, clipper);

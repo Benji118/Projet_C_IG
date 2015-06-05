@@ -11,7 +11,9 @@ int ei_main(int argc, char** argv)
 {
 	ei_size_t		win_size	= ei_size(800, 600);
 	ei_surface_t		main_window	= NULL;
-	ei_color_t		color		= { 255, 0, 255, 255 };
+	ei_color_t		color		= { 150, 150, 150, 255 };
+	ei_color_t		light		= { 255, 255, 255, 255 };
+	ei_color_t		shadow		= { 0, 0, 0, 255 };
 	ei_rect_t*		clipper_ptr	= NULL;
 //	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
 //	clipper_ptr		= &clipper;
@@ -38,10 +40,13 @@ int ei_main(int argc, char** argv)
 	/* Test rounded_frame */
 	ei_size_t taille = {250, 150};
 	ei_rect_t rectangle = {centre, taille};
-	poly = rounded_frame(rectangle, 20.0, false, true);
+	poly = rounded_frame(rectangle, 20.0, true, true);
 	ei_draw_polyline(main_window, poly, color, clipper_ptr);
-	poly = rounded_frame(rectangle, 20.0, true, false);
-	ei_draw_polyline(main_window, poly, color, clipper_ptr);
+	/* poly = rounded_frame(rectangle, 20.0, true, false); */
+	/* ei_draw_polyline(main_window, poly, color, clipper_ptr); */
+
+	/* Test bouton */
+	draw_button        (main_window, rectangle, 20.0, 10.0, light, shadow,  color,  0,  clipper_ptr);
 	
 	
 	/* Unlock and update the surface. */
