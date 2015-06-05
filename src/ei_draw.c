@@ -260,7 +260,7 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	}
 }
 
-void			ei_draw_polygon		(ei_surface_t			surface,
+/*void			ei_draw_polygon		(ei_surface_t			surface,
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
 	const ei_rect_t*		clipper)
@@ -400,7 +400,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 
 		}
 		}
-}
+}*/
 
 void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_point_t*	where,

@@ -27,7 +27,7 @@ typedef struct cel_TCA cel_TCA;
 
 struct cel_TCA {
 	ei_side_t side;
-	cel_TCA* nex
+	cel_TCA* next;
 	int x_inter;
 };
 
