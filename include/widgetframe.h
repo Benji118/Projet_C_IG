@@ -16,13 +16,15 @@
 		ei_color_t			color;
 		int         		border_size;
 		ei_relief_t			relief;
-		ei_rect_t			rect;
-		ei_anchor_t			tect_anchor;
+		ei_rect_t*		    img_rect;
+		ei_anchor_t			text_anchor;
 		char *				texte;
 		ei_font_t			font;
 		ei_color_t			text_color;
 		ei_rect_t			clipper;
+		char*               img;
 		ei_point_t			img_pos;
+		ei_anchor_t         img_anchor;
 	} ei_frame_t;
 
 	void * ei_frame_allocfunc();

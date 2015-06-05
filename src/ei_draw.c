@@ -261,8 +261,12 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	}
 }
 
+<<<<<<< HEAD
+/*void			ei_draw_polygon		(ei_surface_t			surface,
+=======
 
 void			ei_draw_polygon		(ei_surface_t			surface,
+>>>>>>> 6f1b887cc32f7d8bff9dde23161dc1e3a2475690
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
 	const ei_rect_t*		clipper)
@@ -567,11 +571,12 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 			maj_x_inter->x_inter=x1;
 			maj_x_inter=maj_x_inter->next;
 		}
+
 		//maj_x_inter->x_inter=x1;
 	}
 
 }
-
+	
 void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_point_t*	where,
 						 const char*		text,
@@ -584,10 +589,11 @@ void			ei_draw_text		(ei_surface_t		surface,
 	//if (font == NULL)
 	//{
 	surface_text = hw_text_create_surface(text,ei_default_font,color);
-	hw_text_compute_size(text,ei_default_font,w_t,h_t);
+	//hw_text_compute_size(text,ei_default_font,w_t,h_t);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
-	ei_rect_t rect_source = rect_text;
-	rect_source.top_left = *where;
+	ei_rect_t rect_dest = rect_text;
+	rect_dest.top_left = *where;
+	hw_surface_lock(surface_text);
 	//}
 	ei_bool_t alpha;
 	if (hw_surface_has_alpha(surface)==EI_TRUE)
@@ -598,8 +604,9 @@ void			ei_draw_text		(ei_surface_t		surface,
 	{
 		alpha=EI_FALSE;
 	}
-	ei_copy_surface(surface,&rect_source,surface_text,&rect_text,alpha);
-
+	ei_copy_surface(surface,&rect_dest,surface_text,&rect_text,alpha);
+	hw_surface_unlock(surface_text);
+	hw_surface_update_rects(surface_text,NULL);	
 }
 
 void			ei_fill			(ei_surface_t		surface,
