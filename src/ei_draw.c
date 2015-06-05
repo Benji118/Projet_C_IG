@@ -261,12 +261,8 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	}
 }
 
-<<<<<<< HEAD
-/*void			ei_draw_polygon		(ei_surface_t			surface,
-=======
 
 void			ei_draw_polygon		(ei_surface_t			surface,
->>>>>>> 6f1b887cc32f7d8bff9dde23161dc1e3a2475690
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
 	const ei_rect_t*		clipper)
@@ -336,8 +332,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		sent=sent->next;
 	}
 
-	/* Verification */ 
-	/*
+	/* Verification  */
 	for (int j=0; j<size.height; j++) {
 		printf("Scan numero : %d\n",j);
 		ei_side_t *sent_verif=TC[j];
@@ -346,7 +341,6 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 			sent_verif=sent_verif->next;
 		}
 	}
-	*/
 	// Recuperer l'adresse du pixel (0,0)
 	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
 
