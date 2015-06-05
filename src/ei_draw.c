@@ -261,12 +261,8 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	}
 }
 
-<<<<<<< HEAD
-/*void			ei_draw_polygon		(ei_surface_t			surface,
-=======
 
 void			ei_draw_polygon		(ei_surface_t			surface,
->>>>>>> 6f1b887cc32f7d8bff9dde23161dc1e3a2475690
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
 	const ei_rect_t*		clipper)
