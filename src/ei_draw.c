@@ -261,7 +261,6 @@ void                    ei_draw_polyline        (ei_surface_t                   
 	}
 }
 
-
 void			ei_draw_polygon		(ei_surface_t			surface,
 	const ei_linked_point_t*	first_point,
 	const ei_color_t		color,
@@ -299,7 +298,6 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				num_scan=p2.y;
 			}
 			// On remplit TC avec les informations que l'on a 
-			//ei_side_t *sent_tab=TC[num_scan];
 			if (TC[num_scan]!=NULL) {
 				ei_side_t *sent_tab=TC[num_scan];
 				while (sent_tab->next!=NULL) {
@@ -332,7 +330,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		sent=sent->next;
 	}
 
-	/* Verification */ 
+	// Verification de TC 
 	/*
 	for (int j=0; j<size.height; j++) {
 		printf("Scan numero : %d\n",j);
@@ -343,11 +341,13 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		}
 	}
 	*/
+
 	// Recuperer l'adresse du pixel (0,0)
 	uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
 
 	//Creation de la TCA
 	TCA *TCA=create_TCA();
+
 	// Boucle des scanlines
 	for (int k=0; k<size.height; k++) {
 		ei_side_t *sent_tab=TC[k];
@@ -366,13 +366,14 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		// On trie la TCA 
 		TCA=sort_TCA(TCA);		
 
-		// Verification 
-		// Affichage de TCA par scanline 
+		// Verification de TCA a chaque scanline
+		/*
 		cell_TCA *sent_TCA2=TCA->head;
 		while (sent_TCA2!=NULL) {
-			//printf("ymax : %d xymin : %d x_inter : %d\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
+			printf("ymax : %d xymin : %d x_inter : %d\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
 			sent_TCA2=sent_TCA2->next;
 		}
+		*/
 
 		// Remplissage de la scanline
 		cell_TCA *senti_TCA=TCA->head;
@@ -388,187 +389,192 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		}
 		cell_TCA *maj_x_inter=TCA->head;
 		while (maj_x_inter!=NULL) {
-			// Mise a jour des intersections
-			// Initialisation des variables
-			int x1=maj_x_inter->side.begin.x;
-			int x2=maj_x_inter->side.end.x;
-			int y1=maj_x_inter->side.begin.y;
-			int y2=maj_x_inter->side.end.y;
-			int dx=x2-x1;
-			int dy=y2-y1;
-			int e;
-			// On réutilise Bresenham 
-			if (dx !=0) {
-				if (dx>0) {
-					if (dy!=0) {
-						if (dy>0) {
-							// Vecteur oblique 1er cadran
-							if (dx>=dy) {
-								// 1er octant
-								e=dx;
-								dx=2*e;
-								dy=2*dy;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									x1=x1+1;
-									e=e+dy;
-									if (2*e>dx) {
-										y1=y1+1;
-										e=e-dx;
-									}
-								}
-							} else {
-								// 2eme octant
-								e=dy;
-								dx=2*dx;
-								dy=2*e;
-								// Boucle de traitement, segment par segment
-								// Traitement 
-								while (y1!=k) {
-									y1=y1+1;
-									e=e-dx;
-									if (e < 0) {
+			if (k!=size.height-1) {
+				// Mise a jour des intersections
+				// Initialisation des variables
+				int x1=maj_x_inter->side.begin.x;
+				int x2=maj_x_inter->side.end.x;
+				int y1=maj_x_inter->side.begin.y;
+				int y2=maj_x_inter->side.end.y;
+				int dx=x2-x1;
+				int dy=y2-y1;
+				int e;
+				// On réutilise Bresenham 
+				if (dx !=0) {
+					if (dx>0) {
+						if (dy!=0) {
+							if (dy>0) {
+								// Vecteur oblique 1er cadran
+								if (dx>=dy) {
+									// 1er octant
+									e=dx;
+									dx=2*e;
+									dy=2*dy;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
 										x1=x1+1;
 										e=e+dy;
+										if (2*e>dx) {
+											y1=y1+1;
+											e=e-dx;
+										}
+									}
+								} else {
+									// 2eme octant
+									e=dy;
+									dx=2*dx;
+									dy=2*e;
+									// Boucle de traitement, segment par segment
+									// Traitement 
+									while (y1!=k+1) {
+										y1=y1+1;
+										e=e-dx;
+										if (e < 0) {
+											x1=x1+1;
+											e=e+dy;
+										}
+									}
+								}
+							} else {
+								// Vecteur oblique 4eme cadran
+								if (dx+dy>=0){
+									//8e octant
+									e=dx;
+									dx=2*e;
+									dy=2*dy;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
+										x1=x1+1;
+										e=e+dy;
+										if (e<0) {
+											y1=y1-1;
+											e=e+dx;
+										}
+									}
+								} else {
+									// 7e octant
+									e=dy;
+									dx=2*dx;
+									dy=2*e;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
+										y1=y1-1;
+										e=e+dx;
+										if (e>0) {
+											x1=x1+1;
+											e=e+dy;
+										}
 									}
 								}
 							}
 						} else {
-							// Vecteur oblique 4eme cadran
-							if ( dx + dy >= 0 ){
-								//8e octant
-								e=dx;
-								dx=2*e;
-								dy=2*dy;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									x1=x1+1;
-									e=e+dy;
-									if ( e < 0 ) {
-										y1 = y1 - 1;
-										e = e + dx;
-									}
-								}
-							} else {
-								// 7e octant
-								e=dy;
-								dx=2*dx;
-								dy=2*e;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									y1=y1-1;
-									e=e+dx;
-									if ( e > 0 ) {
-										x1 = x1 + 1;
-										e = e + dy;
-									}
-								}
+							// Vecteur horizontal vers la droite
+							// Cas impossible puisqu'on ne prend pas en compte les segments horizontaux
+							/*while (y1!=k){
+								x1=x1+1;
 							}
-						}
-					} else {
-						// Vecteur horizontal vers la droite
-						while (y1!=k){
-							x1 = x1 + 1;
-						}
+							*/
+							printf("Segment horizontal\n");
 				
+						}
+					} else {
+						if (dy!=0){
+							if (dy>0){
+								// 2e cadran
+								if (dx+dy<=0){
+									// 4e octant
+									e=dx;
+									dx=2*e;
+									dy=2*dy;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
+										x1=x1-1;
+										e=e+dy;
+										if (e>=0) {
+											y1=y1+1;
+											e=e+dx;
+										}
+									}
+								} else {
+									// 3e octant
+									e=dy;
+									dx=2*dx;
+									dy=2*e;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
+										y1=y1+1;
+										e=e+dx;
+										if (e<=0) {
+											x1=x1-1;
+											e=e+dy;
+										}
+									}	
+								}
+							} else {
+								// 3e cadran
+								if (dx<=dy){
+									// 5e octant
+									e=dx;
+									dx=2*e;
+									dy=2*dy;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
+										x1=x1-1;
+										e=e-dy;
+										if (e>=0) {
+											y1=y1-1;
+											e = e+dx;
+										}
+									}
+								} else {
+									// 6e octant
+									e=dy;
+									dy=2*e;
+									dx=2*dx;
+									// Boucle de traitement, segment par segment
+									// Traitement
+									while (y1!=k+1) {
+										y1=y1-1;
+										e=e-dx;
+										if (e>=0) {
+											x1=x1-1;
+											e=e+dy;
+										}
+									}
+								}
+							} 
+						} else {
+							// Vecteur horizontal vers la gauche
+							while (y1!=k+1){
+								x1=x1-1;
+							}
+						}
 					}
 				} else {
-					if ( dy != 0 ){
-						if ( dy > 0 ){
-							// 2e cadran
-							if ( dx + dy <= 0 ){
-								// 4e octant
-								e = dx;
-								dx = 2*e;
-								dy = 2*dy;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									x1=x1-1;
-									e=e+dy;
-									if ( e >= 0 ) {
-										y1 = y1 + 1;
-										e = e + dx;
-									}
-								}
-							} else {
-								// 3e octant
-								e = dy;
-								dx = 2*dx;
-								dy = 2*e;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									y1=y1+1;
-									e=e+dx;
-									if ( e <= 0 ) {
-										x1 = x1 - 1;
-										e = e + dy;
-									}
-								}	
-							}
-						} else {
-							// 3e cadran
-							if ( dx <= dy ){
-								// 5e octant
-								e = dx;
-								dx = 2*e;
-								dy = 2*dy;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									x1=x1-1;
-									e=e-dy;
-									if ( e >= 0 ) {
-										y1 = y1 - 1;
-										e = e + dx;
-									}
-								}
-							} else {
-								// 6e octant
-								e = dy;
-								dy = 2*e;
-								dx = 2*dx;
-								// Boucle de traitement, segment par segment
-								// Traitement
-								while (y1!=k) {
-									y1=y1-1;
-									e=e-dx;
-									if ( e >= 0 ) {
-										x1 = x1 - 1;
-										e = e + dy;
-									}
-								}
-							}
-						} 
+					if (dy>0){
+						// Vecteur vertical croissant
+						while (y1!=k+1){
+							y1=y1+1;
+						}
 					} else {
-						// Vecteur horizontal vers la gauche
-						while (y1!=k){
-							x1 = x1 - 1;
+						// Vecteur vertical decroissant
+						while (y1!=k+1){
+							y1=y1-1;
 						}
 					}
 				}
-			} else {
-				if ( dy > 0 ){
-					// Vecteur vertical croissant
-					while (y1!=k){
-						y1 = y1 + 1;
-					}
-				} else {
-					// Vecteur vertical decroissant
-					while (y1!=k){
-						y1 = y1 - 1;
-					}
-				}
+				// Mise a jour des x_inter
+				maj_x_inter->x_inter=x1;
+				// On passe au coté suivant dans TCA
+				maj_x_inter=maj_x_inter->next;
 			}
-			maj_x_inter->x_inter=x1;
-			maj_x_inter=maj_x_inter->next;
 		}
-
-		//maj_x_inter->x_inter=x1;
 	}
 
 }

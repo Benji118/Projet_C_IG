@@ -18,10 +18,11 @@
 		ei_relief_t			relief;
 		ei_rect_t*		    img_rect;
 		ei_anchor_t			text_anchor;
+		ei_point_t*         text_pos;
 		char *				texte;
 		ei_font_t			font;
-		ei_color_t			text_color;
-		ei_rect_t			clipper;
+		ei_color_t*			text_color;
+		ei_rect_t*			clipper;
 		char*               img;
 		ei_point_t			img_pos;
 		ei_anchor_t         img_anchor;
