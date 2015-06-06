@@ -579,18 +579,12 @@ void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_rect_t*	clipper)
 {
 	ei_surface_t *surface_text;
-	int *h_t,*w_t;
-	//if (font == NULL)
-	//{
 	surface_text = hw_text_create_surface(text,ei_default_font,color);
-	//hw_text_compute_size(text,ei_default_font,w_t,h_t);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
 	ei_rect_t rect_dest = rect_text;
 	rect_dest.top_left = *where;
-	hw_surface_lock(surface_text);
-	//}
 	ei_bool_t alpha;
-	if (hw_surface_has_alpha(surface)==EI_TRUE)
+	if (hw_surface_has_alpha(surface_text)==EI_TRUE)
 	{
 		alpha = EI_TRUE;
 	}
@@ -598,9 +592,10 @@ void			ei_draw_text		(ei_surface_t		surface,
 	{
 		alpha=EI_FALSE;
 	}
+	//hw_surface_lock(surface_text);
 	ei_copy_surface(surface,&rect_dest,surface_text,&rect_text,alpha);
-	hw_surface_unlock(surface_text);
-	hw_surface_update_rects(surface_text,NULL);	
+	//hw_surface_unlock(surface_text);
+	//hw_surface_update_rects(surface_text,NULL);	
 }
 
 void			ei_fill			(ei_surface_t		surface,
@@ -621,122 +616,63 @@ int			ei_copy_surface		(ei_surface_t		destination,
 	const ei_rect_t*	src_rect,
 	const ei_bool_t	alpha)
 {
-	uint32_t *px_source_origin =(uint32_t*)hw_surface_get_buffer(source);
-	uint32_t *px_dest_origin =(uint32_t*)hw_surface_get_buffer(destination);
+	ei_rect_t dst;
+	ei_rect_t src;
 
-	uint32_t *px_source;
-	uint32_t *px_dest ;
-
-	ei_size_t taille_source;
-	ei_size_t taille_dest;
-	if (dst_rect==NULL && src_rect==NULL)
+	if (dst_rect == NULL && src_rect==NULL)
 	{
-			taille_source.width = hw_surface_get_size(source).width;
-			taille_source.height = hw_surface_get_size(source).height;
-
-			taille_dest.width = hw_surface_get_size(destination).width;
-			taille_dest.height = hw_surface_get_size(destination).height;
-
+		dst = hw_surface_get_rect(destination);
+		src = hw_surface_get_rect(source);
 	}
-	else if ((dst_rect->size.width!=src_rect->size.width) && 
-		(dst_rect->size.height!=src_rect->size.height))
+	else if ((src_rect->size.width == dst_rect->size.width) && 
+		(src_rect->size.height == dst_rect->size.height))
 	{
-			return 1;
-	}
-	else if (dst_rect==NULL && src_rect!=NULL)
-	{
-		return 1;
-	}
-	else if (dst_rect!=NULL && src_rect==NULL)
-	{
-		return 1;
+		dst = *dst_rect;
+		src = *src_rect;
 	}
 	else
 	{
-		taille_source.width = src_rect->size.width;
-		taille_source.height = src_rect->size.height;
-
-		taille_dest.width = dst_rect->size.width;
-		taille_dest.height = dst_rect->size.height;
-
-		*px_source_origin ++= src_rect->size.width*src_rect->top_left.y+src_rect->top_left.x;
-		*px_dest_origin ++= dst_rect->size.width*dst_rect->top_left.y+dst_rect->top_left.x;
+		return 1;
 	}
-	if(taille_source.height > taille_dest.height)
+	uint32_t *ptr_src_origin = (uint32_t*) hw_surface_get_buffer(source);
+	uint32_t *ptr_dst_origin = (uint32_t*) hw_surface_get_buffer(destination);
+	ptr_src_origin =ptr_src_origin + src.size.width*src.top_left.y + src.top_left.x;
+	ptr_dst_origin =ptr_dst_origin + hw_surface_get_size(destination).width*dst.top_left.y + dst.top_left.x;
+
+	uint32_t *ptr_src = ptr_src_origin;
+	uint32_t *ptr_dst = ptr_dst_origin;
+	printf("src x = %i\n",src.top_left.x);
+	printf("src y = %i\n",src.top_left.y );
+	printf("dst x = %i\n",dst.top_left.x);
+	printf("dst y = %i\n",dst.top_left.y );
+
+	printf("dst width = %i\n", dst.size.width);
+	printf("dst_tot width = %i\n", hw_surface_get_size(destination).width);
+	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++)
 	{
-		for(int y = 0; y<= taille_dest.height; y++)
+		for (uint32_t x = src.top_left.x; x < src.top_left.x + src.size.width; x++)
 		{
-			if (taille_source.width > taille_dest.width)
+			if (alpha == EI_FALSE)
 			{
-				for (int x = 0; x<= taille_dest.width; x++)
-				{
-					px_source = px_source_origin + y*taille_dest.width + x;
-					px_dest = px_dest_origin + y*taille_dest.width + x;
-					if(alpha==EI_FALSE)
-					{
-						*px_dest = *px_source;
-					}
-					else
-					{
-						*px_dest = alpha_effect(source,destination,px_source,px_dest);
-					}
-				}
+				ptr_src = ptr_src + 1;
+				ptr_dst = ptr_dst + 1;
+				*ptr_dst = *ptr_src;
+				printf ("px src : %i \n",*ptr_src);
+				printf ("px dst : %i \n",*ptr_dst);
+
 			}
 			else
 			{
-				for (int x = 0; x<= taille_source.width; x++)
-				{
-					px_source = px_source_origin + y*taille_dest.width + x;
-					px_dest = px_dest_origin + y*taille_dest.width + x;
-					if(alpha==EI_FALSE)
-					{
-						*px_dest = *px_source;
-					}
-					else
-					{
-						*px_dest = alpha_effect(source,destination,px_source,px_dest);
-					}
-				}
+				ptr_src = ptr_src + 1;
+				ptr_dst = ptr_dst + 1;
+				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);
+				printf ("px src : %i \n",*ptr_src);
+				printf ("px dst : %i \n",*ptr_dst);
+				printf("alpha\n");
+
 			}
 		}
-	}
-	else
-	{
-		for(int y = 0; y<= taille_source.height; y++)
-		{
-		if (taille_source.width > taille_dest.width)
-			{
-				for (int x = 0; x<= taille_dest.width; x++)
-				{
-					px_source = px_source_origin + y*taille_source.width + x;
-					px_dest = px_dest_origin + y*taille_source.width + x;
-					if(alpha==EI_FALSE)
-					{
-						*px_dest = *px_source;
-					}
-					else
-					{
-						*px_dest = alpha_effect(source,destination,px_source,px_dest);
-					}
-				}
-			}
-			else
-			{
-				for (int x = 0; x<= taille_source.width; x++)
-				{
-					px_source = px_source_origin + y*taille_source.width + x;
-					px_dest = px_dest_origin + y*taille_source.width + x;
-					if(alpha==EI_FALSE)
-					{
-						*px_dest = *px_source;
-					}
-					else
-					{
-						*px_dest = alpha_effect(source,destination,px_source,px_dest);
-					}
-				}
-			}	
-		}
+		ptr_dst = ptr_dst + (uint32_t)(hw_surface_get_size(destination).width - src.size.width);
 	}
 	return 0;
 }
