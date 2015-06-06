@@ -1,6 +1,7 @@
 #include "ei_draw.h"
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 #include "hw_interface.h"
 #include "ei_types.h"
@@ -279,7 +280,8 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		assert(sent!=NULL);
 		*sent=*first_point;
 		ei_point_t p1,p2;
-		int y_max,x_ymin;
+		int y_max;
+		float x_ymin;
 		// num_scan représente la première scanline d'intersection 
 		int num_scan;
 		//float pente_rec;
@@ -291,20 +293,21 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				// On cherche y_max 
 				if (p1.y<p2.y) {
 					y_max=p2.y;
-					x_ymin=p1.x;
+					x_ymin=(float)p1.x;
 					num_scan=p1.y;
 				} else {
 					y_max=p1.y;
-					x_ymin=p2.x;
+					x_ymin=(float)p2.x;
 					num_scan=p2.y;
 				}
-				// Création du nouveau coté dans TC 
+				// Création du nouveau coté 
 				ei_side_t *new_side=malloc(sizeof(ei_side_t));
 				assert(new_side!=NULL);
 				new_side->ymax=y_max;
 				new_side->x_ymin=x_ymin;
-				new_side->begin=p1;
-				new_side->end=p2;
+				new_side->inv_pente=((float)p2.x-(float)p1.x)/((float)p2.y-(float)p1.y);
+				//new_side->begin=p1;
+				//new_side->end=p2;
 				new_side->next=NULL;
 				// On remplit TC avec le nouveau côté
 				if (TC[num_scan]!=NULL) {
@@ -344,12 +347,12 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		// Boucle des scanlines
 		for (int k=0; k<size.height; k++) {
 			ei_side_t *sent_tab=TC[k];
-			//printf("Scan numero : %d\n", k);
+			printf("Scan numero : %d\n", k);
 			while (sent_tab!=NULL) {
 				// A FAIRE : Supression dans TC
 				// A FAIRE : Gérer la libération 
 				// Ajout en tete de TCA 
-				add_TCA(TCA,*sent_tab);		      
+				add_TCA(TCA,*sent_tab);	      
 				//printf("c");
 				sent_tab=sent_tab->next;
 			}
@@ -363,7 +366,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 			/*
 			  cell_TCA *sent_TCA2=TCA->head;
 			  while (sent_TCA2!=NULL) {
-			  printf("ymax : %d xymin : %d x_inter : %d\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
+			  printf("ymax : %d xymin : %d x_inter : %f\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
 			  sent_TCA2=sent_TCA2->next;
 			  }
 			*/
@@ -371,19 +374,28 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 			// Remplissage de la scanline
 			cell_TCA *senti_TCA=TCA->head;
 			while (senti_TCA!=NULL && senti_TCA->next != NULL) {
-				int inter1=senti_TCA->x_inter;
-				int inter2=senti_TCA->next->x_inter;
+				float inter1=ceilf(senti_TCA->x_inter);
+				float inter2=floorf(senti_TCA->next->x_inter);
+				// Gestion des règles de remplissage
+				int inf=(int) inter1;
+				int sup=(int) inter2;
+				printf("inf : %d sup : %d\n",inf,sup);
 				// Dessin entre deux intersections successives intersections
-				for (int m=inter1; m<=inter2; m++) {
-					// A FAIRE : Gerer les règles de remplissage
+				for (int m=inf; m<=sup; m++) {
+					//printf("Dessin en %d %d\n",m,k);
 					draw_pixel(surface,m,k,color,pixel_ptr,clipper);
 				}
 				senti_TCA=senti_TCA->next->next;
 			}
 			cell_TCA *maj_x_inter=TCA->head;
 			while (maj_x_inter!=NULL) {
-				if (k!=size.height-1) {
+				// Mise a jour des x_inter
+				maj_x_inter->x_inter=maj_x_inter->x_inter+maj_x_inter->side.inv_pente;
+				// On passe au coté suivant dans TCA
+				maj_x_inter=maj_x_inter->next;
+				//if (k!=size.height-1) {
 					// Mise a jour des intersections
+					/*
 					// Initialisation des variables
 					int x1=maj_x_inter->side.begin.x;
 					int x2=maj_x_inter->side.end.x;
@@ -392,7 +404,9 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 					int dx=x2-x1;
 					int dy=y2-y1;
 					int e;
-					// On réutilise Bresenham 
+					*/
+					/*
+					// On réutilise Bresenham
 					if (dx !=0) {
 						if (dx>0) {
 							if (dy!=0) {
@@ -466,10 +480,9 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 							} else {
 								// Vecteur horizontal vers la droite
 								// Cas impossible puisqu'on ne prend pas en compte les segments horizontaux
-								/*while (y1!=k){
+								while (y1!=k){
 								  x1=x1+1;
-								  }
-								*/
+								  }								
 								printf("Segment horizontal\n");
 				
 							}
@@ -561,12 +574,8 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 								y1=y1-1;
 							}
 						}
-					}
-					// Mise a jour des x_inter
-					maj_x_inter->x_inter=x1;
-					// On passe au coté suivant dans TCA
-					maj_x_inter=maj_x_inter->next;
-				}
+					}*/			       
+					//}			  
 			}
 		}
 	}

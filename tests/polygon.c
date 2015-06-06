@@ -9,7 +9,7 @@
 
 int ei_main(int argc, char** argv)
 {
-	ei_size_t		win_size	= ei_size(150,110);
+	ei_size_t		win_size	= ei_size(150*5,110*5);
 	ei_surface_t		main_window	= NULL;
 	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
 	ei_color_t		red		= { 0xff, 0x00, 0x00, 0xff };
@@ -26,13 +26,13 @@ int ei_main(int argc, char** argv)
 	ei_fill		(main_window, &white, clipper_ptr);
 
 	ei_linked_point_t	pts[8];
-	pts[0].point.x = 20; pts[0].point.y = 30; pts[0].next = &(pts[1]);
-	pts[1].point.x = 90; pts[1].point.y = 10; pts[1].next = &(pts[2]);
-	pts[2].point.x = 130; pts[2].point.y = 50; pts[2].next = &(pts[3]);
-	pts[3].point.x = 120; pts[3].point.y = 100; pts[3].next = &(pts[4]);
-	pts[4].point.x = 70; pts[4].point.y = 70; pts[4].next = &(pts[5]);
-	pts[5].point.x = 20; pts[5].point.y = 90; pts[5].next = &(pts[6]);
-	pts[6].point.x = 20; pts[6].point.y = 30; pts[6].next = NULL;
+	pts[0].point.x = 20*5; pts[0].point.y = 30*5; pts[0].next = &(pts[1]);
+	pts[1].point.x = 90*5; pts[1].point.y = 10*5; pts[1].next = &(pts[2]);
+	pts[2].point.x = 130*5; pts[2].point.y = 50*5; pts[2].next = &(pts[3]);
+	pts[3].point.x = 120*5; pts[3].point.y = 100*5; pts[3].next = &(pts[4]);
+	pts[4].point.x = 70*5; pts[4].point.y = 70*5; pts[4].next = &(pts[5]);
+	pts[5].point.x = 20*5; pts[5].point.y = 90*5; pts[5].next = &(pts[6]);
+	pts[6].point.x = 20*5; pts[6].point.y = 30*5; pts[6].next = NULL;
 	
 	ei_draw_polygon(main_window,pts,red,clipper_ptr);
 	/* Unlock and update the surface. */

@@ -12,9 +12,10 @@
 */
 typedef struct ei_side_t {
 	int                             ymax; // ordonnee maximale du cote
-	int                             x_ymin; // abscisse du point d'ordonnee minimale du cote
-	ei_point_t                      begin;
-	ei_point_t                      end;
+	float                             x_ymin; // abscisse du point d'ordonnee minimale du cote
+	float                           inv_pente;
+	//ei_point_t                      begin;
+	//ei_point_t                      end;
 	struct ei_side_t*               next; //pointeur vers le cote suivant
 } ei_side_t;
 
@@ -23,7 +24,7 @@ typedef struct cell_TCA cell_TCA;
 struct cell_TCA {
 	ei_side_t side;
 	cell_TCA* next;
-	int x_inter;
+	float x_inter;
 };
 
 typedef struct TCA {
