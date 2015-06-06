@@ -86,6 +86,29 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 							 ei_rect_t**		img_rect,
 							 ei_anchor_t*		img_anchor)
 {
+	ei_frame_t* frame = (ei_frame_t*) widget;
+	if (requested_size != NULL)
+		frame->size = *requested_size;
+	if (color != NULL)
+		frame->color = *color;
+	if (border_width != NULL)
+		frame->border_size = *border_width;
+	if (relief!=NULL)
+		frame->relief = *relief;
+	if (text!=NULL)
+		frame->texte = *text;
+	if (text_font!=NULL)
+		frame->font = *text_font;
+	if (text_color!=NULL)
+		frame->text_color = text_color;
+	if (text_anchor!=NULL)
+		frame->text_anchor = *text_anchor;
+	if (img != NULL)
+		frame->img = *img;
+	if (img_rect != NULL)
+		frame->img_rect = *img_rect;
+	if (img_anchor!=NULL)
+		frame->img_anchor = *img_anchor;
 }
 
 
