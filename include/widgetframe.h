@@ -1,6 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+#include "ei_event.h"
 #include "SDL_keysym.h"
 #include "hw_interface.h"
 #include "ei_draw.h"
@@ -43,6 +44,6 @@
 		                           ei_rect_t		rect);
 
 	ei_bool_t ei_frame_handlefunc(struct ei_widget_t* widget,
-		                           struct ei_event* event);
+		                           struct ei_event_t* event);
 
 	#endif

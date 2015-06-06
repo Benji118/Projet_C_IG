@@ -10,7 +10,7 @@
 		pts[0].point.x = frame->screen_location.top_left.x - border;
 		pts[0].point.y = frame->screen_location.top_left.y - border;
 
-		pts[1].point.x  = pts[0].point.x + frame->screen_location.size.width + border;
+		pts[1].point.x = pts[0].point.x + frame->screen_location.size.width + border;
 		pts[1].point.y = pts[0].point.y;
 
 		pts[2].point.x = pts[1].point.x;
@@ -56,7 +56,7 @@
 							 ei_surface_t		pick_surface,
 							 ei_rect_t*		clipper)
 	{
-		ei_frame_t * frame = (ei_frame_t*) widget;
+		ei_frame_t* frame = (ei_frame_t*) widget;
 
 		ei_color_t bckgrnd = { 0x33, 0x33, 0x33, 0xAA};
 		ei_linked_point_t* border_shape = frame_pos(widget,frame->border_size) ; // (sans bordure)
