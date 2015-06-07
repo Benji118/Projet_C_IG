@@ -5,8 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "global.h"
 
-ei_widgetclass_t* list_class = NULL;
 
 void			ei_widgetclass_register		(ei_widgetclass_t* widgetclass)
 {
@@ -34,7 +34,7 @@ ei_widgetclass_t*	ei_widgetclass_from_name	(ei_widgetclass_name_t name)
 	ei_widgetclass_t* res = list_class;
 	while (res!=NULL)
 	{
-		if (res->name == name)
+		if (strcmp(res->name,name)==0)
 		{
 			return res;
 		}
@@ -56,7 +56,7 @@ void			ei_frame_register_class 	()
 	frame->drawfunc = ei_frame_drawfunc;
 	frame->setdefaultsfunc = ei_frame_setdefaultsfunc;
 	frame->geomnotifyfunc = ei_frame_geomnotifyfunc;
-	frame->handlefunc = ei_frame_handlefunc;
+	//frame->handlefunc = ei_frame_handlefunc;
 
 	ei_widgetclass_register(frame);
 }

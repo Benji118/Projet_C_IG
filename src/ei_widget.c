@@ -16,19 +16,21 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 							 ei_widget_t*		parent)
 {
 	ei_widget_t *tmp1;
-	ei_widgetclass_t *class = ei_widget_class_from_name(class_name);
+	ei_widgetclass_t *class = ei_widgetclass_from_name(class_name);
 	if (class == NULL)
 	{
 		return NULL;
 		exit(0);
 	}
 	void * memsize = class->allocfunc();
-	ei_widget_t *new_widget = malloc(sizeof(*memsize));
-	new_widget->parent = parent;
+	ei_frame_t* new_widget = malloc(sizeof(*memsize));
+	if (parent != NULL)
+	{
+	new_widget->widget.parent = parent;
 	if (parent->children_head == NULL)
 	{
-		parent->children_head = new_widget;
-		parent->children_tail = new_widget;
+		parent->children_head = &(new_widget->widget);
+		parent->children_tail = &(new_widget->widget);
 	}
 	else
 	{
@@ -37,8 +39,8 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 		{
 			tmp1 = tmp1->next_sibling;
 		}
-		parent->children_tail = new_widget;
-		tmp1->next_sibling = new_widget;
+		parent->children_tail = &(new_widget->widget);
+		tmp1->next_sibling = &(new_widget->widget);
 	}
 	ei_widget_t *tmp = parent->next_sibling;
 	while(tmp != NULL)
@@ -46,10 +48,11 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 		tmp = tmp->next_sibling;
 	}
 	tmp->next_sibling = new_widget;
-	new_widget->children_head = NULL;
-	new_widget->children_tail = NULL;
+	new_widget->widget.children_head = NULL;
+	new_widget->widget.children_tail = NULL;
+	}
 	class->setdefaultsfunc;
-	return new_widget;
+	return (ei_widget_t*) new_widget;
 
 }
 
@@ -86,9 +89,10 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 							 ei_rect_t**		img_rect,
 							 ei_anchor_t*		img_anchor)
 {
+
 	ei_frame_t* frame = (ei_frame_t*) widget;
 	if (requested_size != NULL)
-		frame->size = *requested_size;
+		frame->widget.requested_size = *requested_size;
 	if (color != NULL)
 		frame->color = *color;
 	if (border_width != NULL)
@@ -108,7 +112,7 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 	if (img_rect != NULL)
 		frame->img_rect = *img_rect;
 	if (img_anchor!=NULL)
-		frame->img_anchor = *img_anchor;
+	 	frame->img_anchor = *img_anchor;
 }
 
 
