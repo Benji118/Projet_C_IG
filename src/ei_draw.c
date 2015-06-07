@@ -347,7 +347,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		// Boucle des scanlines
 		for (int k=0; k<size.height; k++) {
 			ei_side_t *sent_tab=TC[k];
-			printf("Scan numero : %d\n", k);
+			/* printf("Scan numero : %d\n", k); */
 			while (sent_tab!=NULL) {
 				// A FAIRE : Supression dans TC
 				// A FAIRE : Gérer la libération 
@@ -379,7 +379,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				// Gestion des règles de remplissage
 				int inf=(int) inter1;
 				int sup=(int) inter2;
-				printf("inf : %d sup : %d\n",inf,sup);
+				/* printf("inf : %d sup : %d\n",inf,sup); */
 				// Dessin entre deux intersections successives intersections
 				for (int m=inf; m<=sup; m++) {
 					//printf("Dessin en %d %d\n",m,k);
