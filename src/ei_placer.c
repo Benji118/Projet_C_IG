@@ -3,62 +3,67 @@
 #include "ei_widgetclass.h"
 #include "ei_placer.h"
 #include "ei_application.h"
+#include <stdlib.h>
 
 void			ei_place			(struct ei_widget_t*	widget,
-							 ei_anchor_t*		anchor,
-							 int*			x,
-							 int*			y,
-							 int*			width,
-							 int*			height,
-							 float*			rel_x,
-							 float*			rel_y,
-							 float*			rel_width,
-							 float*			rel_height)
-{
-	if (anchor != NULL)
+	ei_anchor_t*		anchor,
+	int*			x,
+	int*			y,
+	int*			width,
+	int*			height,
+	float*			rel_x,
+	float*			rel_y,
+	float*			rel_width,
+	float*			rel_height)
+{	if (widget != NULL)
 	{
-		widget->placer_params->anchor = anchor;
-		widget->placer_params->anchor_data = *anchor;
-	}
-	if (x != NULL)
-	{
-		widget->placer_params->x = x;
-		widget->placer_params->x_data = *x;
-	}
-	if (y != NULL)
-	{
-		widget->placer_params->y = y;
-		widget->placer_params->y_data = *y;
-	}
-	if (width != NULL)
-	{
-		widget->placer_params->w = width;
-		widget->placer_params->w_data = *width;
-	}
-	if (height != NULL)
-	{
-		widget->placer_params->h = height;
-		widget->placer_params->h_data = *height;
-	}
-	if (rel_x != NULL)
-	{
-		widget->placer_params->rx = rel_x;
-		widget->placer_params->rx_data = *rel_x;
-	}
-	if (rel_y != NULL)
-	{
-		widget->placer_params->ry = rel_y;
-		widget->placer_params->ry_data = *rel_y;
-	}
-	if (rel_width != NULL)
-	{
-		widget->placer_params->rw = rel_width;
-		widget->placer_params->rw_data = *rel_width;
-	}
-	if (rel_height != NULL)
-	{
-		widget->placer_params->rh = rel_height;
-		widget->placer_params->rh_data = *rel_height;
+		if (widget->placer_params == NULL)
+		widget->placer_params = calloc(1,sizeof(ei_placer_params_t));
+		if (anchor != NULL)
+		{
+			widget->placer_params->anchor = anchor;
+			widget->placer_params->anchor_data = *anchor;
+		}
+		if (x != NULL)
+		{
+			widget->placer_params->x = x;
+			widget->placer_params->x_data = *x;
+		}
+		if (y != NULL)
+		{
+			widget->placer_params->y = y;
+			widget->placer_params->y_data = *y;
+		}
+		if (width != NULL)
+		{
+			widget->placer_params->w = width;
+			widget->placer_params->w_data = *width;
+		}
+		if (height != NULL)
+		{
+			widget->placer_params->h = height;
+			widget->placer_params->h_data = *height;
+		}
+		if (rel_x != NULL)
+		{
+			widget->placer_params->rx = rel_x;
+			widget->placer_params->rx_data = *rel_x;
+		}
+		if (rel_y != NULL)
+		{
+			widget->placer_params->ry = rel_y;
+			widget->placer_params->ry_data = *rel_y;
+		}
+		if (rel_width != NULL)
+		{
+			widget->placer_params->rw = rel_width;
+			widget->placer_params->rw_data = *rel_width;
+		}
+		if (rel_height != NULL)
+		{
+			widget->placer_params->rh = rel_height;
+			widget->placer_params->rh_data = *rel_height;
+		}
 	}
 }
 
