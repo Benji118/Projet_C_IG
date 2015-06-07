@@ -11,7 +11,9 @@
 
 void test_text(ei_surface_t surface,ei_point_t* point, ei_rect_t* clipper,ei_color_t* color)
 {
-	ei_draw_text(surface,point,"HELLO",NULL,color,clipper);
+	ei_font_t	font = hw_text_font_create("./misc/font.ttf",ei_style_normal,30);
+
+	ei_draw_text(surface,point,"HELLO",font,color,clipper);
 }
 
 
@@ -21,7 +23,7 @@ void test_text(ei_surface_t surface,ei_point_t* point, ei_rect_t* clipper,ei_col
  *	dx > dy. This can be used to test a first implementation of Bresenham
  *	algorithm, for instance.
  */
-void test_line(ei_surface_t surface, ei_surface_t surface2, ei_rect_t* clipper)
+void test_line(ei_surface_t surface, ei_rect_t* clipper)
 {
 	ei_color_t		color		= { 255, 0, 255, 255 };
 	ei_color_t      color2      = { 50, 255, 80, 125 };
@@ -31,8 +33,6 @@ void test_line(ei_surface_t surface, ei_surface_t surface2, ei_rect_t* clipper)
 	pts[1].point.x = 600; pts[1].point.y = 400; pts[1].next = NULL;
 	
 	ei_draw_polyline(surface, pts, color, clipper);
-	ei_copy_surface(surface2,NULL,surface,NULL,EI_TRUE);
-	ei_fill(surface2,&color2,NULL);
 
 }
 
@@ -73,6 +73,7 @@ void test_octogone(ei_surface_t surface, ei_rect_t* clipper)
 
 	/* Draw the form with polylines */
 	ei_draw_polyline(surface, pts, color, clipper);
+	ei_draw_polygon(surface, pts, color, clipper);
 }
 
 
@@ -112,6 +113,7 @@ void test_square(ei_surface_t surface, ei_rect_t* clipper)
 
 	/* Draw the form with polylines */
 	ei_draw_polyline(surface, pts, color, clipper);
+	ei_draw_polygon(surface, pts, color, clipper);
 }
 
 
@@ -136,19 +138,20 @@ void test_dot(ei_surface_t surface, ei_rect_t* clipper)
 
 /*
  * ei_main --
- *
+
  *	Main function of the application.
  */
 int ei_main(int argc, char** argv)
 {
 	ei_color_t		colort		= { 255, 0, 255, 255 };
-	ei_size_t		win_size	= ei_size(100, 50);
+	ei_color_t		color2		= { 255, 0, 0, 255 };	
+	ei_size_t		win_size	= ei_size(800, 600);
 	ei_surface_t		main_window	= NULL;
 	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
 	ei_rect_t*		clipper_ptr	= NULL;
 	ei_point_t     point;
-	point.x = 200;
-	point.y = 200;
+	point.x = 10;
+	point.y = 10;
 
 //	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
 //	clipper_ptr		= &clipper;
@@ -163,10 +166,9 @@ int ei_main(int argc, char** argv)
 	//ei_fill		(main_window, &white, clipper_ptr);
 
 	/*Draw_text*/
-	test_text(main_window,&point,clipper_ptr,&colort);
-
+	test_text(main_window,&point,clipper_ptr,&color2);
 	/* Draw polylines. */
-	//test_line	(main_window,second_window, clipper_ptr);
+	//test_line	(main_window, clipper_ptr);
 	//test_octogone	(main_window, clipper_ptr);
 	//test_square	(main_window, clipper_ptr);
 	//test_dot	(main_window, clipper_ptr);

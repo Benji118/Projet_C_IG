@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "polygon.h"
 #include "ei_types.h"
+#include "ei_draw.h"
 
 
 ei_bool_t comp_side (ei_side_t c1, int y) 
@@ -135,33 +136,57 @@ void draw_pixel(ei_surface_t surface,
 }
 
 uint32_t alpha_effect(ei_surface_t surface_source,
-					  ei_surface_t surface_dest,
-	 				  uint32_t *pixel_source,
-	 				  uint32_t *pixel_dest)
+					  ei_surface_t surface_affiche,
+	 				  uint32_t *pixel_surface,
+	 				  uint32_t *pixel_affiche)
 {
-	int irs,igs,ibs,ias, ird,igd,ibd,iad;
+	int irs,igs,ibs,ias, ira,iga,iba,iaa;
 	hw_surface_get_channel_indices(surface_source,&irs,&igs,&ibs,&ias);
-	hw_surface_get_channel_indices(surface_dest,&ird,&igd,&ibd,&iad);
+	hw_surface_get_channel_indices(surface_affiche,&ira,&iga,&iba,&iaa);
+	uint32_t res;
+	char Sr,Sg,Sb,Sa, Pr,Pg,Pb,Pa;
+	ei_color_t color_final;
+	Sr = ((uint32_t)*pixel_surface >> irs*8) & 0xFF;
+	Sg = ((uint32_t)*pixel_surface >> igs*8) & 0xFF;
+	Sb = ((uint32_t)*pixel_surface >> ibs*8) & 0xFF;
+	Sa = ((uint32_t)*pixel_surface >> ias*8) & 0xFF;
 
-	uint32_t Sr,Sg,Sb,Sa, Pr,Pg,Pb,Pa;
-	Pr = *pixel_source << irs*8;
-	Pg = *pixel_source << igs*8;
-	Pb = *pixel_source << ibs*8;
-	Pa = *pixel_source << 8*ias;
-
-	Sr = *pixel_dest << ird*8;
-	Sg = *pixel_dest << igd*8;
-	Sb = *pixel_dest << ibd*8;
-	Sa = 255 << iad*8;
+	Pr = ((uint32_t)*pixel_affiche >> ira*8) & 0xFF;
+	Pg = ((uint32_t)*pixel_affiche >> iga*8) & 0xFF;
+	Pb = ((uint32_t)*pixel_affiche >> iba*8) & 0xFF;
+	Pa = ((uint32_t)*pixel_affiche >> iaa*8) & 0xFF;
 
 	uint32_t Sr_final,Sg_final,Sb_final,Sa_final;
-	Sr_final = (Pa*Pr + (255-Pa)*Sr)/255 << ird*8;
-	Sg_final = (Sa*Pg + (255-Pa)*Sg)/255 << igd*8;
-	Sb_final = (Pa*Pb + (255-Pa)*Sb)/255 << ibd*8;
-	Sa_final = Sa << iad*8;
+	ei_color_t color_source = {Pr,Pg,Pb,Pa};
+	//if(*pixel_surface != *pixel_affiche && Pa != (255 << iaa*8))
+	//{
+	Sr_final = (color_source.red*color_source.alpha + (255-color_source.alpha)*Sr)/255;
+	Sg_final = (color_source.alpha*color_source.green + (255-color_source.alpha)*Sg)/255;
+	Sb_final = (color_source.alpha*color_source.blue + (255-color_source.alpha)*Sb)/255;
+	Sa_final = color_source.alpha;
 
-	return Sr_final+Sg_final+Sb_final+Sa_final;
+	color_final.red = Sr_final;
+	color_final.blue = Sb_final;
+	color_final.green = Sg_final;
+	color_final.alpha = Sa_final;
+
+	res = ei_map_rgba(surface_source,&color_final);
 
 
+	printf("rouge dest : %i , bleu dest : %i, dest vert : %i, dest alpha : %i\n"
+		,color_final.red,color_final.blue,color_final.green,color_final.alpha);
 
+	printf("rouge src : %i , bleu src : %i, src vert : %i, src alpha : %i\n"
+		,color_source.red,color_source.green,color_source.blue,color_source.alpha);
+
+	//}
+	//else
+	//{
+	// Sr_final = Pr;
+	// Sg_final = Pg;
+	// Sb_final = Pb;
+	// Sa_final = Pa;
+
+	//}
+	return res;
 }

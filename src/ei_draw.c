@@ -589,21 +589,12 @@ void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_rect_t*	clipper)
 {
 	ei_surface_t *surface_text;
-	surface_text = hw_text_create_surface(text,ei_default_font,color);
+	surface_text = hw_text_create_surface(text,font,color);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
 	ei_rect_t rect_dest = rect_text;
 	rect_dest.top_left = *where;
-	ei_bool_t alpha;
-	if (hw_surface_has_alpha(surface_text)==EI_TRUE)
-	{
-		alpha = EI_TRUE;
-	}
-	else
-	{
-		alpha=EI_FALSE;
-	}
 	//hw_surface_lock(surface_text);
-	ei_copy_surface(surface,&rect_dest,surface_text,&rect_text,alpha);
+	ei_copy_surface(surface,&rect_dest,surface_text,&rect_text,EI_TRUE);
 	//hw_surface_unlock(surface_text);
 	//hw_surface_update_rects(surface_text,NULL);	
 }
