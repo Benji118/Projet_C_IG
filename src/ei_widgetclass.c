@@ -31,18 +31,16 @@ ei_widgetclass_t*	ei_widgetclass_from_name	(ei_widgetclass_name_t name)
 {
 	if (list_class != NULL)
 	{
-	ei_widgetclass_t* res = list_class;
-	while (res!=NULL)
-	{
-		if (strcmp(res->name,name)==0)
+		ei_widgetclass_t* res = list_class;
+		while (res!=NULL)
 		{
-			return res;
+			if (strcmp(res->name,name)==0)
+			{
+				return res;
+			}
+			res = res->next;
 		}
-		res = res->next;
 	}
-	return NULL;
-	}
-	else
 	return NULL;
 }
 

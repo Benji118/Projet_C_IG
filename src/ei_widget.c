@@ -15,45 +15,46 @@
 ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 							 ei_widget_t*		parent)
 {
-	ei_widget_t *tmp1;
 	ei_widgetclass_t *class = ei_widgetclass_from_name(class_name);
 	if (class == NULL)
 	{
 		return NULL;
 		exit(0);
 	}
-	void * memsize = class->allocfunc();
-	ei_frame_t* new_widget = malloc(sizeof(*memsize));
+	/* void * memsize = class->allocfunc(); */
+	/* ei_frame_t* new_widget = malloc(sizeof(*memsize)); */
+	ei_widget_t *new_widget = class->allocfunc();
+	//new_widget = (ei_widget_t *) new_widget;
+
+	new_widget->wclass = class;
+	new_widget->parent = parent;
+	new_widget->children_head = NULL;
+	new_widget->children_tail = NULL;
+	new_widget->next_sibling = NULL;
 	if (parent != NULL)
 	{
-	new_widget->widget.parent = parent;
-	if (parent->children_head == NULL)
-	{
-		parent->children_head = &(new_widget->widget);
-		parent->children_tail = &(new_widget->widget);
-	}
-	else
-	{
-		tmp1 = parent->children_head; 
-		while (tmp1->next_sibling != NULL)
+		//Le widget créé est le seul fils de parent :
+		if (parent->children_head == NULL)
 		{
-			tmp1 = tmp1->next_sibling;
+			parent->children_head = (new_widget);
+			parent->children_tail = (new_widget);
 		}
-		parent->children_tail = &(new_widget->widget);
-		tmp1->next_sibling = &(new_widget->widget);
+		else
+		{
+			parent->children_tail->next_sibling = new_widget;
+			parent->children_tail = new_widget;
+		}
+		/* ei_widget_t *tmp = parent->next_sibling; */
+		/* while(tmp != NULL) */
+		/* { */
+		/* 	tmp = tmp->next_sibling; */
+		/* } */
+		
+		/* tmp->next_sibling = (new_widget); */
 	}
-	ei_widget_t *tmp = parent->next_sibling;
-	while(tmp != NULL)
-	{
-		tmp = tmp->next_sibling;
-	}
-	tmp->next_sibling = new_widget;
-	new_widget->widget.children_head = NULL;
-	new_widget->widget.children_tail = NULL;
-	}
-	class->setdefaultsfunc;
-	return (ei_widget_t*) new_widget;
 
+	class->setdefaultsfunc(new_widget);
+	return new_widget;
 }
 
 void			ei_widget_destroy		(ei_widget_t*		widget)
@@ -99,6 +100,8 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 		frame->border_size = *border_width;
 	if (relief!=NULL)
 		frame->relief = *relief;
+	else 
+		frame->relief = 0;
 	if (text!=NULL)
 		frame->texte = *text;
 	if (text_font!=NULL)
@@ -113,6 +116,20 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 		frame->img_rect = *img_rect;
 	if (img_anchor!=NULL)
 	 	frame->img_anchor = *img_anchor;
+	if (frame->widget.parent == NULL){
+		ei_size_t taille = {600,600};
+		ei_point_t coin = {0,0};
+		ei_rect_t loc = {coin, taille};
+		frame->widget.screen_location = loc;
+		frame->widget.content_rect = &loc;
+	} else {
+		ei_size_t taille = *requested_size;
+		ei_point_t coin = {150,200};
+		ei_rect_t loc = {coin, taille};
+		frame->widget.screen_location = loc;
+		frame->widget.content_rect = &loc;
+		frame->clipper = NULL;
+	}
 }
 
 

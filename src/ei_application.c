@@ -6,19 +6,23 @@
 
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
+	/* Initialisation de la couche graphique */
+	hw_init();
+
+	/* registers all classes of widget and all geometry managers : */
 	ei_frame_register_class();
 	ei_button_register_class();
 	ei_toplevel_register_class();
 
-	root_widget_window = ei_widget_create("frame",NULL);
+	/* Creation du widget racine de type frame */
+	root_widget_window = ei_widget_create("frame",  NULL);
+
 	//ei_surface_t picking_surface = hw_surface_create(main_window,main_window_size,EI_FALSE);
 
-	hw_init();
 	main_window_surface = hw_create_window(main_window_size, fullscreen);
 
-	//registers all classes of widget and all geometry managers : TODO
 	
-	//hw_surface_lock(main_window);
+	hw_surface_lock(main_window_surface);
 }
 
 ei_widget_t *ei_app_root_widget()
@@ -73,6 +77,8 @@ void ei_app_run()
 	
 	ei_rect_t*		clipper_ptr	= NULL;
 	affiche_widget_rec(root_widget_window, clipper_ptr);
+	hw_surface_unlock(ei_app_root_surface());
+	hw_surface_update_rects(ei_app_root_surface(), NULL);
 	getchar();
 }
 

@@ -1,9 +1,9 @@
 #include "widgetframe.h"
+#include "ei_types.h"
 #include <stdlib.h>
 #include "ei_widgetclass.h"
 #include "geometry.h"
 #include <string.h>
-
 
 
 void * ei_frame_allocfunc()
@@ -32,12 +32,12 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	draw_button( surface, frame->widget.screen_location , 0.0, frame->border_size, frame->color, frame->relief, frame->clipper);
 
 	//Offscreen
-	draw_button( pick_surface, frame->widget.screen_location, 0.0, 0.0, frame->color, frame->relief, frame->clipper);
+	//draw_button( pick_surface, frame->widget.screen_location, 0.0, 0.0, frame->color, frame->relief, frame->clipper);
 
 	//Cas du texte
 	if(frame->texte != NULL){
 		ei_draw_text(surface,frame->text_pos,frame->texte,frame->font,
-			     frame->text_color,frame->clipper);
+			     &frame->text_color,frame->clipper);
 	}
 
 
@@ -56,7 +56,7 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 
 void ei_frame_setdefaultsfunc	(struct ei_widget_t*	widget)
 {
-	(widget->requested_size).width = 0;
+	widget->requested_size.width = 0;
 	(widget->requested_size).height = 0;
 	ei_frame_t* frame = (ei_frame_t*) widget;
 	frame ->color = ei_default_background_color;
@@ -66,7 +66,9 @@ void ei_frame_setdefaultsfunc	(struct ei_widget_t*	widget)
 	frame->text_anchor=ei_anc_center;
 	frame->texte=NULL;
 	frame->font = ei_default_font;
-	*(frame->text_color) = ei_font_default_color;
+	ei_color_t *col = malloc(sizeof(ei_color_t));
+	*col = ei_font_default_color;
+	frame->text_color = col;
 	frame->img=NULL;
 	frame->img_anchor=ei_anc_center;
 

@@ -131,6 +131,7 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 {
 	//Requiert top ou bottom 
 	ei_point_t centre;
+	ei_linked_point_t *courant = NULL;
 	ei_linked_point_t *coin = NULL;
 
        	ei_linked_point_t **frame = malloc(sizeof(ei_linked_point_t*));
@@ -143,6 +144,7 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 		h = rectangle.size.height/2;
 	else
 		h = rectangle.size.width/2;
+
 	mid1.x = rectangle.top_left.x + h;
 	mid1.y = rectangle.top_left.y + h;
 	mid2.x = rectangle.top_left.x + rectangle.size.width - h;
@@ -160,26 +162,31 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 	/* Coin sup droit */
 	centre.x = rectangle.top_left.x + rectangle.size.width - rayon;
 	centre.y = rectangle.top_left.y + rayon;
-	if ( top ){
-		if ( bottom )
-			coin = arc(rayon, centre, 270.0, 360.0);
-		else {
-			coin = arc(rayon, centre, 270.0, 315.0);
+	if ( rayon == 0 )
+		ajoute_en_tete(centre.x, centre.y, frame);
+	else {
+		if ( top ){
+			if ( bottom )
+				coin = arc(rayon, centre, 270.0, 360.0);
+			else {
+				coin = arc(rayon, centre, 270.0, 315.0);
+			}
+		} else {
+			coin = arc(rayon, centre, 315.0, 360.0);
 		}
-	} else {
-		coin = arc(rayon, centre, 315.0, 360.0);
-	}
-	ei_linked_point_t *courant = coin;
+		courant = coin;
 	
-	/* On relie ce coin au cadre commencé */
-	while(courant->next != NULL)
-		courant = courant->next;
-	*courant = **frame;
-	*frame = coin;
+		/* On relie ce coin au cadre commencé */
+		while(courant->next != NULL)
+			courant = courant->next;
+		*courant = **frame;
+		*frame = coin;
+	}
 	if ( top && (bottom == false)) {
 		ajoute_en_tete(mid2.x, mid2.y, frame);
 		ajoute_en_tete(mid1.x, mid1.y, frame);
 	}
+	
 
 	/* Coin inf droit */
 	if ( bottom ){
@@ -198,24 +205,28 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 	/* Coin inf gauche */
 	centre.x = rectangle.top_left.x + rayon;
 	centre.y = rectangle.top_left.y + rectangle.size.height - rayon;
-	if ( bottom ){
-		if ( top )
-			coin = arc(rayon, centre, 90.0, 180.0);
-		else 
-			coin = arc(rayon, centre, 90.0, 135.0);
-	} else
-	       	coin = arc(rayon, centre, 135.0, 180.0);
-	courant = coin;
+	if ( rayon == 0 )
+		ajoute_en_tete(centre.x, centre.y, frame);
+	else {
+		if ( bottom ){
+			if ( top )
+				coin = arc(rayon, centre, 90.0, 180.0);
+			else 
+				coin = arc(rayon, centre, 90.0, 135.0);
+		} else
+			coin = arc(rayon, centre, 135.0, 180.0);
+		courant = coin;
 	
-	/* On relie ce coin au cadre commencé */
-	while(courant->next != NULL)
-		courant = courant->next;
-	*courant = **frame;
-	*frame = coin;
-
+		/* On relie ce coin au cadre commencé */
+		while(courant->next != NULL)
+			courant = courant->next;
+		*courant = **frame;
+		*frame = coin;
+	}
 	if ( bottom && (!top)){
 		ajoute_en_tete(mid1.x, mid1.y, frame);
 	}
+	
 	/* On rajoute en tête le dernier point pour boucler */
 	if ( top )
 		ajoute_en_tete(rectangle.top_left.x, rectangle.top_left.y + rayon, frame);
@@ -237,18 +248,23 @@ void                    draw_button        ( ei_surface_t                   surf
 	
 	/* On définit l'ombre et la lumière a partir de la couleur voulue pour le bouton */
 	ei_color_t light, shadow;
-	light.red = 2*color.red;
-	if (light.red > 255)
+	if (2*((int)color.red) > 255)
 		light.red = 255;
-	light.green = 2*color.green;
-	if (light.green > 255)
+	else
+		light.red = 2*color.red;
+
+	if (2*((int)color.green) > 255)
 		light.green = 255;
-	light.blue = 2*color.blue;
-	if (light.blue > 255)
+	else
+		light.green = 2*color.green;
+
+	if (2*((int)color.blue) > 255)
 		light.blue = 255;
+	else
+		light.blue = 2*color.blue;
+
 	light.alpha = color.alpha;
-
-
+	
 	shadow.red = color.red/2;
 	shadow.green =color.green/2;
 	shadow.blue = color.blue/2;
@@ -258,6 +274,8 @@ void                    draw_button        ( ei_surface_t                   surf
 	/* Rectangle principal (dessus du bouton) */
 	/* Avec décalage si le bouton est enfoncé */
 	ei_rect_t mid_rect;
+	double mid_ray = rayon;
+
 	if ( relief == ei_relief_sunken ){
 		mid_rect.top_left.x = rectangle.top_left.x + (4/3)*edge;
 		mid_rect.top_left.y = rectangle.top_left.y + (4/3)*edge;
@@ -267,8 +285,7 @@ void                    draw_button        ( ei_surface_t                   surf
 	}
 	mid_rect.size.width = rectangle.size.width - 2*edge;
 	mid_rect.size.height = rectangle.size.height - 2*edge;
-	double mid_ray = rayon - edge;
-
+	
 	/* Couleurs choisies selon le type de relief */
 	ei_color_t color_top, color_bot;
 	if ( relief == ei_relief_sunken ){
@@ -281,7 +298,9 @@ void                    draw_button        ( ei_surface_t                   surf
 		
 
 	ei_linked_point_t *first_point_main = rounded_frame(mid_rect, mid_ray, true, true);
-	ei_draw_polygon(surface, first_point_top,  color_top, clipper);
-	ei_draw_polygon(surface, first_point_bot,  color_bot, clipper);
-	ei_draw_polygon(surface, first_point_main,  color, clipper);
+	if (edge != 0.0){
+		ei_draw_polygon(surface, first_point_top, color_top, clipper);
+		ei_draw_polygon(surface, first_point_bot, color_bot, clipper);
+	}
+	ei_draw_polygon(surface, first_point_main, color, clipper);
 }
