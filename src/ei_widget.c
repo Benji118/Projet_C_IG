@@ -7,7 +7,8 @@
 #include "ei_placer.h"
 #include <stdlib.h>
 #include <assert.h>
-
+#include "ei_application.h"
+#include "global.h"
 // void		ei_callback_t	(ei_widget_t*		widget,
 // 				 struct ei_event_t*	event,
 // 				 void*			user_param)
@@ -57,6 +58,9 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 	}
 
 	class->setdefaultsfunc(new_widget);
+	new_widget->pick_id = widget_id_pick;
+	new_widget->pick_color = id_to_color(ei_app_root_surface(),widget_id_pick);
+	widget_id_pick++;
 	return new_widget;
 }
 
@@ -75,6 +79,22 @@ void			ei_widget_destroy		(ei_widget_t*		widget)
 
 ei_widget_t*		ei_widget_pick			(ei_point_t*		where)
 {
+	ei_widget_t* widget = malloc (sizeof(ei_widget_t));
+	widget = ei_app_root_widget();
+	uint32_t* pixel_ptr = (uint32_t*)(hw_surface_get_buffer(picking_surface) 
+	+ where->y*hw_surface_get_size(picking_surface).width + where->x);
+	while (widget!= NULL)
+	{
+		if (widget != ei_app_root_widget())
+		{
+			if (widget->pick_id == *pixel_ptr)
+			{
+				return widget;
+			}
+		}
+		widget = widget->next_sibling;
+	}
+	return NULL;
 }
 
 
