@@ -89,6 +89,7 @@ void			ei_place			(struct ei_widget_t*	widget,
 	{
 		widget->placer_params->rh = rel_height;
 		widget->placer_params->rh_data = *rel_height;
+
 	}
 	
 	ei_placer_run(widget);
