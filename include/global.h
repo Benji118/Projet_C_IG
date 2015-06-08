@@ -11,6 +11,7 @@ extern ei_surface_t main_window_surface;
 extern ei_surface_t picking_surface;
 extern ei_widgetclass_t* list_class;
 extern ei_linked_rect_t *list_rect;
+extern ei_widget_t *active_widget;
 extern uint32_t widget_id_pick;
 
 ei_color_t* id_to_color(ei_surface_t surface,uint32_t id);
