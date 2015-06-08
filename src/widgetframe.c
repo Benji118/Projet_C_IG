@@ -1,4 +1,5 @@
 #include "widgetframe.h"
+#include "ei_placer.h"
 #include "ei_types.h"
 #include <stdlib.h>
 #include "ei_widgetclass.h"
@@ -28,7 +29,6 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 {
 	ei_frame_t * frame = (ei_frame_t*) widget;
 
-	//Frame : pas d'arrondi
 	draw_button( surface, frame->widget.screen_location , 0.0, frame->border_size, frame->color, frame->relief, frame->clipper);
 
 	//Offscreen
@@ -49,7 +49,7 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 		rect_paste->top_left = frame->img_pos;
 		hw_surface_lock(img_surface);
 		ei_copy_surface(surface,rect_paste,img_surface,
-						frame->img_rect,EI_FALSE);
+				frame->img_rect,EI_FALSE);
 		hw_surface_unlock(img_surface);
 	}
 }

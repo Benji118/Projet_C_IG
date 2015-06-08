@@ -16,6 +16,18 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 
 	/* Creation du widget racine de type frame */
 	root_widget_window = ei_widget_create("frame",  NULL);
+	ei_placer_params_t *params = malloc(sizeof(ei_placer_params_t));
+	int *x = malloc(sizeof(int));
+	int *y = malloc(sizeof(int));
+	params->x = x;
+	params->y = y;
+	root_widget_window->placer_params = params;
+	root_widget_window->placer_params->x = 0;
+	root_widget_window->placer_params->y = 1;
+	
+	
+	
+	root_widget_window->requested_size = *main_window_size;
 
 	//ei_surface_t picking_surface = hw_surface_create(main_window,main_window_size,EI_FALSE);
 
@@ -50,7 +62,8 @@ void ei_app_quit_request()
 
 static void affiche_widget_rec(ei_widget_t *widget, ei_rect_t* clipper)
 {
-	widget->wclass->drawfunc (widget, main_window_surface, main_window_surface, clipper);
+	if (widget->placer_params != NULL)
+		widget->wclass->drawfunc (widget, main_window_surface, main_window_surface, clipper);
 	
 	if (widget->next_sibling != NULL)
 		affiche_widget_rec(widget->next_sibling, clipper);

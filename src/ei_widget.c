@@ -1,9 +1,11 @@
 #include "ei_draw.h"
+#include "ei_types.h"
 #include "ei_widgetclass.h"
 #include "ei_widget.h"
 #include "widgetframe.h"
 #include "ei_placer.h"
 #include <stdlib.h>
+#include <assert.h>
 
 // void		ei_callback_t	(ei_widget_t*		widget,
 // 				 struct ei_event_t*	event,
@@ -24,13 +26,13 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 	/* void * memsize = class->allocfunc(); */
 	/* ei_frame_t* new_widget = malloc(sizeof(*memsize)); */
 	ei_widget_t *new_widget = class->allocfunc();
-	//new_widget = (ei_widget_t *) new_widget;
 
 	new_widget->wclass = class;
 	new_widget->parent = parent;
 	new_widget->children_head = NULL;
 	new_widget->children_tail = NULL;
 	new_widget->next_sibling = NULL;
+	new_widget->placer_params = NULL;
 	if (parent != NULL)
 	{
 		//Le widget créé est le seul fils de parent :
@@ -123,11 +125,11 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 		frame->widget.screen_location = loc;
 		frame->widget.content_rect = &loc;
 	} else {
-		ei_size_t taille = *requested_size;
-		ei_point_t coin = {150,200};
-		ei_rect_t loc = {coin, taille};
-		frame->widget.screen_location = loc;
-		frame->widget.content_rect = &loc;
+		/* ei_size_t taille = *requested_size; */
+		/* ei_point_t coin = {150,200}; */
+		/* ei_rect_t loc = {coin, taille}; */
+		/* frame->widget.screen_location = loc; */
+		/* frame->widget.content_rect = &loc; */
 		frame->clipper = NULL;
 	}
 }
