@@ -1,6 +1,7 @@
 #include "ei_types.h"
 #include "ei_widget.h"
 #include "ei_event.h"
+#include "ei_application.h"
 #include "widgetbutton.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,6 +85,7 @@ void ei_app_run()
 {
 	ei_bool_t quit_app = EI_FALSE;
 	ei_event_t *event_cour = malloc(sizeof(ei_event_t));
+	//ei_event_t event_cour;
 	assert(event_cour != NULL);
 	ei_widget_t  *widget_cour;
 	ei_linked_rect_t *clipp_cour;
@@ -100,22 +102,27 @@ void ei_app_run()
 			first_time = EI_FALSE;
 		} else {
 			if (event_cour->type == ei_ev_mouse_buttondown){
-				widget_cour = widget_pick(&(event_cour->param.mouse.where));
-				if (strcmp(widget_cour->wclass->name, "button")){
-					widget_cour = (ei_button_t *) widget_cour;
-					widget_cour->relief = ei_relief_sunken;
-					ei_app_invalidate_rect(&(widget_cour->screen_location));
-				}
-				while (clipp_cour != NULL){
-					clipp_cour = list_rec;
-					affiche_widget_rec(root_widget_window, clipp_cour->rect);
-					hw_surface_unlock(ei_app_root_surface());
-					hw_surface_update_rects(ei_app_root_surface(), NULL);
-					clipp_cour = clipp_cour->next;
+				printf("bouton");
+				widget_cour = ei_widget_pick(&(event_cour->param.mouse.where));
+				if (widget_cour != NULL){
+					if (strcmp(widget_cour->wclass->name, "button")){
+						ei_button_t *button_cour = (ei_button_t *) widget_cour;
+						button_cour->relief = ei_relief_sunken;
+						ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+					}
+					clipp_cour = list_rect;
+					while (clipp_cour != NULL){
+						affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+						hw_surface_unlock(ei_app_root_surface());
+						hw_surface_update_rects(ei_app_root_surface(), NULL);
+						clipp_cour = clipp_cour->next;
+					}
 				}
 			}
 		}
+		//printf("event_wait");
 		hw_event_wait_next(event_cour);
+		//printf("event_pass");
 	}
 }
 
