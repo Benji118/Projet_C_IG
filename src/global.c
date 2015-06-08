@@ -8,6 +8,8 @@ ei_surface_t main_window_surface;
 ei_surface_t picking_surface;
 ei_widgetclass_t* list_class;
 ei_linked_rect_t *list_rect;
+ei_widget_t *active_widget;
+
 uint32_t widget_id_pick = 0;
 
 ei_color_t* id_to_color(ei_surface_t surface,uint32_t id)
