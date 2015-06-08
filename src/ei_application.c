@@ -8,6 +8,8 @@
 #include <string.h>
 #include "global.h"
 
+ei_surface_t ei_app_root_surface();
+
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
 	/* Initialisation de la couche graphique */
@@ -17,6 +19,11 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	ei_frame_register_class();
 	ei_button_register_class();
 	ei_toplevel_register_class();
+	
+	/*Creations de la surface_root et de la surface de picking*/
+	main_window_surface = hw_create_window(main_window_size, fullscreen);
+	picking_surface = hw_surface_create(ei_app_root_surface(),
+		main_window_size,EI_FALSE);
 
 	/* Creation du widget racine de type frame */
 	root_widget_window = ei_widget_create("frame",  NULL);
@@ -33,11 +40,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	
 	root_widget_window->requested_size = *main_window_size;
 
-	//ei_surface_t picking_surface = hw_surface_create(main_window,main_window_size,EI_FALSE);
 
-	main_window_surface = hw_create_window(main_window_size, fullscreen);
-
-	
 	hw_surface_lock(main_window_surface);
 }
 
@@ -118,5 +121,23 @@ void ei_app_run()
 
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
-	
+	ei_rect_t *copy=malloc(sizeof(ei_rect_t));
+	*copy=*rect;
+	if (list_rect==NULL) {
+		printf("first\n");
+		list_rect=malloc(sizeof(ei_linked_rect_t));
+		list_rect->rect=*copy;
+		list_rect->next=NULL;
+	} else {
+		// Ajout en queue de liste
+		ei_linked_rect_t *sent;
+		sent=list_rect;
+		while (sent->next!=NULL) {
+			printf("next\n");
+			sent=sent->next;
+		}
+		sent->next=malloc(sizeof(ei_linked_rect_t));
+		sent->next->rect=*copy;
+		sent->next->next=NULL;
+	}
 }

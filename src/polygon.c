@@ -5,6 +5,7 @@
 #include "polygon.h"
 #include "ei_types.h"
 #include "ei_draw.h"
+#include "global.h"
 
 
 ei_bool_t comp_side (ei_side_t c1, int y) 
