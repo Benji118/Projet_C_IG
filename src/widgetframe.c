@@ -29,10 +29,10 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 {
 	ei_frame_t * frame = (ei_frame_t*) widget;
 
-	draw_button( surface, frame->widget.screen_location , 0.0, frame->border_size, frame->color, frame->relief, frame->clipper);
+	draw_tool( surface, frame->widget.screen_location , 0.0, frame->border_size, frame->color, frame->relief, frame->clipper);
 
 	//Offscreen
-	//draw_button( pick_surface, frame->widget.screen_location, 0.0, 0.0, frame->color, frame->relief, frame->clipper);
+	//draw_tool( pick_surface, frame->widget.screen_location, 0.0, 0.0, frame->color, frame->relief, frame->clipper);
 
 	//Cas du texte
 	if(frame->texte != NULL){

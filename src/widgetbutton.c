@@ -2,6 +2,7 @@
 #include "geometry.h"
 #include <stdlib.h>
 #include <string.h>
+#include "hw_interface.h"
 
 
 void* ei_button_allocfunc()
@@ -25,19 +26,37 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 	ei_rect_t*		clipper)
 {
 	ei_button_t* button = (ei_button_t*) widget;
-
 	if (button->corner_radius!=NULL)
-		draw_button(surface,button->widget.screen_location,(double)*button->corner_radius,button->border_size,button->color,button->relief,clipper);
+	{
+		printf("draw_button1\n");
+		draw_tool(surface,button->widget.screen_location,(double)*button->corner_radius,button->border_size,button->color,button->relief,NULL);
+	}
 	else
-		draw_button(surface,button->widget.screen_location,0.0,button->border_size,button->color,button->relief,clipper);
+	{
+		printf("draw_button2\n");
+		draw_tool(surface,button->widget.screen_location,0.0,button->border_size,button->color,button->relief,clipper);
+	}
 
 	//Offscreen
-	draw_button(pick_surface,button->widget.screen_location,0.0,0.0,button->color,button->relief,clipper);
+	//draw_tool(pick_surface,button->widget.screen_location,0.0,0.0,button->color,button->relief,clipper);
 
 	//Cas du texte
 	if(button->texte != NULL){
-		ei_draw_text(surface,button->text_pos,button->texte,button->font,
-			     button->text_color,button->clipper);
+		int *w, *h;
+		ei_point_t* text_pos = malloc(sizeof(ei_point_t));
+		w = malloc(sizeof(int));
+		h = malloc(sizeof(int));
+		hw_text_compute_size(button->texte,button->font,w,h);
+		if (button->widget.screen_location.size.width > *w && 
+			button->widget.screen_location.size.height > *h)
+		{
+			text_pos->x = button->widget.screen_location.top_left.x 
+			+ (button->widget.screen_location.size.width - *w)/2;
+			text_pos->y = button->widget.screen_location.top_left.y 
+			+ (button->widget.screen_location.size.height - *h)/2;
+			ei_draw_text(surface,text_pos,button->texte,button->font,
+				     button->text_color,button->clipper);
+		}
 	}
 
 
@@ -64,12 +83,13 @@ void ei_button_setdefaultsfunc(struct ei_widget_t* widget)
 	button->text_anchor=ei_anc_center;
 	button->texte=NULL;
 	button->font = ei_default_font;
-	*(button->text_color) = ei_font_default_color;
+	ei_color_t *col = malloc (sizeof(ei_color_t));
+	*col = ei_font_default_color;
 	button->img=NULL;
 	button->img_anchor=ei_anc_center;
 }
 
-void ei_button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+void ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 {
 	widget->screen_location = rect;
 }

@@ -2,6 +2,7 @@
 #include "ei_draw.h"
 #include "ei_widgetclass.h"
 #include "widgetframe.h"
+#include "widgetbutton.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,13 +17,9 @@ void			ei_widgetclass_register		(ei_widgetclass_t* widgetclass)
 	}
 	else
 	{
-		ei_widgetclass_t* tmp = list_class;
-		while (tmp->next != NULL)
-		{
-			tmp = tmp->next;
-		}
-		tmp->next = widgetclass;
-		free(tmp);
+		widgetclass->next = malloc(sizeof(ei_widgetclass_t));
+		widgetclass->next = list_class;
+		list_class = widgetclass;
 	}
 }
 
@@ -62,6 +59,16 @@ void			ei_frame_register_class 	()
 
 void			ei_button_register_class 	()
 {
+	ei_widgetclass_t* button = malloc(sizeof(ei_widgetclass_t));
+	strcpy(button->name,"button");
+	button->allocfunc = ei_button_allocfunc;
+	button->releasefunc = ei_button_releasefunc;
+	button->drawfunc = ei_button_drawfunc;
+	button->setdefaultsfunc = ei_button_setdefaultsfunc;
+	button->geomnotifyfunc = ei_button_geomnotifyfunc;
+	//button->handlefunc = ei_button_handlefunc;
+
+	ei_widgetclass_register(button);
 }
 
 

@@ -2,6 +2,7 @@
 #include "ei_types.h"
 #include "ei_widgetclass.h"
 #include "ei_widget.h"
+#include "widgetbutton.h"
 #include "widgetframe.h"
 #include "ei_placer.h"
 #include <stdlib.h>
@@ -151,6 +152,37 @@ void			ei_button_configure		(ei_widget_t*		widget,
 							 ei_callback_t*		callback,
 							 void**			user_param)
 {
+	ei_button_t* button = (ei_button_t*) widget;
+	if (requested_size != NULL)
+		button->widget.requested_size = *requested_size;
+	if (color != NULL)
+		button->color = *color;
+	if (border_width != NULL)
+		button->border_size = *border_width;
+	if (relief!=NULL)
+		button->relief = *relief;
+	else 
+		button->relief = 0;
+	if (text!=NULL)
+		button->texte = *text;
+	if (text_font!=NULL)
+		button->font = *text_font;
+	if (text_color!=NULL)
+		button->text_color = text_color;
+	if (text_anchor!=NULL)
+		button->text_anchor = *text_anchor;
+	if (img != NULL)
+		button->img = *img;
+	if (img_rect != NULL)
+		button->img_rect = *img_rect;
+	if (img_anchor!=NULL)
+	 	button->img_anchor = *img_anchor;
+	if (corner_radius!=NULL)
+		button->corner_radius = corner_radius;
+	if (callback!=NULL)
+		button->callback = *callback;
+	if (user_param != NULL)
+		button->user_param = *user_param;
 }
 
 

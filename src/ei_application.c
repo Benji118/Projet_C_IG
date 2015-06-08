@@ -23,7 +23,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	params->y = y;
 	root_widget_window->placer_params = params;
 	root_widget_window->placer_params->x = 0;
-	root_widget_window->placer_params->y = 1;
+	root_widget_window->placer_params->y = 0;
 	
 	
 	

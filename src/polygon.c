@@ -173,11 +173,11 @@ uint32_t alpha_effect(ei_surface_t surface_source,
 	res = ei_map_rgba(surface_source,&color_final);
 
 
-	printf("rouge dest : %i , bleu dest : %i, dest vert : %i, dest alpha : %i\n"
-		,color_final.red,color_final.blue,color_final.green,color_final.alpha);
+	// printf("rouge dest : %i , bleu dest : %i, dest vert : %i, dest alpha : %i\n"
+	// 	,color_final.red,color_final.blue,color_final.green,color_final.alpha);
 
-	printf("rouge src : %i , bleu src : %i, src vert : %i, src alpha : %i\n"
-		,color_source.red,color_source.green,color_source.blue,color_source.alpha);
+	// printf("rouge src : %i , bleu src : %i, src vert : %i, src alpha : %i\n"
+	// 	,color_source.red,color_source.green,color_source.blue,color_source.alpha);
 
 	//}
 	//else

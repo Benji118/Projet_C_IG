@@ -22,7 +22,7 @@ typedef struct ei_button_t
 	ei_anchor_t              img_anchor;
 	ei_rect_t*		img_rect;
 	ei_rect_t*		clipper;
-	ei_callback_t   clickfunc;
+	ei_callback_t   callback;
 	void*           user_param;
 }ei_button_t;
 
@@ -37,7 +37,7 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 
 void ei_button_setdefaultsfunc(struct ei_widget_t* widget);
 
-void ei_button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect);
+void ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
 

@@ -642,13 +642,13 @@ int			ei_copy_surface		(ei_surface_t		destination,
 
 	uint32_t *ptr_src = ptr_src_origin;
 	uint32_t *ptr_dst = ptr_dst_origin;
-	printf("src x = %i\n",src.top_left.x);
-	printf("src y = %i\n",src.top_left.y );
-	printf("dst x = %i\n",dst.top_left.x);
-	printf("dst y = %i\n",dst.top_left.y );
+	// printf("src x = %i\n",src.top_left.x);
+	// printf("src y = %i\n",src.top_left.y );
+	// printf("dst x = %i\n",dst.top_left.x);
+	// printf("dst y = %i\n",dst.top_left.y );
 
-	printf("dst width = %i\n", dst.size.width);
-	printf("dst_tot width = %i\n", hw_surface_get_size(destination).width);
+	// printf("dst width = %i\n", dst.size.width);
+	// printf("dst_tot width = %i\n", hw_surface_get_size(destination).width);
 	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++)
 	{
 		for (uint32_t x = src.top_left.x; x < src.top_left.x + src.size.width; x++)
@@ -658,8 +658,8 @@ int			ei_copy_surface		(ei_surface_t		destination,
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
 				*ptr_dst = *ptr_src;
-				printf ("px src : %i \n",*ptr_src);
-				printf ("px dst : %i \n",*ptr_dst);
+				// printf ("px src : %i \n",*ptr_src);
+				// printf ("px dst : %i \n",*ptr_dst);
 
 			}
 			else
@@ -667,9 +667,9 @@ int			ei_copy_surface		(ei_surface_t		destination,
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
 				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);
-				printf ("px src : %i \n",*ptr_src);
-				printf ("px dst : %i \n",*ptr_dst);
-				printf("alpha\n");
+				// printf ("px src : %i \n",*ptr_src);
+				// printf ("px dst : %i \n",*ptr_dst);
+				// printf("alpha\n");
 
 			}
 		}

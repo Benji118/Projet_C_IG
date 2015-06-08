@@ -235,7 +235,7 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 	return *frame;	
 }
 
-void                    draw_button        ( ei_surface_t                   surface,
+void                    draw_tool        ( ei_surface_t                   surface,
 					     const ei_rect_t                rectangle,
 					     const double                   rayon,
 					     const double                   edge,
