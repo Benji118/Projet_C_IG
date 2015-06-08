@@ -79,7 +79,7 @@ void			ei_widget_destroy		(ei_widget_t*		widget)
 
 ei_widget_t*		ei_widget_pick			(ei_point_t*		where)
 {
-	ei_widget_t* widget = malloc (sizeof(ei_widget_t));
+	ei_widget_t* widget;
 	widget = ei_app_root_widget();
 	uint32_t* pixel_ptr = (uint32_t*)(hw_surface_get_buffer(picking_surface) 
 	+ where->y*hw_surface_get_size(picking_surface).width + where->x);
