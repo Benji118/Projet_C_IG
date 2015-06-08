@@ -30,4 +30,3 @@ ei_default_handle_func_t ei_event_get_default_handle_func()
 ei_bool_t ei_default_handle_func_t (struct ei_event_t* event)
 {
 }
-
