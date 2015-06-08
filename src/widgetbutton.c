@@ -30,15 +30,18 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 	{
 		printf("draw_button1\n");
 		draw_tool(surface,button->widget.screen_location,(double)*button->corner_radius,button->border_size,button->color,button->relief,NULL);
+		//Offscreen
+		draw_tool(pick_surface,button->widget.screen_location,(double)*button->corner_radius,0,*(button->widget.pick_color),button->relief,clipper);
+
 	}
 	else
 	{
 		printf("draw_button2\n");
 		draw_tool(surface,button->widget.screen_location,0.0,button->border_size,button->color,button->relief,clipper);
-	}
+		//Offscreen
+		draw_tool(pick_surface,button->widget.screen_location,0,0,*(button->widget.pick_color),button->relief,clipper);
 
-	//Offscreen
-	//draw_tool(pick_surface,button->widget.screen_location,0.0,0.0,button->color,button->relief,clipper);
+	}
 
 	//Cas du texte
 	if(button->texte != NULL){
@@ -55,7 +58,7 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 			text_pos->y = button->widget.screen_location.top_left.y 
 			+ (button->widget.screen_location.size.height - *h)/2;
 			ei_draw_text(surface,text_pos,button->texte,button->font,
-				     button->text_color,button->clipper);
+				     button->text_color,clipper);
 		}
 	}
 

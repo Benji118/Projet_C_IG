@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "global.h"
 
+ei_surface_t ei_app_root_surface();
+
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
 	/* Initialisation de la couche graphique */
@@ -29,7 +31,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	
 	root_widget_window->requested_size = *main_window_size;
 
-	//ei_surface_t picking_surface = hw_surface_create(main_window,main_window_size,EI_FALSE);
+	ei_surface_t picking_surface = hw_surface_create(ei_app_root_surface,main_window_size,EI_FALSE);
 
 	main_window_surface = hw_create_window(main_window_size, fullscreen);
 
