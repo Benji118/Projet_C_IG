@@ -25,8 +25,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	main_window_surface = hw_create_window(main_window_size, fullscreen);
 	picking_surface = hw_surface_create(ei_app_root_surface(),
 		main_window_size,EI_FALSE);
-
-	/* Creation du widget racine de type frame */
+	widget_id_pick = 0;
+		/* Creation du widget racine de type frame */
 	root_widget_window = ei_widget_create("frame",  NULL);
 	ei_placer_params_t *params = malloc(sizeof(ei_placer_params_t));
 	int *x = malloc(sizeof(int));
@@ -100,18 +100,25 @@ void ei_app_run()
 			hw_surface_unlock(ei_app_root_surface());
 			hw_surface_update_rects(ei_app_root_surface(), NULL);
 			first_time = EI_FALSE;
-		} else {
+		} 
+		else 
+		{
 			if (event_cour->type == ei_ev_mouse_buttondown){
-				printf("bouton");
 				widget_cour = ei_widget_pick(&(event_cour->param.mouse.where));
 				if (widget_cour != NULL){
-					if (strcmp(widget_cour->wclass->name, "button")){
+					printf("pass 2\n");
+					printf("!=NULL\n");
+					if (strcmp(widget_cour->wclass->name, "button")==0){
 						ei_button_t *button_cour = (ei_button_t *) widget_cour;
-						button_cour->relief = ei_relief_sunken;
+						if (button_cour->relief == ei_relief_raised)
+							button_cour->relief = ei_relief_sunken;
+						else if (button_cour->relief == ei_relief_raised)
+							button_cour->relief = ei_relief_sunken;
 						ei_app_invalidate_rect(&(button_cour->widget.screen_location));
 					}
 					clipp_cour = list_rect;
 					while (clipp_cour != NULL){
+						printf("ouiii\n");
 						affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
 						hw_surface_unlock(ei_app_root_surface());
 						hw_surface_update_rects(ei_app_root_surface(), NULL);
@@ -119,6 +126,27 @@ void ei_app_run()
 					}
 				}
 			}
+			// else if (event_cour->type == ei_ev_mouse_buttonup)
+			// {
+			// 	widget_cour = ei_widget_pick(&(event_cour->param.mouse.where));
+			// 	if(widget_cour != NULL)
+			// 	{
+			// 		if (strcmp(widget_cour->wclass->name, "button")==0)
+			// 		{
+			// 			ei_button_t* button_cour = (ei_button_t *)widget_cour;
+			// 			button_cour->relief = ei_relief_raised;
+			// 			ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+			// 		}
+			// 		clipp_cour = list_rect;
+			// 		while (clipp_cour != NULL)
+			// 		{
+			// 			affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+			// 			hw_surface_unlock(ei_app_root_surface());
+			// 			hw_surface_update_rects(ei_app_root_surface(), NULL);
+			// 			clipp_cour = clipp_cour->next;
+			// 		}	
+			// 	}
+			// }
 		}
 		//printf("event_wait");
 		hw_event_wait_next(event_cour);
