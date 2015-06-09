@@ -28,7 +28,7 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 
 	//dessin du toplevel
 	draw_tool(surface,toplevel->widget.screen_location,0.0,
-		toplevel->border_size,toplevel->color,0,clipper);
+		toplevel->border_size,toplevel->color,ei_relief_raised,clipper);
 
 	//Offscreen
 	draw_tool(pick_surface,toplevel->widget.screen_location,0.0,
@@ -36,7 +36,7 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 
 	if (toplevel->title != NULL)
 	{
-		ei_color_t black_title = {0,0,0,0};
+		ei_color_t black_title = {0,0,0,255};
 		int *w,*h;
 		w = malloc (sizeof(int));
 		h = malloc (sizeof(int));
@@ -76,7 +76,7 @@ void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 	widget->screen_location = rect;
 }
 
-void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event* event)
+void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
 
 }
