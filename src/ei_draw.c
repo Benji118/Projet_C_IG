@@ -592,8 +592,6 @@ void			ei_draw_text		(ei_surface_t		surface,
 	ei_surface_t *surface_text;
 	surface_text = hw_text_create_surface(text,font,color);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
-	printf("text width : %i\n",rect_text.size.width);
-	printf("text height : %i\n",rect_text.size.height);
 	ei_rect_t rect_dest=rect_text;
 	rect_dest.top_left = *where;
 	// if (clipper == NULL || (clipper->top_left.x < where->x
