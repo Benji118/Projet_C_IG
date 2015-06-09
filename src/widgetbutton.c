@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hw_interface.h"
+#include "ei_event.h"
 
 
 void* ei_button_allocfunc()
@@ -28,16 +29,22 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 	ei_button_t* button = (ei_button_t*) widget;
 	if (button->corner_radius!=NULL)
 	{
-		draw_tool(surface,button->widget.screen_location,(double)*button->corner_radius,button->border_size,button->color,button->relief,NULL);
+		draw_tool(surface,button->widget.screen_location,
+			(double)*button->corner_radius,button->border_size,button->color,
+			button->relief,NULL);
 		//Offscreen
-		draw_tool(pick_surface,button->widget.screen_location,(double)*button->corner_radius,0,*(button->widget.pick_color),button->relief,clipper);
+		draw_tool(pick_surface,button->widget.screen_location,
+			(double)*button->corner_radius,0,*(button->widget.pick_color),
+			button->relief,clipper);
 
 	}
 	else
 	{
-		draw_tool(surface,button->widget.screen_location,0.0,button->border_size,button->color,button->relief,clipper);
+		draw_tool(surface,button->widget.screen_location,0.0,
+			button->border_size,button->color,button->relief,clipper);
 		//Offscreen
-		draw_tool(pick_surface,button->widget.screen_location,0,0,*(button->widget.pick_color),button->relief,clipper);
+		draw_tool(pick_surface,button->widget.screen_location,0,0,
+			*(button->widget.pick_color),button->relief,clipper);
 
 	}
 
@@ -97,4 +104,21 @@ void ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 
 void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
+	ei_button_t* button = (ei_button_t*) widget;
+
+	if (event->type == ei_ev_mouse_buttondown)
+	{
+		if (button->relief == ei_relief_raised)
+				button->relief = ei_relief_sunken;
+		else if (button->relief == ei_relief_raised)
+				button->relief = ei_relief_sunken;
+		return EI_TRUE;
+	}
+	else if(button->callback != NULL)
+	{
+		button->callback(widget,event,button->user_param);
+		return EI_TRUE;
+	}
+	else
+		return EI_FALSE;
 }
