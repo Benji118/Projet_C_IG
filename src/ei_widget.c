@@ -196,20 +196,20 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 		frame->img_rect = *img_rect;
 	if (img_anchor!=NULL)
 	 	frame->img_anchor = *img_anchor;
-	if (frame->widget.parent == NULL){
-		ei_size_t taille = {600,600};
-		ei_point_t coin = {0,0};
-		ei_rect_t loc = {coin, taille};
-		frame->widget.screen_location = loc;
-		frame->widget.content_rect = &loc;
-	} else {
-		/* ei_size_t taille = *requested_size; */
-		/* ei_point_t coin = {150,200}; */
-		/* ei_rect_t loc = {coin, taille}; */
-		/* frame->widget.screen_location = loc; */
-		/* frame->widget.content_rect = &loc; */
-		frame->clipper = NULL;
-	}
+	/* if (frame->widget.parent == NULL){ */
+	/* 	ei_size_t taille = {600,600}; */
+	/* 	ei_point_t coin = {0,0}; */
+	/* 	ei_rect_t loc = {coin, taille}; */
+	/* 	frame->widget.screen_location = loc; */
+	/* 	frame->widget.content_rect = &loc; */
+	/* } else { */
+	/* 	/\* ei_size_t taille = *requested_size; *\/ */
+	/* 	/\* ei_point_t coin = {150,200}; *\/ */
+	/* 	/\* ei_rect_t loc = {coin, taille}; *\/ */
+	/* 	/\* frame->widget.screen_location = loc; *\/ */
+	/* 	/\* frame->widget.content_rect = &loc; *\/ */
+	/* 	frame->clipper = NULL; */
+	/* } */
 }
 
 
