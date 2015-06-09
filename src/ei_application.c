@@ -129,19 +129,15 @@ void ei_app_run()
 			ei_app_quit_request();
 		} else if ( event_cour->type == ei_ev_mouse_buttondown )
 		{
-			printf("clic\n");
 			widget_cour = ei_widget_pick(&(event_cour->param.mouse.where));
 			ei_event_set_active_widget(widget_cour);
-			printf("class : %c\n",*(active_widget->wclass->name));
 			if (widget_cour != NULL)
 			{
 				if (strcmp(widget_cour->wclass->name, "button") == 0)
 				{
-					printf("reconnait boutton\n");
 					hw_surface_lock(ei_app_root_surface());
 					ei_button_t *button_cour = (ei_button_t *) widget_cour;
 					if (button_cour->relief == ei_relief_raised) {
-						printf("press button\n");
 						button_cour->relief = ei_relief_sunken;
 						ei_app_invalidate_rect(&(button_cour->widget.screen_location));
 					}
@@ -158,14 +154,12 @@ void ei_app_run()
 			} 
 			// traite = EI_TRUE;
 		} else if (event_cour->type==ei_ev_mouse_buttonup) {
-			printf("release clic\n");
 			if (active_widget!=NULL) {
 				// Gérer le cas ou le type du widget actif n'est pas un boutton
 				// Rajouter un if sur le type
 				hw_surface_lock(ei_app_root_surface());
 				ei_button_t *button_cour = (ei_button_t *) widget_cour;
 				if (button_cour->relief == ei_relief_sunken) {
-					printf("release button\n");
 					button_cour->relief = ei_relief_raised;
 				}
 				ei_app_invalidate_rect(&(button_cour->widget.screen_location));
@@ -189,7 +183,6 @@ void ei_app_invalidate_rect(ei_rect_t* rect)
 	ei_rect_t *copy=malloc(sizeof(ei_rect_t));
 	*copy=*rect;
 	if (list_rect==NULL) {
-		printf("first\n");
 		list_rect=malloc(sizeof(ei_linked_rect_t));
 		list_rect->rect=*copy;
 		list_rect->next=NULL;
@@ -198,7 +191,6 @@ void ei_app_invalidate_rect(ei_rect_t* rect)
 		ei_linked_rect_t *sent;
 		sent=list_rect;
 		while (sent->next!=NULL) {
-			printf("next\n");
 			sent=sent->next;
 		}
 		sent->next=malloc(sizeof(ei_linked_rect_t));
