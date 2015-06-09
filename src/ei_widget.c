@@ -78,46 +78,75 @@ void			ei_widget_destroy		(ei_widget_t*		widget)
 }
 
 
-static ei_widget_t* pick_rec(ei_widget_t* widget_pick, uint32_t *pixel_ptr)
-{
-	if (widget_pick != NULL)
-	{
-		if (widget_pick->pick_id == *pixel_ptr)
-		{
-			return widget_pick;
-		}
-		if (widget_pick->next_sibling != NULL)
-			pick_rec(widget_pick->next_sibling,pixel_ptr);
+/* static ei_widget_t* pick_rec(ei_widget_t* widget_pick, uint32_t *pixel_ptr) */
+/* { */
+/* 	if (widget_pick != NULL) */
+/* 	{ */
+/* 		if (widget_pick->pick_id == *pixel_ptr) */
+/* 			return widget_pick; */
+/* 		else { */
+/* 			if (widget_pick->next_sibling != NULL) */
+/* 				return pick_rec(widget_pick->next_sibling,pixel_ptr); */
 
-		if (widget_pick->children_head != NULL)
-			pick_rec(widget_pick->children_head,pixel_ptr);
+/* 			if (widget_pick->children_head != NULL) */
+/* 				return pick_rec(widget_pick->children_head,pixel_ptr); */
+/* 		} */
+/* 	} */
+/* 	else */
+/* 		return NULL; */
+/* } */
+
+/* ei_widget_t*		ei_widget_pick			(ei_point_t*		where) */
+/* { */
+/* 	ei_widget_t* widget; */
+/* 	widget = ei_app_root_widget(); */
+/* 	uint8_t* pixel_ptr = hw_surface_get_buffer(picking_surface)  */
+/* 	+ (	where->y*hw_surface_get_size(picking_surface).width + where->x)*4; */
+/* 	int ir,ig,ib,ia; */
+/* 	hw_surface_get_channel_indices(picking_surface,&ir,&ig,&ib,&ia); */
+/* 	uint8_t *pr,*pg,*pb; */
+/* 	pr = pixel_ptr + ir; */
+/* 	pg = pixel_ptr + ig; */
+/* 	pb = pixel_ptr + ib; */
+
+/* 	uint32_t color = (*pb) + 256*(*pg) + 256*256*(*pr); */
+/* 	if (pick_rec(widget,&color)!=ei_app_root_widget())	 */
+/* 	return pick_rec(widget,&color); */
+/* 	else */
+/* 	return NULL; */
+/* } */
+
+
+static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
+{
+	if (widget_pick->children_head == NULL)
+		return widget_pick;
+	/* Le click est dans la zone du widget */
+	/* Determinons dans quel fils le click a eu lieu */
+	ei_widget_t *widget_pointe = widget_pick;
+	ei_widget_t *widget_cour = widget_pick->children_head;
+	
+	while(widget_cour != NULL){
+		//Si un voisin plus avancé contient le click, c'est lui ou un de ses fils.
+		if (( widget_cour->screen_location.top_left.x <= where->x) && 
+		    ( widget_cour->screen_location.top_left.y <= where->y) &&
+		    ((widget_cour->screen_location.top_left.x + widget_cour->screen_location.size.width) >= where->x) &&
+		    ((widget_cour->screen_location.top_left.y + widget_cour->screen_location.size.height) >= where->y))
+		{
+			widget_pointe = widget_cour;
+		}
+		widget_cour = widget_pick->next_sibling;
 	}
-	else
-		return NULL;
+	widget_pointe = pick_rec(widget_pointe, where);
+	return widget_pointe;
+			
 }
 
 ei_widget_t*		ei_widget_pick			(ei_point_t*		where)
 {
-	ei_widget_t* widget;
-	widget = ei_app_root_widget();
-	uint8_t* pixel_ptr = hw_surface_get_buffer(picking_surface) 
-	+ (	where->y*hw_surface_get_size(picking_surface).width + where->x)*4;
-	int ir,ig,ib,ia;
-	hw_surface_get_channel_indices(picking_surface,&ir,&ig,&ib,&ia);
-	uint8_t *pr,*pg,*pb;
-	pr = pixel_ptr + ir;
-	pg = pixel_ptr + ig;
-	pb = pixel_ptr + ib;
-
-	uint32_t color = (*pb) + 256*(*pg) + 256*256*(*pr);
-	if (pick_rec(widget,&color)!=ei_app_root_widget())	
-	return pick_rec(widget,&color);
-	else
-	return NULL;
+	ei_widget_t *widget = ei_app_root_widget();
+	return pick_rec(widget, where);
 }
-
-
-
 
 void			ei_frame_configure		(ei_widget_t*		widget,
 							 ei_size_t*		requested_size,
