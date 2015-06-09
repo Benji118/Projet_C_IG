@@ -1,0 +1,35 @@
+#ifndef EI_WIDGETTOPLEVEL_H
+#define EI_WIDGETTOPLEVEL_H
+
+#include "ei_widget.h"
+#include "ei_types.h"
+
+typedef struct ei_toplevel_t
+{
+	ei_widget_t widget;
+	ei_size_t requested_size;
+	ei_color_t color;
+	int border_size;
+	char* title;
+	ei_bool_t closable;
+	ei_axis_set_t resizable;
+	ei_size_t* min_size;
+} ei_toplevel_t;
+
+void* ei_toplevel_allocfunc();
+
+void ei_toplevel_releasefunc(struct ei_widget_t* widget);
+
+void ei_toplevel_drawfunc(struct ei_widget_t*	widget,
+	ei_surface_t		surface,
+	ei_surface_t		pick_surface,
+	ei_rect_t*		clipper);
+
+void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget);
+
+void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
+
+void ei_topelevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
+
+
+#endif

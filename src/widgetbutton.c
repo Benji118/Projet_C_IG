@@ -62,6 +62,13 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 			+ (button->widget.screen_location.size.width - *w)/2;
 			text_pos->y = button->widget.screen_location.top_left.y 
 			+ (button->widget.screen_location.size.height - *h)/2;
+			
+			//Decalage si bouton enfonce
+			if (button->relief == ei_relief_sunken){
+				text_pos->x = text_pos->x + (0.3)*button->border_size;
+				text_pos->y = text_pos->y + (0.3)*button->border_size;
+			}
+			
 			ei_draw_text(surface,text_pos,button->texte,button->font,
 				     button->text_color,clipper);
 		}
@@ -112,13 +119,13 @@ void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 				button->relief = ei_relief_sunken;
 		else if (button->relief == ei_relief_raised)
 				button->relief = ei_relief_sunken;
-		return EI_TRUE;
+		//return EI_TRUE;
 	}
 	else if(button->callback != NULL)
 	{
 		button->callback(widget,event,button->user_param);
-		return EI_TRUE;
+		//return EI_TRUE;
 	}
-	else
-		return EI_FALSE;
+	//else
+		//return EI_FALSE;
 }
