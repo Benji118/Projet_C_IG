@@ -28,7 +28,6 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 	ei_button_t* button = (ei_button_t*) widget;
 	if (button->corner_radius!=NULL)
 	{
-		printf("draw_button1\n");
 		draw_tool(surface,button->widget.screen_location,(double)*button->corner_radius,button->border_size,button->color,button->relief,NULL);
 		//Offscreen
 		draw_tool(pick_surface,button->widget.screen_location,(double)*button->corner_radius,0,*(button->widget.pick_color),button->relief,clipper);
@@ -36,7 +35,6 @@ void ei_button_drawfunc(struct ei_widget_t*	widget,
 	}
 	else
 	{
-		printf("draw_button2\n");
 		draw_tool(surface,button->widget.screen_location,0.0,button->border_size,button->color,button->relief,clipper);
 		//Offscreen
 		draw_tool(pick_surface,button->widget.screen_location,0,0,*(button->widget.pick_color),button->relief,clipper);
