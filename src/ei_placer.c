@@ -26,13 +26,13 @@ void			ei_place			(struct ei_widget_t*	widget,
 		w = NULL;
 		int *h = malloc(sizeof(int));
 		h = NULL;
-		int *rx = malloc(sizeof(int));
+		float *rx = malloc(sizeof(int));
 		rx = NULL;
-		int *ry = malloc(sizeof(int));
+		float *ry = malloc(sizeof(int));
 		ry = NULL;
-		int *rw = malloc(sizeof(int));
+		float *rw = malloc(sizeof(int));
 		rw = NULL;
-		int *rh = malloc(sizeof(int));
+		float *rh = malloc(sizeof(int));
 		rh = NULL;
 
 		params->x = x;
