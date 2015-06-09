@@ -4,6 +4,8 @@
 #include <string.h>
 #include "hw_interface.h"
 #include "ei_event.h"
+#include "global.h"
+#include "ei_application.h"
 
 
 void* ei_button_allocfunc()
@@ -111,21 +113,91 @@ void ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 
 void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
-	ei_button_t* button = (ei_button_t*) widget;
+	ei_linked_rect_t *clipp_cour;
+	ei_button_t* button_cour = (ei_button_t*) widget;
 
-	if (event->type == ei_ev_mouse_buttondown)
-	{
-		if (button->relief == ei_relief_raised)
-				button->relief = ei_relief_sunken;
-		else if (button->relief == ei_relief_raised)
-				button->relief = ei_relief_sunken;
-		//return EI_TRUE;
+	/* Si sortie du curseur de sa zone */
+	/* Ou retour du curseur dans la zone */
+	if ( event->type == ei_ev_mouse_move ){
+		/* Si le bouton est enfoncé et que l'on n'es plus dessus */
+		if ( button_cour->relief == ei_relief_sunken &&
+		     (ei_widget_pick(&(event->param.mouse.where)) != widget)){
+			button_cour->relief = ei_relief_raised;
+
+			ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+			clipp_cour = list_rect;
+			hw_surface_lock(ei_app_root_surface());
+			while (clipp_cour != NULL)
+			{
+				affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+				clipp_cour = clipp_cour->next;
+			}
+			ei_app_free_rect(&list_rect);
+			hw_surface_unlock(ei_app_root_surface());
+			hw_surface_update_rects(ei_app_root_surface(), NULL);
+		}
+
+		/* Si le bouton est relevé et qu'on revient dessus */
+		if ( button_cour->relief == ei_relief_raised &&
+		     (ei_widget_pick(&(event->param.mouse.where)) == widget)){
+			button_cour->relief = ei_relief_sunken;
+
+			ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+			clipp_cour = list_rect;
+			hw_surface_lock(ei_app_root_surface());
+			while (clipp_cour != NULL)
+			{
+				affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+				clipp_cour = clipp_cour->next;
+			}
+			ei_app_free_rect(&list_rect);
+			hw_surface_unlock(ei_app_root_surface());
+			hw_surface_update_rects(ei_app_root_surface(), NULL);
+		}
 	}
-	else if(button->callback != NULL)
+
+	/* Si on appuie sur le bouton */
+	if ( event->type == ei_ev_mouse_buttondown )
 	{
-		button->callback(widget,event,button->user_param);
-		//return EI_TRUE;
+		hw_surface_lock(ei_app_root_surface());
+		if (button_cour->relief == ei_relief_raised) {
+			button_cour->relief = ei_relief_sunken;
+			ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+		}
+		clipp_cour = list_rect;
+		while (clipp_cour != NULL)
+		{
+			affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+			clipp_cour = clipp_cour->next;
+		}
+		ei_app_free_rect(&list_rect);
+		hw_surface_unlock(ei_app_root_surface());
+		hw_surface_update_rects(ei_app_root_surface(), NULL); 
 	}
-	//else
-		//return EI_FALSE;
+	/* Si on releve le bouton de la souris */
+	if (event->type==ei_ev_mouse_buttonup) {
+		if (ei_event_get_active_widget()!=NULL) {
+			hw_surface_lock(ei_app_root_surface());
+			if (button_cour->relief == ei_relief_sunken) {
+				button_cour->relief = ei_relief_raised;
+			}
+			ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+		}
+		clipp_cour = list_rect;
+		while (clipp_cour != NULL)
+		{
+			affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+			clipp_cour = clipp_cour->next;
+		}
+		ei_app_free_rect(&list_rect);
+		hw_surface_unlock(ei_app_root_surface());
+		ei_event_set_active_widget(NULL);
+		hw_surface_update_rects(ei_app_root_surface(), NULL);
+		if (widget == ei_widget_pick(&(event->param.mouse.where))){
+			/* Execution callback si on est revenu sur le bouton*/
+			button_cour->callback((ei_widget_t *)button_cour, event, NULL);
+		}
+		
+	}
+	
 }
