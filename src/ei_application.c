@@ -82,47 +82,45 @@ static void affiche_widget_rec(ei_widget_t *widget, ei_rect_t* clipper)
 		
 }
 
+static void traiter_event(ei_widget_t *widget, ei_event_t *event){
+	
+}
+
 void ei_app_run()
 {
-	ei_event_t event_cour;;
-	//ei_event_t event_cour;
+	ei_event_t *event_cour = malloc(sizeof(ei_event_t));
 	//assert(&event_cour != NULL);
 	ei_widget_t  *widget_cour =malloc(sizeof(ei_widget_t));
 	ei_linked_rect_t *clipp_cour;
-	ei_bool_t first_time = EI_TRUE;
 	// ei_bool_t traite;
+
+	affiche_widget_rec(root_widget_window, NULL);
+	hw_surface_unlock(ei_app_root_surface());
+	hw_surface_update_rects(ei_app_root_surface(), NULL);
 
 	while (quit_app == EI_FALSE)
 	{	
-		if (event_cour.param.key.key_sym == 27)
+		if (event_cour->param.key.key_sym == 27)
 			ei_app_quit_request();
 
-		if (first_time == EI_TRUE){
-			affiche_widget_rec(root_widget_window, NULL);
-			hw_surface_unlock(ei_app_root_surface());
-			hw_surface_update_rects(ei_app_root_surface(), NULL);
-			first_time = EI_FALSE;
-			// traite=EI_FALSE;
-
-		}
-		if (/*traite==EI_FALSE &&*/ event_cour.type == ei_ev_mouse_buttondown )
+		if ( event_cour->type == ei_ev_mouse_buttondown )
 		{
-			widget_cour = ei_widget_pick(&(event_cour.param.mouse.where));
+			widget_cour = ei_widget_pick(&(event_cour->param.mouse.where));
 
 			if (widget_cour != NULL)
 			{
 
-				if (strcmp(widget_cour->wclass->name, "button")==0)
+				if (strcmp(widget_cour->wclass->name, "button") == 0)
 				{
 					ei_button_t *button_cour = (ei_button_t *) widget_cour;
 
 						if (button_cour->relief == ei_relief_raised)
-					button_cour->relief = ei_relief_sunken;
+							button_cour->relief = ei_relief_sunken;
 
-						 else if (button_cour->relief == ei_relief_sunken)
-						 {
-						 	button_cour->relief = ei_relief_raised;
-						 }
+						else if (button_cour->relief == ei_relief_sunken)
+						{
+							button_cour->relief = ei_relief_raised;
+						}
 
 					ei_app_invalidate_rect(&(button_cour->widget.screen_location));
 				}
@@ -163,7 +161,7 @@ void ei_app_run()
 		// 	}
 		// 	traite = EI_FALSE;
 		// }
-		hw_event_wait_next(&event_cour);
+		hw_event_wait_next(event_cour);
 	}
 }
 
