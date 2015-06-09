@@ -95,3 +95,7 @@ void ei_frame_geomnotifyfunc (struct ei_widget_t*	widget,
 	widget->screen_location = rect;
 }
 
+void ei_frame_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
+{
+
+}

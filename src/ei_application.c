@@ -100,7 +100,9 @@ void ei_app_run()
 			traitant_interne(ei_event_get_active_widget(), event_cour);
 		}
 		hw_event_wait_next(event_cour);
-		traitant_defaut(event_cour);
+		if (traitant_defaut != NULL)
+			//On execute le traitant externe si il a été défini
+			traitant_defaut(event_cour);
 	}
 }
 

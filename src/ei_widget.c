@@ -42,9 +42,14 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 		}
 		else if (parent->children_tail != NULL)
 		{
-			ei_widget_t* tmp = parent->children_tail;
-			tmp->next_sibling = new_widget;
-			parent->children_tail = new_widget;
+
+			// ei_widget_t* tmp = parent->children_tail;
+			// parent->children_tail->next_sibling = new_widget;
+			// parent->children_tail = new_widget;
+
+			(parent->children_tail->next_sibling) = new_widget;
+			(parent->children_tail) = new_widget;
+
 		}
 		/* ei_widget_t *tmp = parent->next_sibling; */
 		/* while(tmp != NULL) */
@@ -308,27 +313,36 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 	}
 	if (closable !=NULL)
 		toplevel->closable = *closable;
-	// if (toplevel->closable == EI_TRUE)
-	// {
-	// 	//close button
-	// 	int corner_radius = 50;
-	// 	ei_size_t close_size
-	// 	ei_color_t red = {0xff,0,0,0};
-	// 	ei_button_configure(titlebar->children_head,)	
-	// }
+	if (toplevel->closable == EI_TRUE)
+	{
+		//close button
+		int close_corner_radius = 10;
+		ei_size_t close_size;
+		close_size.width = 20;
+		close_size.height = 20;
+		ei_color_t close_color = {0xff,0,0,0};
+		int close_border = 5;
+		ei_relief_t close_relief = ei_relief_raised;
+		ei_button_configure(titlebar->children_head,&close_size,&close_color,
+			&close_border,&close_corner_radius,&close_relief,NULL,NULL,NULL,
+			NULL,NULL,NULL,NULL,NULL,NULL);
+		int close_x = 2*toplevel->border_size;
+		int close_y = 2*toplevel->border_size;
+		ei_place(titlebar->children_head,NULL,&close_x,&close_y,
+			&close_size.width,&close_size.height,NULL,NULL,NULL,NULL);	
+	}
 	if (resizable != NULL)
 		toplevel->resizable = *resizable;
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
 
 	//inside frame
-	if (toplevel->widget.next_sibling==NULL)
-		printf("NULL\n");
 	ei_color_t in_frame_color = toplevel->color;
-	ei_frame_configure(toplevel->widget.next_sibling,NULL,
-	&in_frame_color,&toplevel->border_size,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+	ei_frame_configure(toplevel->widget.children_head->next_sibling,
+		&toplevel->requested_size,&in_frame_color,&toplevel->border_size,NULL,
+		NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 	int y = title_size.height;
-	ei_place(toplevel->widget.next_sibling,NULL,NULL,&y,
+	ei_place(toplevel->widget.children_head->next_sibling,NULL,NULL,&y,
 		&toplevel->widget.screen_location.size.width,
 		&toplevel->widget.screen_location.size.height,NULL,NULL,NULL,NULL);
 	
