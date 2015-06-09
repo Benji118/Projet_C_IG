@@ -277,8 +277,8 @@ void                    draw_tool        ( ei_surface_t                   surfac
 	double mid_ray = rayon;
 
 	if ( relief == ei_relief_sunken ){
-		mid_rect.top_left.x = rectangle.top_left.x + (4/3)*edge;
-		mid_rect.top_left.y = rectangle.top_left.y + (4/3)*edge;
+		mid_rect.top_left.x = rectangle.top_left.x + (1.3)*edge;
+		mid_rect.top_left.y = rectangle.top_left.y + (1.3)*edge;
 	} else {
 		mid_rect.top_left.x = rectangle.top_left.x + edge;
 		mid_rect.top_left.y = rectangle.top_left.y + edge;
