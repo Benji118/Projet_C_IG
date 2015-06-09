@@ -43,7 +43,7 @@ void ei_frame_geomnotifyfunc (struct ei_widget_t*	widget,
 			      ei_rect_t		rect);
 
 
-	ei_bool_t ei_frame_handlefunc(struct ei_widget_t* widget,
-		                           struct ei_event_t* event);
+void ei_frame_handlefunc(struct ei_widget_t* widget,
+			      struct ei_event_t* event);
 
 #endif

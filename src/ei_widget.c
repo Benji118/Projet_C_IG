@@ -41,13 +41,13 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 		//Le widget créé est le seul fils de parent :
 		if (parent->children_head == NULL)
 		{
-			parent->children_head = (new_widget);
-			parent->children_tail = (new_widget);
+			parent->children_head = new_widget;
+			parent->children_tail = new_widget;
 		}
 		else
 		{
-			parent->children_tail->next_sibling = new_widget;
-			parent->children_tail = new_widget;
+			(parent->children_tail->next_sibling) = new_widget;
+			(parent->children_tail) = new_widget;
 		}
 		/* ei_widget_t *tmp = parent->next_sibling; */
 		/* while(tmp != NULL) */
