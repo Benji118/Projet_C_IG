@@ -23,9 +23,9 @@ void ei_frame_releasefunc (struct ei_widget_t *widget)
 }
 
 void ei_frame_drawfunc(struct ei_widget_t*	widget,
-		       ei_surface_t		surface,
-		       ei_surface_t		pick_surface,
-		       ei_rect_t*		clipper)
+	ei_surface_t		surface,
+	ei_surface_t		pick_surface,
+	ei_rect_t*		clipper)
 {
 	ei_frame_t * frame = (ei_frame_t*) widget;
 
@@ -35,10 +35,25 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	draw_tool( pick_surface, frame->widget.screen_location, 0.0, 0.0, *(frame->widget.pick_color), 0, frame->clipper);
 
 	//Cas du texte
-	if(frame->texte != NULL){
-		ei_draw_text(surface,frame->text_pos,frame->texte,frame->font,
-			     &frame->text_color,frame->clipper);
-	}
+	if(frame->texte != NULL)
+	{
+		int *w, *h;
+		ei_point_t* text_pos = malloc(sizeof(ei_point_t));
+		w = malloc(sizeof(int));
+		h = malloc(sizeof(int));
+		hw_text_compute_size(frame->texte,frame->font,w,h);
+		if (frame->widget.screen_location.size.width > *w && 
+			frame->widget.screen_location.size.height > *h)
+		{
+			text_pos->x = frame->widget.screen_location.top_left.x 
+			+ (frame->widget.screen_location.size.width - *w)/2;
+			text_pos->y = frame->widget.screen_location.top_left.y 
+			+ (frame->widget.screen_location.size.height - *h)/2;
+
+		}
+			ei_draw_text(surface,text_pos,frame->texte,frame->font,
+				frame->text_color,frame->clipper);
+		}
 
 
 	//Cas de l'image

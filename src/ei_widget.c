@@ -7,14 +7,10 @@
 #include "widgettoplevel.h"
 #include "ei_placer.h"
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "ei_application.h"
 #include "global.h"
-// void		ei_callback_t	(ei_widget_t*		widget,
-// 				 struct ei_event_t*	event,
-// 				 void*			user_param)
-// {
-// }
 
 
 ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
@@ -44,10 +40,16 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 			parent->children_head = new_widget;
 			parent->children_tail = new_widget;
 		}
-		else
+		else if (parent->children_tail != NULL)
 		{
+
+			// ei_widget_t* tmp = parent->children_tail;
+			// parent->children_tail->next_sibling = new_widget;
+			// parent->children_tail = new_widget;
+
 			(parent->children_tail->next_sibling) = new_widget;
 			(parent->children_tail) = new_widget;
+
 		}
 		/* ei_widget_t *tmp = parent->next_sibling; */
 		/* while(tmp != NULL) */
@@ -56,6 +58,14 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 		/* } */
 		
 		/* tmp->next_sibling = (new_widget); */
+	}
+	if (strcmp(class_name,"toplevel") == 0 )
+	{
+		ei_widget_t* title = ei_widget_create("frame",new_widget);
+		ei_widget_create("button",title);
+		ei_widget_create("frame",new_widget);
+		ei_widget_create("button",new_widget);
+
 	}
 
 	class->setdefaultsfunc(new_widget);
@@ -273,18 +283,67 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 						 	 ei_size_t**		min_size)
 {
 	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
+	ei_size_t title_size;
+	ei_color_t title_color = {0xAA,0xAA,0xAA,0};
+	title_size.height = 30;
+	ei_font_t title_font = ei_default_font;
+	ei_color_t black = {0xff,0xff,0xff,0};
+	ei_widget_t* titlebar = toplevel->widget.children_head;
 	if (requested_size != NULL)
+	{
 		toplevel->widget.requested_size = *requested_size;
+		title_size.width = requested_size->width;
+	}
 	if (color != NULL)
 		toplevel->color = *color;
 	if (border_width != NULL)
 		toplevel->border_size = *border_width;
 	if (title != NULL)
+	{
 		toplevel-> title = *title;
+		//titlebar
+	ei_frame_configure(titlebar,&title_size,&title_color,
+		NULL,NULL,&toplevel->title,&title_font,&black,NULL,NULL,NULL,NULL);
+	ei_place(titlebar,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+	}
+	else
+	{
+	ei_frame_configure(titlebar,&title_size,&title_color,
+		NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);	
+	}
 	if (closable !=NULL)
 		toplevel->closable = *closable;
+	if (toplevel->closable == EI_TRUE)
+	{
+		//close button
+		int close_corner_radius = 10;
+		ei_size_t close_size;
+		close_size.width = 20;
+		close_size.height = 20;
+		ei_color_t close_color = {0xff,0,0,0};
+		int close_border = 5;
+		ei_relief_t close_relief = ei_relief_raised;
+		ei_button_configure(titlebar->children_head,&close_size,&close_color,
+			&close_border,&close_corner_radius,&close_relief,NULL,NULL,NULL,
+			NULL,NULL,NULL,NULL,NULL,NULL);
+		int close_x = 2*toplevel->border_size;
+		int close_y = 2*toplevel->border_size;
+		ei_place(titlebar->children_head,NULL,&close_x,&close_y,
+			&close_size.width,&close_size.height,NULL,NULL,NULL,NULL);	
+	}
 	if (resizable != NULL)
 		toplevel->resizable = *resizable;
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
+
+	//inside frame
+	ei_color_t in_frame_color = toplevel->color;
+	ei_frame_configure(toplevel->widget.children_head->next_sibling,
+		&toplevel->requested_size,&in_frame_color,&toplevel->border_size,NULL,
+		NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+	int y = title_size.height;
+	ei_place(toplevel->widget.children_head->next_sibling,NULL,NULL,&y,
+		&toplevel->widget.screen_location.size.width,
+		&toplevel->widget.screen_location.size.height,NULL,NULL,NULL,NULL);
+	
 }

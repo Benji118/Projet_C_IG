@@ -59,8 +59,6 @@ void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget)
 	(widget->requested_size).width = 0;
 	(widget->requested_size).height = 0;
 	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
-	toplevel->requested_size.width = 0;
-	toplevel->requested_size.height = 0;
 	toplevel ->color = ei_default_background_color;
 	toplevel->border_size=0;
 	toplevel->title=NULL;
