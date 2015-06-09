@@ -143,6 +143,10 @@ static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 		}
 		widget_cour = widget_pick->next_sibling;
 	}
+        // Si rien parmi les fils, on doit retourner widget_pick
+	if (widget_pointe == widget_pick)
+		return widget_pick;
+
 	widget_pointe = pick_rec(widget_pointe, where);
 	return widget_pointe;
 			
@@ -151,7 +155,11 @@ static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 ei_widget_t*		ei_widget_pick			(ei_point_t*		where)
 {
 	ei_widget_t *widget = ei_app_root_widget();
-	return pick_rec(widget, where);
+
+	if (pick_rec(widget, where)!=ei_app_root_widget())
+		return pick_rec(widget, where);
+	else
+		return NULL;
 }
 
 void			ei_frame_configure		(ei_widget_t*		widget,
