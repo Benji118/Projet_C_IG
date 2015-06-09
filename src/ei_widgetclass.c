@@ -3,6 +3,7 @@
 #include "ei_widgetclass.h"
 #include "widgetframe.h"
 #include "widgetbutton.h"
+#include "widgettoplevel.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -74,4 +75,14 @@ void			ei_button_register_class 	()
 
 void			ei_toplevel_register_class 	()
 {
+	ei_widgetclass_t* toplevel = malloc(sizeof(ei_widgetclass_t));
+	strcpy(toplevel->name,"toplevel");
+	toplevel->allocfunc = ei_toplevel_allocfunc;
+	toplevel->releasefunc = ei_toplevel_releasefunc;
+	toplevel->drawfunc = ei_toplevel_drawfunc;
+	toplevel->setdefaultsfunc = ei_toplevel_setdefaultsfunc;
+	toplevel->geomnotifyfunc = ei_toplevel_geomnotifyfunc;
+	//topelevel->handlefunc = ei_topelevel_handlefunc;
+
+	ei_widgetclass_register(toplevel);
 }
