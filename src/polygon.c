@@ -159,11 +159,14 @@ uint32_t alpha_effect(ei_surface_t surface_source,
 
 	uint32_t Sr_final,Sg_final,Sb_final,Sa_final;
 	ei_color_t color_source = {Pr,Pg,Pb,Pa};
-	//if(*pixel_surface != *pixel_affiche && Pa != (255 << iaa*8))
-	//{
-	Sr_final = (color_source.red*color_source.alpha + (255-color_source.alpha)*Sr)/255;
-	Sg_final = (color_source.alpha*color_source.green + (255-color_source.alpha)*Sg)/255;
-	Sb_final = (color_source.alpha*color_source.blue + (255-color_source.alpha)*Sb)/255;
+	ei_color_t color_affiche = {Sr,Sg,Sb,Sa};
+
+	Sr_final = (color_source.red*color_source.alpha + (255-color_source.alpha)
+				*color_affiche.red)/255;
+	Sg_final = (color_source.alpha*color_source.green + (255-color_source.alpha)
+				*color_affiche.green)/255;
+	Sb_final = (color_source.alpha*color_source.blue + (255-color_source.alpha)
+				*color_affiche.blue)/255;
 	Sa_final = color_source.alpha;
 
 	color_final.red = Sr_final;
@@ -173,21 +176,5 @@ uint32_t alpha_effect(ei_surface_t surface_source,
 
 	res = ei_map_rgba(surface_source,&color_final);
 
-
-	// printf("rouge dest : %i , bleu dest : %i, dest vert : %i, dest alpha : %i\n"
-	// 	,color_final.red,color_final.blue,color_final.green,color_final.alpha);
-
-	// printf("rouge src : %i , bleu src : %i, src vert : %i, src alpha : %i\n"
-	// 	,color_source.red,color_source.green,color_source.blue,color_source.alpha);
-
-	//}
-	//else
-	//{
-	// Sr_final = Pr;
-	// Sg_final = Pg;
-	// Sb_final = Pb;
-	// Sa_final = Pa;
-
-	//}
 	return res;
 }

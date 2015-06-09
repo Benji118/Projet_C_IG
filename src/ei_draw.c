@@ -588,15 +588,73 @@ void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_color_t*	color,
 						 const ei_rect_t*	clipper)
 {
+	//clipper null ou contenant le texte
 	ei_surface_t *surface_text;
 	surface_text = hw_text_create_surface(text,font,color);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
-	ei_rect_t rect_dest = rect_text;
+	printf("text width : %i\n",rect_text.size.width);
+	printf("text height : %i\n",rect_text.size.height);
+	ei_rect_t rect_dest=rect_text;
 	rect_dest.top_left = *where;
-	//hw_surface_lock(surface_text);
+	// if (clipper == NULL || (clipper->top_left.x < where->x
+	// 	&& clipper->top_left.y < where->y
+	// 	&& clipper->size.width > rect_text.size.width 
+	// 	&& clipper->size.height > rect_text.size.height))
+	// {
+
+	// 	rect_dest = rect_text;
+	// 	rect_dest.top_left = *where;
+	// }
+	// //le topleft du clipper est dans rect_text
+	// else if (where->x > clipper->top_left.x && where->y > clipper->top_left.y)
+	// {
+	// 	rect_dest.top_left = clipper->top_left;
+	// 	//cas clipper dans rect_text en entier
+	// 	if (((rect_text.size.width - (clipper->top_left.x - where->x)) > clipper->size.width)
+	// 	&& ((rect_text.size.height - (clipper->top_left.y - where->y)) > clipper->size.height))
+	// 	{
+	// 		rect_dest = *clipper;
+	// 	}
+	// 	//cas du clipper depassant rect_text en largeur
+	// 	else if ((rect_text.size.width - (clipper->top_left.x - where->x)) < clipper->size.width 
+	// 			&& (rect_text.size.height - (clipper->top_left.y - where->y)) > clipper->size.height)
+	// 	{
+	// 		rect_dest.size.width = clipper->size.width;
+	// 		rect_dest.size.height = rect_text.size.height; 
+	// 	}
+	// 	//cas du clipper depassant rect_text en hauteur
+	// 	else if ((rect_text.size.width - (clipper->top_left.x - where->x)) > clipper->size.width 
+	// 			&& (rect_text.size.height - (clipper->top_left.y - where->y)) < clipper->size.height)
+	// 	{
+	// 		rect_dest.size.height = clipper->size.height;
+	// 		rect_dest.size.width = rect_text.size.width; 
+	// 	}
+	// 	//le clipper depasse rect_text en largeur et hauteur
+	// 	else if ((rect_text.size.width - (clipper->top_left.x - where->x)) < clipper->size.width 
+	// 			&& (rect_text.size.height - (clipper->top_left.y - where->y)) < clipper->size.height)
+	// 	{
+	// 		rect_dest.size = clipper->size;
+	// 	}
+	// }
+	// //le topleft du clipper est en dehors du rect_text
+	// 	//northwest
+	// else if (clipper->top_left.x < where->x
+	// 		&& clipper->top_left.y < where->y)	
+	// {
+	// 	//rect_text en entier dans clipper;
+	// 	if (clipper->size.width + clipper->top_left.x > where->x + rect_text.size.width
+	// 		&& clipper->size.height + clipper->top_left.y > where->y + rect_text.size.height)
+	// 	{
+	// 		rect_dest = rect_text;
+	// 	}
+	// 	//les cas restants : on prend toujours le clipper
+	// 	else
+	// 	{
+	// 		rect_dest = *clipper;
+	// 	}
+	// }
 	ei_copy_surface(surface,&rect_dest,surface_text,&rect_text,EI_TRUE);
-	//hw_surface_unlock(surface_text);
-	//hw_surface_update_rects(surface_text,NULL);	
+
 }
 
 void			ei_fill			(ei_surface_t		surface,
@@ -642,13 +700,7 @@ int			ei_copy_surface		(ei_surface_t		destination,
 
 	uint32_t *ptr_src = ptr_src_origin;
 	uint32_t *ptr_dst = ptr_dst_origin;
-	// printf("src x = %i\n",src.top_left.x);
-	// printf("src y = %i\n",src.top_left.y );
-	// printf("dst x = %i\n",dst.top_left.x);
-	// printf("dst y = %i\n",dst.top_left.y );
 
-	// printf("dst width = %i\n", dst.size.width);
-	// printf("dst_tot width = %i\n", hw_surface_get_size(destination).width);
 	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++)
 	{
 		for (uint32_t x = src.top_left.x; x < src.top_left.x + src.size.width; x++)
@@ -658,19 +710,12 @@ int			ei_copy_surface		(ei_surface_t		destination,
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
 				*ptr_dst = *ptr_src;
-				// printf ("px src : %i \n",*ptr_src);
-				// printf ("px dst : %i \n",*ptr_dst);
-
 			}
 			else
 			{
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
 				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);
-				// printf ("px src : %i \n",*ptr_src);
-				// printf ("px dst : %i \n",*ptr_dst);
-				// printf("alpha\n");
-
 			}
 		}
 		ptr_dst = ptr_dst + (uint32_t)(hw_surface_get_size(destination).width - src.size.width);
