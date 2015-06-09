@@ -4,7 +4,7 @@
 #include "ei_widget.h"
 #include "widgetbutton.h"
 #include "widgetframe.h"
-//#include "widgettoplevel.h"
+#include "widgettoplevel.h"
 #include "ei_placer.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -272,19 +272,19 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 							 ei_axis_set_t*		resizable,
 						 	 ei_size_t**		min_size)
 {
-	/* ei_toplevel_t* toplevel = (ei_toplevel_t*) widget; */
-	/* if (requested_size != NULL) */
-	/* 	toplevel->widget.requested_size = *requested_size; */
-	/* if (color != NULL) */
-	/* 	toplevel->color = *color; */
-	/* if (border_width != NULL) */
-	/* 	toplevel->border_size = *border_width; */
-	/* if (title != NULL) */
-	/* 	toplevel-> title = *title; */
-	/* if (closable !=NULL) */
-	/* 	toplevel->closable = *closable; */
-	/* if (resizable != NULL) */
-	/* 	toplevel->resizable = *resizable; */
-	/* if (min_size != NULL) */
-	/* 	toplevel->min_size = *min_size; */
+	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
+	if (requested_size != NULL)
+		toplevel->widget.requested_size = *requested_size;
+	if (color != NULL)
+		toplevel->color = *color;
+	if (border_width != NULL)
+		toplevel->border_size = *border_width;
+	if (title != NULL)
+		toplevel-> title = *title;
+	if (closable !=NULL)
+		toplevel->closable = *closable;
+	if (resizable != NULL)
+		toplevel->resizable = *resizable;
+	if (min_size != NULL)
+		toplevel->min_size = *min_size;
 }
