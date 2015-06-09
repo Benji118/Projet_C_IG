@@ -4,7 +4,7 @@
 #include "ei_widget.h"
 #include "widgetbutton.h"
 #include "widgetframe.h"
-#include "widgettoplevel.h"
+//#include "widgettoplevel.h"
 #include "ei_placer.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -138,6 +138,10 @@ static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 		}
 		widget_cour = widget_pick->next_sibling;
 	}
+        // Si rien parmi les fils, on doit retourner widget_pick
+	if (widget_pointe == widget_pick)
+		return widget_pick;
+
 	widget_pointe = pick_rec(widget_pointe, where);
 	return widget_pointe;
 			
@@ -146,7 +150,11 @@ static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 ei_widget_t*		ei_widget_pick			(ei_point_t*		where)
 {
 	ei_widget_t *widget = ei_app_root_widget();
-	return pick_rec(widget, where);
+
+	if (pick_rec(widget, where)!=ei_app_root_widget())
+		return pick_rec(widget, where);
+	else
+		return NULL;
 }
 
 void			ei_frame_configure		(ei_widget_t*		widget,
@@ -264,19 +272,19 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 							 ei_axis_set_t*		resizable,
 						 	 ei_size_t**		min_size)
 {
-	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
-	if (requested_size != NULL)
-		toplevel->widget.requested_size = *requested_size;
-	if (color != NULL)
-		toplevel->color = *color;
-	if (border_width != NULL)
-		toplevel->border_size = *border_width;
-	if (title != NULL)
-		toplevel-> title = *title;
-	if (closable !=NULL)
-		toplevel->closable = *closable;
-	if (resizable != NULL)
-		toplevel->resizable = *resizable;
-	if (min_size != NULL)
-		toplevel->min_size = *min_size;
+	/* ei_toplevel_t* toplevel = (ei_toplevel_t*) widget; */
+	/* if (requested_size != NULL) */
+	/* 	toplevel->widget.requested_size = *requested_size; */
+	/* if (color != NULL) */
+	/* 	toplevel->color = *color; */
+	/* if (border_width != NULL) */
+	/* 	toplevel->border_size = *border_width; */
+	/* if (title != NULL) */
+	/* 	toplevel-> title = *title; */
+	/* if (closable !=NULL) */
+	/* 	toplevel->closable = *closable; */
+	/* if (resizable != NULL) */
+	/* 	toplevel->resizable = *resizable; */
+	/* if (min_size != NULL) */
+	/* 	toplevel->min_size = *min_size; */
 }
