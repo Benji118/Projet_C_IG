@@ -170,7 +170,6 @@ void ei_app_invalidate_rect(ei_rect_t* rect)
 	ei_rect_t *copy=malloc(sizeof(ei_rect_t));
 	*copy=*rect;
 	if (list_rect==NULL) {
-		printf("first\n");
 		list_rect=malloc(sizeof(ei_linked_rect_t));
 		list_rect->rect=*copy;
 		list_rect->next=NULL;
