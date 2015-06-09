@@ -43,7 +43,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	root_widget_window->requested_size = *main_window_size;
 
 
-	hw_surface_lock(main_window_surface);
+	//hw_surface_lock(main_window_surface);
 }
 
 ei_widget_t *ei_app_root_widget()
@@ -89,52 +89,73 @@ static void traiter_event(ei_widget_t *widget, ei_event_t *event){
 void ei_app_run()
 {
 	ei_event_t *event_cour = malloc(sizeof(ei_event_t));
+	event_cour->type=ei_ev_none;
 	//assert(&event_cour != NULL);
 	ei_widget_t  *widget_cour =malloc(sizeof(ei_widget_t));
 	ei_linked_rect_t *clipp_cour;
 	// ei_bool_t traite;
 
+	hw_surface_lock(ei_app_root_surface());
 	affiche_widget_rec(root_widget_window, NULL);
 	hw_surface_unlock(ei_app_root_surface());
 	hw_surface_update_rects(ei_app_root_surface(), NULL);
 
 	while (quit_app == EI_FALSE)
-	{	
+	{
 		if (event_cour->param.key.key_sym == 27)
-			ei_app_quit_request();
-
+		  ei_app_quit_request();
 		if ( event_cour->type == ei_ev_mouse_buttondown )
 		{
+			printf("clic\n");
 			widget_cour = ei_widget_pick(&(event_cour->param.mouse.where));
-
+			ei_event_set_active_widget(widget_cour);
+			//printf("class : %c\n",*(widget_cour->wclass->name));
 			if (widget_cour != NULL)
 			{
-
 				if (strcmp(widget_cour->wclass->name, "button") == 0)
 				{
+					printf("reconnait boutton\n");
+					hw_surface_lock(ei_app_root_surface());
 					ei_button_t *button_cour = (ei_button_t *) widget_cour;
-
-						if (button_cour->relief == ei_relief_raised)
-							button_cour->relief = ei_relief_sunken;
-
-						else if (button_cour->relief == ei_relief_sunken)
-						{
-							button_cour->relief = ei_relief_raised;
-						}
-
+					if (button_cour->relief == ei_relief_raised) {
+						printf("press button\n");
+						button_cour->relief = ei_relief_sunken;
+					/*
+					  else if (button_cour->relief == ei_relief_sunken)
+					  {
+					  button_cour->relief = ei_relief_raised;
+					  }
+					*/
 					ei_app_invalidate_rect(&(button_cour->widget.screen_location));
-				}
-				clipp_cour = list_rect;
-				while (clipp_cour != NULL)
-				{
-					affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
-					hw_surface_unlock(ei_app_root_surface());
-					hw_surface_update_rects(ei_app_root_surface(), NULL);
-					clipp_cour = clipp_cour->next;
-				}
+					}
+				}				
+			} else {
+				printf("widget null\n");
 			}
 			// traite = EI_TRUE;
+		} else if (event_cour->type==ei_ev_mouse_buttonup) {
+			printf("release clic\n");
+			if (active_widget!=NULL) {
+				// Gérer le cas ou le type du widget actif n'est pas un boutton
+				// Rajouter un if sur le type
+				hw_surface_lock(ei_app_root_surface());
+				ei_button_t *button_cour = (ei_button_t *) widget_cour;
+				if (button_cour->relief == ei_relief_sunken) {
+					printf("release button\n");
+					button_cour->relief = ei_relief_raised;
+				}
+				ei_app_invalidate_rect(&(button_cour->widget.screen_location));
+			}
 		}
+		clipp_cour = list_rect;
+		while (clipp_cour != NULL)
+		{
+			printf("clip\n");
+			affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+			clipp_cour = clipp_cour->next;
+		}
+		hw_surface_unlock(ei_app_root_surface());
+		hw_surface_update_rects(ei_app_root_surface(), NULL);
 
 		// if (traite == EI_TRUE && event_cour.type == ei_ev_mouse_buttonup )
 		// {
