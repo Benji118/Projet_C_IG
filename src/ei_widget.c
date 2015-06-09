@@ -288,6 +288,8 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 	title_size.height = 30;
 	ei_font_t title_font = ei_default_font;
 	ei_color_t black = {0xff,0xff,0xff,0};
+	ei_color_t in_frame_color = toplevel->color;
+	int corner_radius = 10;
 	ei_widget_t* titlebar = toplevel->widget.children_head;
 	if (requested_size != NULL)
 	{
@@ -316,7 +318,6 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 	if (toplevel->closable == EI_TRUE)
 	{
 		//close button
-		int close_corner_radius = 10;
 		ei_size_t close_size;
 		close_size.width = 20;
 		close_size.height = 20;
@@ -324,7 +325,7 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 		int close_border = 5;
 		ei_relief_t close_relief = ei_relief_raised;
 		ei_button_configure(titlebar->children_head,&close_size,&close_color,
-			&close_border,&close_corner_radius,&close_relief,NULL,NULL,NULL,
+			&close_border,&corner_radius,&close_relief,NULL,NULL,NULL,
 			NULL,NULL,NULL,NULL,NULL,NULL);
 		int close_x = 2*toplevel->border_size;
 		int close_y = 2*toplevel->border_size;
@@ -333,11 +334,26 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
 	}
 	if (resizable != NULL)
 		toplevel->resizable = *resizable;
+	if (resizable !=ei_axis_none)
+	{
+		//resize button
+		ei_size_t resize_size;
+		resize_size.width = 5;
+		resize_size.height = 5;
+		ei_anchor_t resize_anchor = ei_anc_southeast;
+		ei_button_configure(toplevel->widget.children_tail,&resize_size,&in_frame_color,
+			&toplevel->border_size,&corner_radius,NULL,NULL,NULL,NULL,NULL,
+			NULL,NULL,NULL,NULL,NULL);
+		float rx = 1.0;
+		float ry = 1.0;
+		ei_place(toplevel->widget.children_tail,&resize_anchor,NULL,NULL,&resize_size.width,
+			&resize_size.height,&rx,&ry,NULL,NULL);
+
+	}
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
 
 	//inside frame
-	ei_color_t in_frame_color = toplevel->color;
 	ei_frame_configure(toplevel->widget.children_head->next_sibling,
 		&toplevel->requested_size,&in_frame_color,&toplevel->border_size,NULL,
 		NULL,NULL,NULL,NULL,NULL,NULL,NULL);
