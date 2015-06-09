@@ -8,7 +8,6 @@ ei_surface_t main_window_surface;
 ei_surface_t picking_surface;
 ei_widgetclass_t* list_class;
 ei_linked_rect_t *list_rect;
-ei_widget_t *active_widget;
 uint32_t widget_id_pick ;
 
 
@@ -29,4 +28,28 @@ ei_color_t id_to_color(ei_surface_t surface,uint32_t id)
 	Pa = (id >> *ia*8) & 0xFF;
 	ei_color_t res = {Pr,Pg,Pb,Pa};
 	return res;
+}
+
+void ei_app_free_head(ei_linked_rect_t **list){
+	ei_linked_rect_t *supp = (*list);
+	(*list) = (*list)->next;
+	free(supp);
+}
+
+void ei_app_free_rect(ei_linked_rect_t** list_rect) {
+	while (*list_rect != NULL)
+		ei_app_free_head(list_rect);
+}
+
+void affiche_widget_rec(ei_widget_t *widget, ei_rect_t* clipper)
+{
+	if (widget->placer_params != NULL)
+		widget->wclass->drawfunc (widget, main_window_surface, picking_surface, clipper);
+	
+	if (widget->next_sibling != NULL)
+		affiche_widget_rec(widget->next_sibling, clipper);
+	
+	if (widget->children_head != NULL)
+		affiche_widget_rec(widget->children_head, widget->content_rect);
+		
 }

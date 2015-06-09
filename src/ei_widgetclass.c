@@ -67,7 +67,7 @@ void			ei_button_register_class 	()
 	button->drawfunc = ei_button_drawfunc;
 	button->setdefaultsfunc = ei_button_setdefaultsfunc;
 	button->geomnotifyfunc = ei_button_geomnotifyfunc;
-	//button->handlefunc = ei_button_handlefunc;
+	button->handlefunc = ei_button_handlefunc;
 
 	ei_widgetclass_register(button);
 }
