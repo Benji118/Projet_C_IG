@@ -26,7 +26,7 @@ void test_text(ei_surface_t surface,ei_point_t* point, ei_rect_t* clipper,ei_col
 void test_line(ei_surface_t surface, ei_rect_t* clipper)
 {
 	ei_color_t		color		= { 255, 0, 255, 255 };
-	ei_color_t      color2      = { 50, 255, 80, 125 };
+	//ei_color_t              color2      = { 50, 255, 80, 125 };
 	ei_linked_point_t	pts[2];
 
 	pts[0].point.x = 200; pts[0].point.y = 200; pts[0].next = &pts[1];
@@ -143,15 +143,15 @@ void test_dot(ei_surface_t surface, ei_rect_t* clipper)
  */
 int ei_main(int argc, char** argv)
 {
-	ei_color_t		colort		= { 255, 0, 255, 255 };
-	ei_color_t		color2		= { 255, 0, 0, 255 };	
+	//ei_color_t		colort		= { 255, 0, 255, 255 };
+	//ei_color_t		color2		= { 255, 0, 0, 255 };	
 	ei_size_t		win_size	= ei_size(800, 600);
 	ei_surface_t		main_window	= NULL;
 	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
 	ei_rect_t*		clipper_ptr	= NULL;
-	ei_point_t     point;
-	point.x = 100;
-	point.y = 100;
+	//ei_point_t              point;
+	//point.x = 100;
+	//point.y = 100;
 
 	//ei_rect_t		clipper		= ei_rect(ei_point(100,100), ei_size(50, 20));
 	//clipper_ptr		= &clipper;
