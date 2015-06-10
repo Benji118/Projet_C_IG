@@ -50,6 +50,5 @@ void affiche_widget_rec(ei_widget_t *widget, ei_rect_t* clipper)
 		affiche_widget_rec(widget->next_sibling, clipper);
 	
 	if (widget->children_head != NULL)
-		affiche_widget_rec(widget->children_head, widget->content_rect);
-		
+		affiche_widget_rec(widget->children_head, &(widget->screen_location));
 }

@@ -28,11 +28,11 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 
 	//dessin du toplevel
 	draw_tool(surface,toplevel->widget.screen_location,0.0,
-		toplevel->border_size,toplevel->color,ei_relief_raised,clipper);
+		  toplevel->border_size,toplevel->color,ei_relief_raised,clipper);
 
 	//Offscreen
 	draw_tool(pick_surface,toplevel->widget.screen_location,0.0,
-		toplevel->border_size,toplevel->color,ei_relief_none,clipper);	
+		  toplevel->border_size,*(toplevel->widget.pick_color),ei_relief_none,clipper);	
 
 	if (toplevel->title != NULL)
 	{
