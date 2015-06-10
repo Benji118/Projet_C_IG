@@ -282,22 +282,33 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 
 	if (resizable != NULL)
 		toplevel->resizable = *resizable;
-	// if (resizable !=ei_axis_none)
-	// {
-	// 	//resize button
-	// 	ei_size_t resize_size;
-	// 	resize_size.width = 5;
-	// 	resize_size.height = 5;
-	// 	ei_anchor_t resize_anchor = ei_anc_southeast;
-	// 	ei_button_configure(toplevel->widget.children_tail,&resize_size,&in_frame_color,
-	// 		&toplevel->border_size,&corner_radius,NULL,NULL,NULL,NULL,NULL,
-	// 		NULL,NULL,NULL,NULL,NULL);
-	// 	float rx = 1.0;
-	// 	float ry = 1.0;
-	// 	ei_place(toplevel->widget.children_tail,&resize_anchor,NULL,NULL,&resize_size.width,
-	// 		&resize_size.height,&rx,&ry,NULL,NULL);
+	if (resizable !=ei_axis_none)
+	{
+		//resize button
+		ei_widget_t* resize_button;
+		ei_size_t resize_size;
+		resize_size.width = 5;
+		resize_size.height = 5;
+		ei_anchor_t resize_anchor = ei_anc_southeast;
+		ei_color_t resize_color = toplevel->color;
+		ei_relief_t resize_relief = ei_relief_raised;
+		int resize_border_width = 3;
+		resize_button = ei_widget_create("button",widget);
+		ei_button_configure(resize_button,
+							&resize_size,
+							&resize_color,
+							&resize_border_width,
+							NULL,
+							&resize_relief,
+							NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+		float resize_rx = 0;
+		float resize_ry = 0;
+		int resize_x = 0;
+		int resize_y = 0;
+		ei_place(resize_button,&resize_anchor,&resize_x,&resize_y,NULL,
+			NULL,&resize_rx,&resize_ry,NULL,NULL);
 
-	// }
+	}
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
 
