@@ -4,6 +4,9 @@
 #include "ei_placer.h"
 #include "ei_application.h"
 #include <stdlib.h>
+#include <stdio.h>
+
+static void ei_parcours_rec_place(ei_widget_t *widget);
 
 void			ei_place			(struct ei_widget_t*	widget,
 							 ei_anchor_t*		anchor,
@@ -95,10 +98,23 @@ void			ei_place			(struct ei_widget_t*	widget,
 	}
 	
 	ei_placer_run(widget);
+	ei_parcours_rec_place(widget->children_head);
+
 }
 
 
-
+static void ei_parcours_rec_place(ei_widget_t *widget)
+{
+	if (widget != NULL){
+		ei_placer_run(widget);
+	
+		if (widget->next_sibling != NULL)
+			ei_parcours_rec_place(widget->next_sibling);
+	
+		if (widget->children_head != NULL)
+			ei_parcours_rec_place(widget->children_head);
+	}
+}
 
 
 void ei_placer_run(struct ei_widget_t* widget)
@@ -170,11 +186,16 @@ void ei_placer_run(struct ei_widget_t* widget)
 		if (widget->placer_params->anchor_data == 5)
 		{
 			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-				+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
-				+ widget->placer_params->x_data - widget->screen_location.size.width;
+				+ widget->parent->screen_location.size.width
+				+ widget->placer_params->x_data
+				- widget->screen_location.size.width;
 			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-				+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
-				+ widget->placer_params->y_data - widget->screen_location.size.height;
+				+ widget->parent->screen_location.size.height
+				+ widget->placer_params->y_data
+				- widget->screen_location.size.height;
+			/* widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y */
+			/* 	+ widget->parent->screen_location.size.height*widget->placer_params->ry_data */
+			/* 	+ widget->placer_params->y_data - widget->screen_location.size.height; */
 		}
 		if (widget->placer_params->anchor_data == 6)
 		{
@@ -208,15 +229,12 @@ void ei_placer_run(struct ei_widget_t* widget)
 			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
 				+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
 				+ widget->placer_params->x_data;
-			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.y
-				+ widget->parent->screen_location.size.height * widget->placer_params->y_data
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height * widget->placer_params->ry_data
 				+ widget->placer_params->y_data;
 		}
 	}
 }
-
-
-
 
 void ei_placer_forget(struct ei_widget_t* widget)
 {

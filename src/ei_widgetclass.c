@@ -82,7 +82,7 @@ void			ei_toplevel_register_class 	()
 	toplevel->drawfunc = ei_toplevel_drawfunc;
 	toplevel->setdefaultsfunc = ei_toplevel_setdefaultsfunc;
 	toplevel->geomnotifyfunc = ei_toplevel_geomnotifyfunc;
-	//topelevel->handlefunc = ei_topelevel_handlefunc;
+	toplevel->handlefunc = ei_toplevel_handlefunc;
 
 	ei_widgetclass_register(toplevel);
 }
