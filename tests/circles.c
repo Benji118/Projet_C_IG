@@ -26,14 +26,14 @@ int ei_main(int argc, char** argv)
 
 	/* Draw circle. */
 	ei_point_t centre = {400, 300};
-	/* double rayon = 150.0; */
-	/* double dep = 270.0; */
-	/* double arr = 360.0; */
+	double rayon = 150.0; 
+	double dep = 270.0; 
+	double arr = 360.0; 
 
 	/* Test arc */
 	ei_linked_point_t *poly = malloc(sizeof(ei_linked_point_t));
-	//poly = arc(rayon, centre, dep, arr);
-	//ei_draw_polyline(main_window, poly, color, clipper_ptr);
+	poly = arc(rayon, centre, dep, arr);
+	ei_draw_polyline(main_window, poly, color, clipper_ptr);
 
 	/* Test rounded_frame */
 	ei_size_t taille = {250, 150};
@@ -41,13 +41,13 @@ int ei_main(int argc, char** argv)
 	ei_point_t centre2 = {100, 300};
 	ei_rect_t rectangle2 = {centre2, taille};
 	poly = rounded_frame(rectangle, 20.0, false, true);
-	//ei_draw_polyline(main_window, poly, color, clipper_ptr);
-	/* poly = rounded_frame(rectangle, 20.0, true, false); */
-	/* ei_draw_polyline(main_window, poly, color, clipper_ptr); */
+	ei_draw_polyline(main_window, poly, color, clipper_ptr);
+	poly = rounded_frame(rectangle, 20.0, true, false); 
+	ei_draw_polyline(main_window, poly, color, clipper_ptr);
 
 	/* Test bouton */
-	draw_button        (main_window, rectangle, 20.0, 5.0, color, 0, clipper_ptr);
-	draw_button        (main_window, rectangle2, 20.0, 5.0, color, ei_relief_sunken, clipper_ptr);
+	draw_tool        (main_window, rectangle, 20.0, 5.0, color, 0, clipper_ptr);
+	draw_tool        (main_window, rectangle2, 20.0, 5.0, color, ei_relief_sunken, clipper_ptr);
 	
 	
 	/* Unlock and update the surface. */
