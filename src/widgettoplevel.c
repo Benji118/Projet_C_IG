@@ -33,7 +33,7 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 	//Barre de titre
 	ei_rect_t title_bar;
 	title_bar.top_left    = toplevel->widget.screen_location.top_left;
-	title_bar.size.height = 25;
+	title_bar.size.height = 40;
 	title_bar.size.width   = toplevel->widget.screen_location.size.width;
 	ei_color_t black = {0, 0, 0, 0xff};
 	
@@ -45,20 +45,20 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 
 	if (toplevel->title != NULL)
 	{
-		ei_color_t black_title = {0,0,0,255};
+		ei_color_t white_title = {0xff,0xff,0xff,255};
 		int *w,*h;
 		w = malloc (sizeof(int));
 		h = malloc (sizeof(int));
 		ei_point_t* title_pos = malloc(sizeof(ei_point_t));
 		hw_text_compute_size(toplevel->title,ei_default_font,w,h);
 		if (toplevel->widget.screen_location.size.width > *w
-			&& toplevel->widget.screen_location.size.height > *h)
+			&& title_bar.size.height > *h)
 		{
 			title_pos->x = toplevel->widget.screen_location.top_left.x 
 			+ (toplevel->widget.screen_location.size.width - *w)/2;
 			title_pos->y = toplevel->widget.screen_location.top_left.y 
-			+ (toplevel->widget.screen_location.size.height - *h)/2;
-			ei_draw_text(surface,title_pos,toplevel->title,ei_default_font,&black_title,clipper);
+			+ (title_bar.size.height - *h)/2;
+			ei_draw_text(surface,title_pos,toplevel->title,ei_default_font,&white_title,clipper);
 		}
 	}
 }

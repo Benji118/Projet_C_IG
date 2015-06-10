@@ -304,11 +304,18 @@ void resize_window(ei_widget_t *widget, struct ei_event_t *event, void *user_par
 {
 	hw_surface_lock(ei_app_root_surface());
 	int h,w;
-	
+	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget->parent;
+
 	w = event->param.mouse.where.x - widget->parent->screen_location.top_left.x ;
 	h = event->param.mouse.where.y - widget->parent->screen_location.top_left.y ;
+
+	if (toplevel->min_size->width > w)
+		w = toplevel->min_size->width;
+	if (toplevel->min_size->height > h)
+		h = toplevel->min_size->height;
+
 	ei_place(widget->parent,NULL,NULL,NULL,&w,&h,NULL,NULL,NULL,NULL);
-	
+
 	ei_app_invalidate_rect(&(widget->parent->screen_location));
 	ei_linked_rect_t *clipp_cour = list_rect;
 	while (clipp_cour != NULL)
@@ -380,14 +387,19 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 	}
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
+	else
+	{
+		toplevel->min_size->height= 80;
+		toplevel->min_size->width = 160;
+	}
 
 
 	/* Bouton de fermeture */
 	if (*closable == EI_TRUE){
 		ei_widget_t    *closing_button;
 		ei_anchor_t	button_anchor           = ei_anc_northwest;
-		int		button_x		= 3;
-		int		button_y		= 2;
+		int		button_x		= 5;
+		int		button_y		= 5;
 		float		button_rel_x		= 0.0;
 		float		button_rel_y		= 0.0;
 		ei_color_t	button_color		= {0, 0, 0, 0xff};

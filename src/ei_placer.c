@@ -119,12 +119,14 @@ static void ei_parcours_rec_place(ei_widget_t *widget)
 
 void ei_placer_run(struct ei_widget_t* widget)
 {
+
 	if (widget->parent == NULL)
 	{
 		widget->screen_location.top_left.x = 0;
 		widget->screen_location.top_left.y = 0;
 		widget->screen_location.size = hw_surface_get_size(ei_app_root_widget());
 	}
+	
 	widget->screen_location.size.width = widget->placer_params->rw_data
 	*widget->parent->screen_location.size.width + widget->placer_params->w_data;
 	widget->screen_location.size.height = widget->placer_params->rh_data
@@ -143,6 +145,13 @@ void ei_placer_run(struct ei_widget_t* widget)
 		widget->screen_location.size.height = widget->requested_size.height;
 	else
 		widget->screen_location.size.height = widget->placer_params->h_data;
+
+	if (widget->placer_params->rh == NULL && widget->placer_params->rw !=NULL)
+	{
+		widget->screen_location.size.height = 40;
+		widget->screen_location.size.width = widget->placer_params->rw_data
+	*widget->parent->screen_location.size.width;
+	}
 	
 
 	//traitement anchor
