@@ -192,7 +192,7 @@ void			ei_frame_configure		(ei_widget_t*		widget,
 	if (text_anchor!=NULL)
 		frame->text_anchor = *text_anchor;
 	if (img != NULL)
-		frame->img = *img;
+		frame->img = img;
 	if (img_rect != NULL)
 		frame->img_rect = *img_rect;
 	if (img_anchor!=NULL)
