@@ -76,7 +76,7 @@ void ei_app_quit_request()
 void ei_app_run()
 {
 	ei_event_t *event_cour = malloc(sizeof(ei_event_t));
-	assert(&event_cour != NULL);
+	assert(event_cour != NULL);
 	event_cour->type=ei_ev_none;
 
 	/* ei_widget_t  *widget_cour =malloc(sizeof(ei_widget_t)); */
