@@ -195,7 +195,8 @@ void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 		hw_surface_update_rects(ei_app_root_surface(), NULL);
 		if (widget == ei_widget_pick(&(event->param.mouse.where))){
 			/* Execution callback si on est revenu sur le bouton*/
-			button_cour->callback((ei_widget_t *)button_cour, event, NULL);
+			if (button_cour->callback != NULL)
+				button_cour->callback((ei_widget_t *)button_cour, event, NULL);
 		}
 		
 	}
