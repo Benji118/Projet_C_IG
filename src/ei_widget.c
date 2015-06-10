@@ -108,7 +108,6 @@ void			ei_widget_destroy		(ei_widget_t*		widget)
 		cour->next_sibling = widget->next_sibling;
 	}
 	ei_destroy_rec(widget->children_head);
-	printf("destroy");
 	free(widget);
 }
 
@@ -170,7 +169,7 @@ static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 		{
 			widget_pointe = widget_cour;
 		}
-		widget_cour = widget_pick->next_sibling;
+		widget_cour = widget_cour->next_sibling;
 	}
         // Si rien parmi les fils, on doit retourner widget_pick
 	if (widget_pointe == widget_pick)
@@ -286,7 +285,31 @@ void close_window(ei_widget_t *widget, struct ei_event_t *event, void *user_para
 {
 	hw_surface_lock(ei_app_root_surface());
 	ei_app_invalidate_rect(&(widget->parent->screen_location));
+
 	ei_widget_destroy(widget->parent);
+
+	ei_linked_rect_t *clipp_cour = list_rect;
+	while (clipp_cour != NULL)
+	{
+		affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+		clipp_cour = clipp_cour->next;
+	}
+	ei_app_free_rect(&list_rect);
+	hw_surface_unlock(ei_app_root_surface());
+	ei_event_set_active_widget(NULL);
+	hw_surface_update_rects(ei_app_root_surface(), NULL);
+}
+
+void resize_window(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
+	hw_surface_lock(ei_app_root_surface());
+	int h,w;
+	
+	w = event->param.mouse.where.x - widget->parent->screen_location.top_left.x ;
+	h = event->param.mouse.where.y - widget->parent->screen_location.top_left.y ;
+	ei_place(widget->parent,NULL,NULL,NULL,&w,&h,NULL,NULL,NULL,NULL);
+	
+	ei_app_invalidate_rect(&(widget->parent->screen_location));
 	ei_linked_rect_t *clipp_cour = list_rect;
 	while (clipp_cour != NULL)
 	{
@@ -338,6 +361,7 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 		ei_color_t resize_color = toplevel->color;
 		ei_relief_t resize_relief = ei_relief_raised;
 		int resize_border_width = 3;
+		ei_callback_t	resize_callback 	= resize_window;
 		resize_button = ei_widget_create("button",widget);
 		ei_button_configure(resize_button,
 							&resize_size,
@@ -345,9 +369,9 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 							&resize_border_width,
 							NULL,
 							&resize_relief,
-							NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-		float resize_rx = 0;
-		float resize_ry = 0;
+							NULL,NULL,NULL,NULL,NULL,NULL,NULL,&resize_callback,NULL);
+		float resize_rx = 1;
+		float resize_ry = 1;
 		int resize_x = 0;
 		int resize_y = 0;
 		ei_place(resize_button,&resize_anchor,&resize_x,&resize_y,NULL,
