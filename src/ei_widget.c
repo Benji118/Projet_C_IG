@@ -67,16 +67,48 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 	return new_widget;
 }
 
+static void ei_destroy_rec(ei_widget_t * widget)
+{
+	if (widget != NULL){
+		if (widget->next_sibling != NULL){
+			ei_destroy_rec(widget->next_sibling);
+			ei_widget_destroy(widget->next_sibling);
+		}
+	
+		if (widget->children_head != NULL){
+			ei_destroy_rec(widget->children_head);
+			ei_widget_destroy(widget->children_head);
+		}
+	}
+}
+
 void			ei_widget_destroy		(ei_widget_t*		widget)
 {
-	if (widget->children_head == NULL)
+	//On relie le widget precedent et le suivant:
+	ei_widget_t *cour = widget->parent->children_head;
+	if (cour == widget)
 	{
-		free(widget);
-	}
-	else
+		//widget en tete de ses freres
+		widget->parent->children_head = widget->next_sibling;
+		widget->next_sibling = NULL;
+	} else if (cour->next_sibling == NULL)
 	{
-		ei_widget_destroy (widget->children_head);
+		//widget sans frere
+		widget->parent->children_head = NULL;
+		widget->parent->children_tail = NULL;
+	} else {
+		while (cour->next_sibling != widget)
+			cour = cour->next_sibling;
+		//cour est le precedent de widget.
+		if (widget->parent->children_tail == widget)
+		{
+			//widget en queue des ses freres
+			widget->parent->children_tail = cour;
+		}
+		cour->next_sibling = widget->next_sibling;
 	}
+	ei_destroy_rec(widget->children_head);
+	free(widget);
 }
 
 
@@ -137,7 +169,7 @@ static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 		{
 			widget_pointe = widget_cour;
 		}
-		widget_cour = widget_pick->next_sibling;
+		widget_cour = widget_cour->next_sibling;
 	}
         // Si rien parmi les fils, on doit retourner widget_pick
 	if (widget_pointe == widget_pick)
@@ -251,7 +283,43 @@ void	ei_button_configure(     ei_widget_t*		widget,
 
 void close_window(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
+	hw_surface_lock(ei_app_root_surface());
+	ei_app_invalidate_rect(&(widget->parent->screen_location));
+
+	ei_widget_destroy(widget->parent);
+
+	ei_linked_rect_t *clipp_cour = list_rect;
+	while (clipp_cour != NULL)
+	{
+		affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+		clipp_cour = clipp_cour->next;
+	}
+	ei_app_free_rect(&list_rect);
+	hw_surface_unlock(ei_app_root_surface());
+	ei_event_set_active_widget(NULL);
+	hw_surface_update_rects(ei_app_root_surface(), NULL);
+}
+
+void resize_window(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
+	hw_surface_lock(ei_app_root_surface());
+	int h,w;
 	
+	w = event->param.mouse.where.x - widget->parent->screen_location.top_left.x ;
+	h = event->param.mouse.where.y - widget->parent->screen_location.top_left.y ;
+	ei_place(widget->parent,NULL,NULL,NULL,&w,&h,NULL,NULL,NULL,NULL);
+	
+	ei_app_invalidate_rect(&(widget->parent->screen_location));
+	ei_linked_rect_t *clipp_cour = list_rect;
+	while (clipp_cour != NULL)
+	{
+		affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+		clipp_cour = clipp_cour->next;
+	}
+	ei_app_free_rect(&list_rect);
+	hw_surface_unlock(ei_app_root_surface());
+	ei_event_set_active_widget(NULL);
+	hw_surface_update_rects(ei_app_root_surface(), NULL);
 }
 
 void	ei_toplevel_configure	(ei_widget_t*		widget,
@@ -264,9 +332,11 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 				 ei_size_t**		min_size)
 {
 	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
+
 	/* ------------------------------------------------------- */
 	/* Les barres d'en tete font 25px de hauteur  */
 	/* Assignations */
+
 	if (requested_size != NULL)
 		toplevel->widget.requested_size = *requested_size;
 	if (color != NULL)
@@ -277,10 +347,40 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 		toplevel->title = *title;
 	if (closable != NULL)
 		toplevel->closable = *closable;
+
 	if (resizable != NULL)
 		toplevel->resizable = *resizable;
+	if (resizable !=ei_axis_none)
+	{
+		//resize button
+		ei_widget_t* resize_button;
+		ei_size_t resize_size;
+		resize_size.width = 5;
+		resize_size.height = 5;
+		ei_anchor_t resize_anchor = ei_anc_southeast;
+		ei_color_t resize_color = toplevel->color;
+		ei_relief_t resize_relief = ei_relief_raised;
+		int resize_border_width = 3;
+		ei_callback_t	resize_callback 	= resize_window;
+		resize_button = ei_widget_create("button",widget);
+		ei_button_configure(resize_button,
+							&resize_size,
+							&resize_color,
+							&resize_border_width,
+							NULL,
+							&resize_relief,
+							NULL,NULL,NULL,NULL,NULL,NULL,NULL,&resize_callback,NULL);
+		float resize_rx = 1;
+		float resize_ry = 1;
+		int resize_x = 0;
+		int resize_y = 0;
+		ei_place(resize_button,&resize_anchor,&resize_x,&resize_y,NULL,
+			NULL,&resize_rx,&resize_ry,NULL,NULL);
+
+	}
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
+
 
 	/* Bouton de fermeture */
 	if (*closable == EI_TRUE){
@@ -310,67 +410,5 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 		ei_place(closing_button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, NULL, NULL);
 	}
 	/* /\* -------------------------------------------------------- *\/ */
-	/* ei_size_t title_size; */
-	/* ei_color_t title_color = {0xAA,0xAA,0xAA,255}; */
-	/* title_size.height = 30; */
-	/* ei_font_t title_font = ei_default_font; */
-	/* ei_color_t black = {0xff,0xff,0xff,255}; */
-	/* ei_widget_t* titlebar = toplevel->widget.children_head; */
-	/* if (requested_size != NULL) */
-	/* { */
-	/* 	toplevel->widget.requested_size = *requested_size; */
-	/* 	title_size.width = requested_size->width; */
-	/* } */
-	/* if (color != NULL) */
-	/* 	toplevel->color = *color; */
-	/* if (border_width != NULL) */
-	/* 	toplevel->border_size = *border_width; */
-	/* if (title != NULL) */
-	/* { */
-	/* 	toplevel-> title = *title; */
-	/* 	//titlebar */
-	/* ei_frame_configure(titlebar,&title_size,&title_color, */
-	/* 	NULL,NULL,&toplevel->title,&title_font,&black,NULL,NULL,NULL,NULL); */
-	/* ei_place(titlebar,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL); */
-	/* } */
-	/* else */
-	/* { */
-	/* ei_frame_configure(titlebar,&title_size,&title_color, */
-	/* 	NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);	 */
-	/* } */
-	/* if (closable !=NULL) */
-	/* 	toplevel->closable = *closable; */
-	/* if (toplevel->closable == EI_TRUE) */
-	/* { */
-	/* 	//close button */
-	/* 	int close_corner_radius = 10; */
-	/* 	ei_size_t close_size; */
-	/* 	close_size.width = 20; */
-	/* 	close_size.height = 20; */
-	/* 	ei_color_t close_color = {0xff,0,0,0}; */
-	/* 	int close_border = 5; */
-	/* 	ei_relief_t close_relief = ei_relief_raised; */
-	/* 	ei_button_configure(titlebar->children_head,&close_size,&close_color, */
-	/* 		&close_border,&close_corner_radius,&close_relief,NULL,NULL,NULL, */
-	/* 		NULL,NULL,NULL,NULL,NULL,NULL); */
-	/* 	int close_x = 2*toplevel->border_size; */
-	/* 	int close_y = 2*toplevel->border_size; */
-	/* 	ei_place(titlebar->children_head,NULL,&close_x,&close_y, */
-	/* 		&close_size.width,&close_size.height,NULL,NULL,NULL,NULL);	 */
-	/* } */
-	/* if (resizable != NULL) */
-	/* 	toplevel->resizable = *resizable; */
-	/* if (min_size != NULL) */
-	/* 	toplevel->min_size = *min_size; */
-
-	/* //inside frame */
-	/* ei_color_t in_frame_color = toplevel->color; */
-	/* ei_frame_configure(toplevel->widget.children_head->next_sibling, */
-	/* 	&toplevel->requested_size,&in_frame_color,&toplevel->border_size,NULL, */
-	/* 	NULL,NULL,NULL,NULL,NULL,NULL,NULL); */
-	/* int y = title_size.height; */
-	/* ei_place(toplevel->widget.children_head->next_sibling,NULL,NULL,&y, */
-	/* 	&toplevel->widget.screen_location.size.width, */
-	/* 	&toplevel->widget.screen_location.size.height,NULL,NULL,NULL,NULL); */
 	
 }
