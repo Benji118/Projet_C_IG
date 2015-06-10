@@ -130,7 +130,6 @@ void ei_placer_run(struct ei_widget_t* widget)
 	widget->screen_location.size.height = widget->placer_params->rh_data
 	*widget->parent->screen_location.size.height + widget->placer_params->h_data;
 
-	//provisoire
 	widget->screen_location.top_left.x = widget->placer_params->x_data;
 	widget->screen_location.top_left.y = widget->placer_params->y_data;
 	widget->screen_location.size = hw_surface_get_size(ei_app_root_widget());
