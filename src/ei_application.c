@@ -38,9 +38,13 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	root_widget_window->placer_params->x = 0;
 	root_widget_window->placer_params->y = 0;
 	
-	
-	
 	root_widget_window->requested_size = *main_window_size;
+	ei_point_t origine = {0,0};
+	ei_rect_t loc = {origine, *main_window_size};
+	root_widget_window->screen_location = loc;
+	/* root_widget_window->content_rect = &loc; */
+	root_widget_window->content_rect = NULL;
+	
 
 
 	//hw_surface_lock(main_window_surface);

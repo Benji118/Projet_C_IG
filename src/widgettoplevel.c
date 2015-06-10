@@ -24,7 +24,34 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 							ei_surface_t	pick_surface,
 							ei_rect_t*	clipper)
 {
+	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
 
+	//dessin du toplevel
+	draw_tool(surface,toplevel->widget.screen_location,0.0,
+		  toplevel->border_size,toplevel->color,ei_relief_raised,clipper);
+
+	//Offscreen
+	draw_tool(pick_surface,toplevel->widget.screen_location,0.0,
+		  toplevel->border_size,*(toplevel->widget.pick_color),ei_relief_none,clipper);	
+
+	if (toplevel->title != NULL)
+	{
+		ei_color_t black_title = {0,0,0,255};
+		int *w,*h;
+		w = malloc (sizeof(int));
+		h = malloc (sizeof(int));
+		ei_point_t* title_pos = malloc(sizeof(ei_point_t));
+		hw_text_compute_size(toplevel->title,ei_default_font,w,h);
+		if (toplevel->widget.screen_location.size.width > *w
+			&& toplevel->widget.screen_location.size.height > *h)
+		{
+			title_pos->x = toplevel->widget.screen_location.top_left.x 
+			+ (toplevel->widget.screen_location.size.width - *w)/2;
+			title_pos->y = toplevel->widget.screen_location.top_left.y 
+			+ (toplevel->widget.screen_location.size.height - *h)/2;
+			ei_draw_text(surface,title_pos,toplevel->title,ei_default_font,&black_title,clipper);
+		}
+	}
 }
 
 void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget)
@@ -47,7 +74,7 @@ void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 	widget->screen_location = rect;
 }
 
-void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event* event)
+void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
 
 }
