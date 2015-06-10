@@ -67,16 +67,49 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 	return new_widget;
 }
 
+static void ei_destroy_rec(ei_widget_t * widget)
+{
+	if (widget != NULL){
+		if (widget->next_sibling != NULL){
+			ei_destroy_rec(widget->next_sibling);
+			ei_widget_destroy(widget->next_sibling);
+		}
+	
+		if (widget->children_head != NULL){
+			ei_destroy_rec(widget->children_head);
+			ei_widget_destroy(widget->children_head);
+		}
+	}
+}
+
 void			ei_widget_destroy		(ei_widget_t*		widget)
 {
-	if (widget->children_head == NULL)
+	//On relie le widget precedent et le suivant:
+	ei_widget_t *cour = widget->parent->children_head;
+	if (cour == widget)
 	{
-		free(widget);
-	}
-	else
+		//widget en tete de ses freres
+		widget->parent->children_head = widget->next_sibling;
+		widget->next_sibling = NULL;
+	} else if (cour->next_sibling == NULL)
 	{
-		ei_widget_destroy (widget->children_head);
+		//widget sans frere
+		widget->parent->children_head = NULL;
+		widget->parent->children_tail = NULL;
+	} else {
+		while (cour->next_sibling != widget)
+			cour = cour->next_sibling;
+		//cour est le precedent de widget.
+		if (widget->parent->children_tail == widget)
+		{
+			//widget en queue des ses freres
+			widget->parent->children_tail = cour;
+		}
+		cour->next_sibling = widget->next_sibling;
 	}
+	ei_destroy_rec(widget->children_head);
+	printf("destroy");
+	free(widget);
 }
 
 
@@ -251,7 +284,19 @@ void	ei_button_configure(     ei_widget_t*		widget,
 
 void close_window(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
-	
+	hw_surface_lock(ei_app_root_surface());
+	ei_app_invalidate_rect(&(widget->parent->screen_location));
+	ei_widget_destroy(widget->parent);
+	ei_linked_rect_t *clipp_cour = list_rect;
+	while (clipp_cour != NULL)
+	{
+		affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+		clipp_cour = clipp_cour->next;
+	}
+	ei_app_free_rect(&list_rect);
+	hw_surface_unlock(ei_app_root_surface());
+	ei_event_set_active_widget(NULL);
+	hw_surface_update_rects(ei_app_root_surface(), NULL);
 }
 
 void	ei_toplevel_configure	(ei_widget_t*		widget,

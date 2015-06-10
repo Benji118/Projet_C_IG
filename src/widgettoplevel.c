@@ -35,7 +35,7 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 	title_bar.top_left    = toplevel->widget.screen_location.top_left;
 	title_bar.size.height = 25;
 	title_bar.size.width   = toplevel->widget.screen_location.size.width;
-	ei_color_t black = {0xff, 0xff, 0xff, 0xff};
+	ei_color_t black = {0, 0, 0, 0xff};
 	
 	draw_tool(surface, title_bar, 0.0, 0.0, black, 0, clipper);
 
