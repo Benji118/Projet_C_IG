@@ -41,12 +41,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	ei_point_t origine = {0,0};
 	ei_rect_t loc = {origine, *main_window_size};
 	root_widget_window->screen_location = loc;
-	/* root_widget_window->content_rect = &loc; */
 	root_widget_window->content_rect = NULL;
 	
-
-
-	//hw_surface_lock(main_window_surface);
 }
 
 ei_widget_t *ei_app_root_widget()
@@ -62,9 +58,10 @@ ei_surface_t ei_app_root_surface()
 
 void ei_app_free()
 {
-	/* ei_widget_t *root = ei_app_root_widget(); */
-	/* ei_widget_destroy (root); */
-	/* hw_quit(); */
+	if (ei_app_root_widget()->children_head != NULL)
+		ei_widget_destroy (ei_app_root_widget()->children_head);
+	free(ei_app_root_widget());
+	hw_quit();
 }
 
 void ei_app_quit_request()
@@ -79,13 +76,10 @@ void ei_app_run()
 	assert(&event_cour != NULL);
 	event_cour->type=ei_ev_none;
 
-	/* ei_widget_t  *widget_cour =malloc(sizeof(ei_widget_t)); */
-	/* widget_cour = NULL; */
 	ei_event_set_active_widget(NULL);
 
 	ei_default_handle_func_t traitant_defaut = ei_event_get_default_handle_func();
 	ei_widgetclass_handlefunc_t traitant_interne;
-	// ei_bool_t traite;
 
 	hw_surface_lock(ei_app_root_surface());
 	affiche_widget_rec(root_widget_window, NULL);
@@ -93,15 +87,19 @@ void ei_app_run()
 	hw_surface_update_rects(ei_app_root_surface(), NULL);
 
 	while (quit_app == EI_FALSE)
-	{
-
+	{			
 		if (event_cour->type == ei_ev_mouse_buttondown){
-			ei_event_set_active_widget( ei_widget_pick(&(event_cour->param.mouse.where)) );
+			uint8_t* pixel_ptr = hw_surface_get_buffer(picking_surface)
+				+  (event_cour->param.mouse.where.y*hw_surface_get_size(picking_surface).width 
+				    + event_cour->param.mouse.where.x)*4;
+			if (ei_widget_pick(&(event_cour->param.mouse.where)) != NULL)
+			if (ei_widget_pick(&(event_cour->param.mouse.where))->pick_id == *pixel_ptr)
+			    ei_event_set_active_widget( ei_widget_pick(&(event_cour->param.mouse.where)) );
 			x_last_click = event_cour->param.mouse.where.x;
 			y_last_click = event_cour->param.mouse.where.y;
 			
 		}
-		
+
 		if (ei_event_get_active_widget() != NULL){
 			traitant_interne = ei_event_get_active_widget()->wclass->handlefunc;
 			traitant_interne(ei_event_get_active_widget(), event_cour);

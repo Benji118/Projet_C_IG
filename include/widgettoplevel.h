@@ -28,7 +28,7 @@ void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget);
 
 void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
-void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
+ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
 
 
 #endif

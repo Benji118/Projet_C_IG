@@ -5,6 +5,7 @@
 #include "hw_interface.h"
 #include "ei_event.h"
 #include "global.h"
+#include "ei_widget.h"
 #include "ei_application.h"
 
 
@@ -111,7 +112,7 @@ void ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 	widget->screen_location = rect;
 }
 
-void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
+ei_bool_t ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
 	ei_linked_rect_t *clipp_cour;
 	ei_button_t* button_cour = (ei_button_t*) widget;
@@ -141,6 +142,7 @@ void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 			hw_surface_unlock(ei_app_root_surface());
 			hw_surface_update_rects(ei_app_root_surface(), NULL);
 		}
+		
 
 		/* Si le bouton est relevé et qu'on revient dessus */
 		if ( button_cour->relief == ei_relief_raised &&
@@ -159,6 +161,7 @@ void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 			hw_surface_unlock(ei_app_root_surface());
 			hw_surface_update_rects(ei_app_root_surface(), NULL);
 		}
+		return EI_TRUE;
 	}
 
 	/* Si on appuie sur le bouton */
@@ -178,6 +181,7 @@ void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 		ei_app_free_rect(&list_rect);
 		hw_surface_unlock(ei_app_root_surface());
 		hw_surface_update_rects(ei_app_root_surface(), NULL); 
+		return EI_TRUE;
 	}
 	/* Si on releve le bouton de la souris */
 	if (event->type==ei_ev_mouse_buttonup) {
@@ -203,6 +207,7 @@ void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 			if (button_cour->callback != NULL)
 				button_cour->callback((ei_widget_t *)button_cour, event, NULL);
 		}
+		return EI_TRUE;
 		
 	}
 	

@@ -201,9 +201,6 @@ void ei_placer_run(struct ei_widget_t* widget)
 				+ widget->parent->screen_location.size.height
 				+ widget->placer_params->y_data
 				- widget->screen_location.size.height;
-			/* widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y */
-			/* 	+ widget->parent->screen_location.size.height*widget->placer_params->ry_data */
-			/* 	+ widget->placer_params->y_data - widget->screen_location.size.height; */
 		}
 		if (widget->placer_params->anchor_data == 6)
 		{
