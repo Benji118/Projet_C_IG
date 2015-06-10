@@ -57,11 +57,7 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 
 
 	//Cas de l'image
-	//ei_surface_t img_surface;
 	if (frame->img !=NULL){
-		//printf("img non NULL\n");
-		//printf("%s\n",frame->img);
-		//ei_surface_t img_surface = hw_image_load(frame->img,surface);
 		ei_rect_t* rect_paste = frame->img_rect;
 		if (rect_paste!=NULL) {
 			printf("frame->img_rect :\n top (%d,%d)\n size : (%d,%d)\n",frame->img_rect->top_left.x,frame->img_rect->top_left.y,frame->img_rect->size.width,frame->img_rect->size.height);
@@ -104,7 +100,7 @@ void ei_frame_geomnotifyfunc (struct ei_widget_t*	widget,
 	widget->screen_location = rect;
 }
 
-void ei_frame_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
+ei_bool_t ei_frame_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
-
+	return EI_FALSE;
 }

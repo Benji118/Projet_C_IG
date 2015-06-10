@@ -210,5 +210,7 @@ ei_bool_t ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* eve
 		return EI_TRUE;
 		
 	}
+
+	return EI_FALSE;
 	
 }
