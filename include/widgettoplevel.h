@@ -34,8 +34,12 @@ void ei_toplevel_setdefaultsfunc(struct ei_widget_t* widget);
 
 void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
+<<<<<<< HEAD
 //Fonction de gestion d'evenement pour un widget de classe ei_toplevel_t
 void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
+=======
+ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
+>>>>>>> 81d30b2937ba9b1eb7f490d2aa5f761144234e5a
 
 
 #endif

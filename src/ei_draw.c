@@ -317,12 +317,11 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		for (int k=0; k<size.height; k++) {
 			ei_side_t *sent_tab=TC[k];
 			while (sent_tab!=NULL) {
-				// A FAIRE : Supression dans TC
-				// A FAIRE : Gérer la libération 
 				// Ajout en tete de TCA 
 				add_TCA(TCA,*sent_tab);	      
 				sent_tab=sent_tab->next;
 			}
+			// Liberation de TC[k]
 			free_TC(TC[k]);
 			// On supprime les éléments tels que y_max=k
 			del_TCA(TCA,k);

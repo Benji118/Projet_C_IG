@@ -45,6 +45,6 @@ void ei_button_setdefaultsfunc(struct ei_widget_t* widget);
 void ei_button_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect);
 
 //Fonction de gestion d'evenement pour un widget de classe ei_button_t
-void ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
+ei_bool_t ei_button_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event);
 
 #endif

@@ -35,14 +35,10 @@ int ei_main(int argc, char** argv)
 	ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 	/* Create, configure and place the frame on screen. */
-	char* name_img="misc/klimt.jpg";
-	ei_surface_t img_surf=hw_image_load(name_img,ei_app_root_surface());
-	ei_rect_t img_s_rect=hw_surface_get_rect(img_surf);
-	//printf("size surf img : (%d,%d)\n",img_s_rect.size.width,img_s_rect.size.height);
 	frame = ei_widget_create("frame", ei_app_root_widget());
 	ei_frame_configure	(frame, &frame_size, &frame_color,
 				 &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
-				 &img_surf, NULL, NULL);
+				 NULL, NULL, NULL);
 	ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 	/* Run the application's main loop. */

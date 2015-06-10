@@ -29,8 +29,12 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 {
 	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
 
+	ei_rect_t fenetre = toplevel->widget.screen_location;
+	fenetre.size.height = fenetre.size.height - 5;
+	fenetre.top_left.y = fenetre.top_left.y +5;
+
 	//dessin de la fenetre
-	draw_tool(surface,toplevel->widget.screen_location,0.0,
+	draw_tool(surface,fenetre,0.0,
 		  toplevel->border_size,toplevel->color,ei_relief_raised,clipper);
 
 	//Barre de titre
@@ -40,7 +44,7 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 	title_bar.size.width   = toplevel->widget.screen_location.size.width;
 	ei_color_t black = {0, 0, 0, 0xff};
 	
-	draw_tool(surface, title_bar, 0.0, 0.0, black, 0, clipper);
+	draw_tool(surface, title_bar, 5.0, 0.0, black, 0, clipper);
 
 	//Offscreen
 	draw_tool(pick_surface,toplevel->widget.screen_location,0.0,
@@ -86,18 +90,20 @@ void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 	widget->screen_location = rect;
 }
 
-void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
+ei_bool_t ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
-	ei_linked_rect_t *clipp_cour;
-	//ei_toplevel_t* tl_cour = (ei_toplevel_t*) widget;
-	ei_rect_t *grande_zone=malloc(sizeof(ei_rect_t));
+	if ( event->type == ei_ev_mouse_move ){
 	
-	/* si on a cliqué su la barre d'en-tete */
-	int new_x, new_y;
-	ei_point_t haut_gauche = widget->screen_location.top_left;
+		if (y_last_click <= widget->screen_location.top_left.x + 25){
+			ei_linked_rect_t *clipp_cour;
+			//ei_toplevel_t* tl_cour = (ei_toplevel_t*) widget;
+			ei_rect_t *grande_zone=malloc(sizeof(ei_rect_t));
 	
-	if (y_last_click <= widget->screen_location.top_left.x + 25){
-		if ( event->type == ei_ev_mouse_move ){
+			/* si on a cliqué su la barre d'en-tete */
+			int new_x, new_y;
+			ei_point_t haut_gauche = widget->screen_location.top_left;
+	
+			
 			new_x = haut_gauche.x + event->param.mouse.where.x - x_last_click;
 			new_y = haut_gauche.y + event->param.mouse.where.y - y_last_click;
 
@@ -128,12 +134,12 @@ void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 			hw_surface_unlock(ei_app_root_surface());
 			hw_surface_update_rects(ei_app_root_surface(), NULL);
 		}
+		return EI_TRUE;
 
-		if  (event->type==ei_ev_mouse_buttonup) {
-			if (ei_event_get_active_widget()!=NULL) {
-				
-			}
-		}
 	}
+
+	return EI_FALSE;
+	
+
 }
 

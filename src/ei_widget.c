@@ -41,23 +41,10 @@ ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,
 		}
 		else
 		{
-			// ei_widget_t* tmp = parent->children_tail;
-			// parent->children_tail->next_sibling = new_widget;
-			// parent->children_tail = new_widget;
-
 			(parent->children_tail->next_sibling) = new_widget;
 			(parent->children_tail) = new_widget;
-
 		}
 	}
-	/* if (strcmp(class_name,"toplevel") == 0 ) */
-	/* { */
-	/* 	ei_widget_t* title = ei_widget_create("frame",new_widget); */
-	/* 	ei_widget_create("button",title); */
-	/* 	ei_widget_create("frame",new_widget); */
-	/* 	ei_widget_create("button",new_widget); */
-
-	/* } */
 
 	class->setdefaultsfunc(new_widget);
 	new_widget->pick_id = widget_id_pick;
@@ -110,45 +97,6 @@ void			ei_widget_destroy		(ei_widget_t*		widget)
 	ei_destroy_rec(widget->children_head);
 	free(widget);
 }
-
-
-/* static ei_widget_t* pick_rec(ei_widget_t* widget_pick, uint32_t *pixel_ptr) */
-/* { */
-/* 	if (widget_pick != NULL) */
-/* 	{ */
-/* 		if (widget_pick->pick_id == *pixel_ptr) */
-/* 			return widget_pick; */
-/* 		else { */
-/* 			if (widget_pick->next_sibling != NULL) */
-/* 				return pick_rec(widget_pick->next_sibling,pixel_ptr); */
-
-/* 			if (widget_pick->children_head != NULL) */
-/* 				return pick_rec(widget_pick->children_head,pixel_ptr); */
-/* 		} */
-/* 	} */
-/* 	else */
-/* 		return NULL; */
-/* } */
-
-/* ei_widget_t*		ei_widget_pick			(ei_point_t*		where) */
-/* { */
-/* 	ei_widget_t* widget; */
-/* 	widget = ei_app_root_widget(); */
-/* 	uint8_t* pixel_ptr = hw_surface_get_buffer(picking_surface)  */
-/* 	+ (	where->y*hw_surface_get_size(picking_surface).width + where->x)*4; */
-/* 	int ir,ig,ib,ia; */
-/* 	hw_surface_get_channel_indices(picking_surface,&ir,&ig,&ib,&ia); */
-/* 	uint8_t *pr,*pg,*pb; */
-/* 	pr = pixel_ptr + ir; */
-/* 	pg = pixel_ptr + ig; */
-/* 	pb = pixel_ptr + ib; */
-
-/* 	uint32_t color = (*pb) + 256*(*pg) + 256*256*(*pr); */
-/* 	if (pick_rec(widget,&color)!=ei_app_root_widget())	 */
-/* 	return pick_rec(widget,&color); */
-/* 	else */
-/* 	return NULL; */
-/* } */
 
 
 static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
@@ -398,8 +346,8 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 	if (*closable == EI_TRUE){
 		ei_widget_t    *closing_button;
 		ei_anchor_t	button_anchor           = ei_anc_northwest;
-		int		button_x		= 5;
-		int		button_y		= 5;
+		int		button_x		= 8;
+		int		button_y		= 8;
 		float		button_rel_x		= 0.0;
 		float		button_rel_y		= 0.0;
 		ei_color_t	button_color		= {0, 0, 0, 0xff};
