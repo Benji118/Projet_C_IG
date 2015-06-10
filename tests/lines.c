@@ -73,7 +73,7 @@ void test_octogone(ei_surface_t surface, ei_rect_t* clipper)
 
 	/* Draw the form with polylines */
 	ei_draw_polyline(surface, pts, color, clipper);
-	ei_draw_polygon(surface, pts, color, clipper);
+	//ei_draw_polygon(surface, pts, color, clipper);
 }
 
 
@@ -113,7 +113,7 @@ void test_square(ei_surface_t surface, ei_rect_t* clipper)
 
 	/* Draw the form with polylines */
 	ei_draw_polyline(surface, pts, color, clipper);
-	ei_draw_polygon(surface, pts, color, clipper);
+	//ei_draw_polygon(surface, pts, color, clipper);
 }
 
 
@@ -153,8 +153,8 @@ int ei_main(int argc, char** argv)
 	point.x = 100;
 	point.y = 100;
 
-	ei_rect_t		clipper		= ei_rect(ei_point(100,100), ei_size(50, 20));
-	clipper_ptr		= &clipper;
+	//ei_rect_t		clipper		= ei_rect(ei_point(100,100), ei_size(50, 20));
+	//clipper_ptr		= &clipper;
 	
 	hw_init();
 		
@@ -162,15 +162,15 @@ int ei_main(int argc, char** argv)
 
 	/* Lock the drawing surface, paint it white. */
 	hw_surface_lock	(main_window);
-	//ei_fill(main_window,&white,NULL);
+	ei_fill(main_window,&white,NULL);
 	//ei_fill		(main_window, &white, clipper_ptr);
 
 	/*Draw_text*/
-	test_text(main_window,&point,clipper_ptr,&color2);
+	//test_text(main_window,&point,clipper_ptr,&color2);
 	/* Draw polylines. */
-	//test_line	(main_window, clipper_ptr);
-	//test_octogone	(main_window, clipper_ptr);
-	//test_square	(main_window, clipper_ptr);
+	test_line	(main_window, clipper_ptr);
+	test_octogone	(main_window, clipper_ptr);
+	test_square	(main_window, clipper_ptr);
 	//test_dot	(main_window, clipper_ptr);
 	
 	/* Unlock and update the surface. */
