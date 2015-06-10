@@ -16,7 +16,7 @@
 #include "ei_widget.h"
 #include "ei_utils.h"
 #include "ei_event.h"
-
+#include "test_two048.h"
 
 
 // ei_widget_set_destroy_cb --

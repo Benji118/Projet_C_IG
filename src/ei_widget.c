@@ -98,6 +98,7 @@ void			ei_widget_destroy		(ei_widget_t*		widget)
 	free(widget);
 }
 
+
 static ei_widget_t* pick_rec(ei_widget_t* widget_pick, ei_point_t* where)
 {
 	if (widget_pick->children_head == NULL)
