@@ -485,7 +485,7 @@ void			ei_draw_text		(ei_surface_t		surface,
 			*copy=*inter_clip;
 			copy->top_left.x=copy->top_left.x-where->x;
 			copy->top_left.y=copy->top_left.y-where->y;
-			rect_t *tmp=inter_rect(*copy,rect_text);
+			ei_rect_t *tmp=inter_rect(*copy,rect_text);
 			rect_text=*tmp;
 			rect_dest=*inter_clip;
 			free(copy);
