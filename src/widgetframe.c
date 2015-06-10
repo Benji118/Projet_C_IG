@@ -53,20 +53,24 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 		}
 			ei_draw_text(surface,text_pos,frame->texte,frame->font,
 				frame->text_color,frame->clipper);
-		}
+	}
 
 
 	//Cas de l'image
-	ei_surface_t img_surface;
+	//ei_surface_t img_surface;
 	if (frame->img !=NULL){
-		img_surface = hw_image_load(frame->img,surface);
+		//printf("img non NULL\n");
+		//printf("%s\n",frame->img);
+		//ei_surface_t img_surface = hw_image_load(frame->img,surface);
 		ei_rect_t* rect_paste = frame->img_rect;
-		if (rect_paste!=NULL)
-		rect_paste->top_left = frame->img_pos;
-		hw_surface_lock(img_surface);
-		ei_copy_surface(surface,rect_paste,img_surface,
-				frame->img_rect,EI_FALSE);
-		hw_surface_unlock(img_surface);
+		if (rect_paste!=NULL) {
+			printf("frame->img_rect :\n top (%d,%d)\n size : (%d,%d)\n",frame->img_rect->top_left.x,frame->img_rect->top_left.y,frame->img_rect->size.width,frame->img_rect->size.height);
+			rect_paste->top_left = frame->img_pos;
+		}
+		hw_surface_lock(surface);
+		ei_copy_surface(surface,rect_paste,*(frame->img),frame->img_rect,EI_FALSE);
+		hw_surface_unlock(surface);
+		hw_surface_update_rects(surface,NULL);
 	}
 }
 
@@ -87,7 +91,10 @@ void ei_frame_setdefaultsfunc	(struct ei_widget_t*	widget)
 	frame->text_color = col;
 	frame->img=NULL;
 	frame->img_anchor=ei_anc_center;
-	frame->img_pos=widget->screen_location.top_left;
+	ei_point_t img_point;
+	img_point.x=0;
+	img_point.y=0;
+	frame->img_pos=img_point;
 
 }
 

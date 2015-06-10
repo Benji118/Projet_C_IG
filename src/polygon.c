@@ -50,6 +50,7 @@ void del_TCA (TCA *a, int y)
 		if (cour->side.ymax==y) {
 			if (prec==cour) {
 				a->head=a->head->next;
+				//free(cour);
 				cour=a->head;
 				prec=a->head;
 			} else {
@@ -177,4 +178,15 @@ uint32_t alpha_effect(ei_surface_t surface_source,
 	res = ei_map_rgba(surface_source,&color_final);
 
 	return res;
+}
+
+void free_TC(ei_side_t *begin)
+{
+	ei_side_t* tmp=begin;
+	ei_side_t* next;
+	while(tmp!=NULL) {
+		next=tmp->next;
+		free(tmp);
+		tmp=next;
+	}
 }
