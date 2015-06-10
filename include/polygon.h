@@ -14,8 +14,6 @@ typedef struct ei_side_t {
 	int                             ymax; // ordonnee maximale du cote
 	float                             x_ymin; // abscisse du point d'ordonnee minimale du cote
 	float                           inv_pente;
-	//ei_point_t                      begin;
-	//ei_point_t                      end;
 	struct ei_side_t*               next; //pointeur vers le cote suivant
 } ei_side_t;
 
@@ -44,11 +42,10 @@ void add_TCA(TCA *a, ei_side_t c);
 // Suppresion en queue dans TC
 void del_TCA (TCA *a, int y);
 
-// Fonction de tri
-// A utiliser après chaque ajout dans TCA
-// Décale la première cellule jusqu'à sa place
+// Fonction de tri de TCA
 TCA *sort_TCA (TCA *a);
 
+// Fonction de dessin d'un pixel
 void draw_pixel (ei_surface_t surface,
 		 uint32_t x,
 		 uint32_t y,
@@ -60,4 +57,7 @@ uint32_t alpha_effect(ei_surface_t surface_source,
 					  ei_surface_t surface_dest,
  					  uint32_t *pixel_source,
  					  uint32_t *pixel_dest);
+
+void free_TC(ei_side_t *begin);
+
 #endif 
