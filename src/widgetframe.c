@@ -61,6 +61,7 @@ void ei_frame_drawfunc(struct ei_widget_t*	widget,
 	if (frame->img !=NULL){
 		img_surface = hw_image_load(frame->img,surface);
 		ei_rect_t* rect_paste = frame->img_rect;
+		if (rect_paste!=NULL)
 		rect_paste->top_left = frame->img_pos;
 		hw_surface_lock(img_surface);
 		ei_copy_surface(surface,rect_paste,img_surface,
@@ -86,6 +87,7 @@ void ei_frame_setdefaultsfunc	(struct ei_widget_t*	widget)
 	frame->text_color = col;
 	frame->img=NULL;
 	frame->img_anchor=ei_anc_center;
+	frame->img_pos=widget->screen_location.top_left;
 
 }
 

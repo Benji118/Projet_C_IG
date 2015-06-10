@@ -392,195 +392,73 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				// Mise a jour des x_inter
 				maj_x_inter->x_inter=maj_x_inter->x_inter+maj_x_inter->side.inv_pente;
 				// On passe au coté suivant dans TCA
-				maj_x_inter=maj_x_inter->next;
-				//if (k!=size.height-1) {
-					// Mise a jour des intersections
-					/*
-					// Initialisation des variables
-					int x1=maj_x_inter->side.begin.x;
-					int x2=maj_x_inter->side.end.x;
-					int y1=maj_x_inter->side.begin.y;
-					int y2=maj_x_inter->side.end.y;
-					int dx=x2-x1;
-					int dy=y2-y1;
-					int e;
-					*/
-					/*
-					// On réutilise Bresenham
-					if (dx !=0) {
-						if (dx>0) {
-							if (dy!=0) {
-								if (dy>0) {
-									// Vecteur oblique 1er cadran
-									if (dx>=dy) {
-										// 1er octant
-										e=dx;
-										dx=2*e;
-										dy=2*dy;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											x1=x1+1;
-											e=e+dy;
-											if (2*e>dx) {
-												y1=y1+1;
-												e=e-dx;
-											}
-										}
-									} else {
-										// 2eme octant
-										e=dy;
-										dx=2*dx;
-										dy=2*e;
-										// Boucle de traitement, segment par segment
-										// Traitement 
-										while (y1!=k+1) {
-											y1=y1+1;
-											e=e-dx;
-											if (e < 0) {
-												x1=x1+1;
-												e=e+dy;
-											}
-										}
-									}
-								} else {
-									// Vecteur oblique 4eme cadran
-									if (dx+dy>=0){
-										//8e octant
-										e=dx;
-										dx=2*e;
-										dy=2*dy;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											x1=x1+1;
-											e=e+dy;
-											if (e<0) {
-												y1=y1-1;
-												e=e+dx;
-											}
-										}
-									} else {
-										// 7e octant
-										e=dy;
-										dx=2*dx;
-										dy=2*e;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											y1=y1-1;
-											e=e+dx;
-											if (e>0) {
-												x1=x1+1;
-												e=e+dy;
-											}
-										}
-									}
-								}
-							} else {
-								// Vecteur horizontal vers la droite
-								// Cas impossible puisqu'on ne prend pas en compte les segments horizontaux
-								while (y1!=k){
-								  x1=x1+1;
-								  }								
-								printf("Segment horizontal\n");
-				
-							}
-						} else {
-							if (dy!=0){
-								if (dy>0){
-									// 2e cadran
-									if (dx+dy<=0){
-										// 4e octant
-										e=dx;
-										dx=2*e;
-										dy=2*dy;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											x1=x1-1;
-											e=e+dy;
-											if (e>=0) {
-												y1=y1+1;
-												e=e+dx;
-											}
-										}
-									} else {
-										// 3e octant
-										e=dy;
-										dx=2*dx;
-										dy=2*e;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											y1=y1+1;
-											e=e+dx;
-											if (e<=0) {
-												x1=x1-1;
-												e=e+dy;
-											}
-										}	
-									}
-								} else {
-									// 3e cadran
-									if (dx<=dy){
-										// 5e octant
-										e=dx;
-										dx=2*e;
-										dy=2*dy;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											x1=x1-1;
-											e=e-dy;
-											if (e>=0) {
-												y1=y1-1;
-												e = e+dx;
-											}
-										}
-									} else {
-										// 6e octant
-										e=dy;
-										dy=2*e;
-										dx=2*dx;
-										// Boucle de traitement, segment par segment
-										// Traitement
-										while (y1!=k+1) {
-											y1=y1-1;
-											e=e-dx;
-											if (e>=0) {
-												x1=x1-1;
-												e=e+dy;
-											}
-										}
-									}
-								} 
-							} else {
-								// Vecteur horizontal vers la gauche
-								while (y1!=k+1){
-									x1=x1-1;
-								}
-							}
-						}
-					} else {
-						if (dy>0){
-							// Vecteur vertical croissant
-							while (y1!=k+1){
-								y1=y1+1;
-							}
-						} else {
-							// Vecteur vertical decroissant
-							while (y1!=k+1){
-								y1=y1-1;
-							}
-						}
-					}*/			       
-					//}			  
+				maj_x_inter=maj_x_inter->next;			       		  
 			}
 		}
 	}
 }
-	
+
+static ei_rect_t* inter_rect(ei_rect_t rect1, ei_rect_t rect2) {
+	// On cherche le top left de l'intersection
+	ei_point_t top_inter;
+	ei_size_t size_inter;
+	// On prend le max des top_left.x
+	if (rect1.top_left.x<rect2.top_left.x) {
+		top_inter.x=rect2.top_left.x;
+		if (top_inter.x+rect2.size.width<rect1.top_left.x+rect1.size.width) {
+			size_inter.width=rect2.size.width;
+		} else {
+			size_inter.width=rect1.top_left.x+rect1.size.width-top_inter.x;
+		}
+	} else if (rect1.top_left.x>rect2.top_left.x) {
+		top_inter.x=rect1.top_left.x;
+	        if (top_inter.x+rect1.size.width<rect2.top_left.x+rect2.size.width) {
+			size_inter.width=rect1.size.width;
+		} else {
+			size_inter.width=rect2.top_left.x+rect2.size.width-top_inter.x;
+		}
+	} else {
+		top_inter.x=rect1.top_left.x;
+		if (rect1.size.width<rect2.size.width) {
+			size_inter.width=rect1.size.width;
+		} else {
+			size_inter.width=rect2.size.width;
+		}
+	}
+	// On prend le max des top_left.y
+	if (rect1.top_left.y<rect2.top_left.y) {
+		top_inter.y=rect2.top_left.y;
+		if (top_inter.y+rect2.size.height<rect1.top_left.y+rect1.size.height) {
+			size_inter.height=rect2.size.height;
+		} else {
+			size_inter.height=rect1.top_left.y+rect1.size.height-top_inter.y;
+		}
+	} else if (rect1.top_left.y>rect2.top_left.y) {
+		top_inter.y=rect1.top_left.y;
+		if (top_inter.y+rect1.size.height<rect2.top_left.y+rect2.size.height) {
+			size_inter.height=rect1.size.height;
+		} else {
+			size_inter.height=rect2.top_left.y+rect2.size.height-top_inter.y;
+		}
+	} else {
+		top_inter.y=rect1.top_left.y;
+		if (rect1.size.height<rect2.size.height) {
+			size_inter.height=rect1.size.height;
+		} else {
+			size_inter.height=rect2.size.height;
+		}
+	}
+	// Resultat
+	if (size_inter.height<0 || size_inter.width<0) {
+		return NULL;
+	} else {
+		ei_rect_t *inter=malloc(sizeof(ei_rect_t));
+		inter->top_left=top_inter;
+		inter->size=size_inter;
+		return inter;
+	}
+}
+
 void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_point_t*	where,
 						 const char*		text,
@@ -588,71 +466,41 @@ void			ei_draw_text		(ei_surface_t		surface,
 						 const ei_color_t*	color,
 						 const ei_rect_t*	clipper)
 {
-	//clipper null ou contenant le texte
+	// Initialisation de la surface de texte
 	ei_surface_t *surface_text;
-	surface_text = hw_text_create_surface(text,font,color);
+	ei_font_t new_font;
+	if (font==NULL) {
+		new_font=ei_default_font;
+	} else {
+		
+		new_font=font;
+	}
+	surface_text = hw_text_create_surface(text,new_font,color);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
+	printf("rect text : \n top : (%d,%d)\n size : (%d,%d)\n",rect_text.top_left.x,rect_text.top_left.y,rect_text.size.width,rect_text.size.height);
 	ei_rect_t rect_dest=rect_text;
 	rect_dest.top_left = *where;
-	// if (clipper == NULL || (clipper->top_left.x < where->x
-	// 	&& clipper->top_left.y < where->y
-	// 	&& clipper->size.width > rect_text.size.width 
-	// 	&& clipper->size.height > rect_text.size.height))
-	// {
-
-	// 	rect_dest = rect_text;
-	// 	rect_dest.top_left = *where;
-	// }
-	// //le topleft du clipper est dans rect_text
-	// else if (where->x > clipper->top_left.x && where->y > clipper->top_left.y)
-	// {
-	// 	rect_dest.top_left = clipper->top_left;
-	// 	//cas clipper dans rect_text en entier
-	// 	if (((rect_text.size.width - (clipper->top_left.x - where->x)) > clipper->size.width)
-	// 	&& ((rect_text.size.height - (clipper->top_left.y - where->y)) > clipper->size.height))
-	// 	{
-	// 		rect_dest = *clipper;
-	// 	}
-	// 	//cas du clipper depassant rect_text en largeur
-	// 	else if ((rect_text.size.width - (clipper->top_left.x - where->x)) < clipper->size.width 
-	// 			&& (rect_text.size.height - (clipper->top_left.y - where->y)) > clipper->size.height)
-	// 	{
-	// 		rect_dest.size.width = clipper->size.width;
-	// 		rect_dest.size.height = rect_text.size.height; 
-	// 	}
-	// 	//cas du clipper depassant rect_text en hauteur
-	// 	else if ((rect_text.size.width - (clipper->top_left.x - where->x)) > clipper->size.width 
-	// 			&& (rect_text.size.height - (clipper->top_left.y - where->y)) < clipper->size.height)
-	// 	{
-	// 		rect_dest.size.height = clipper->size.height;
-	// 		rect_dest.size.width = rect_text.size.width; 
-	// 	}
-	// 	//le clipper depasse rect_text en largeur et hauteur
-	// 	else if ((rect_text.size.width - (clipper->top_left.x - where->x)) < clipper->size.width 
-	// 			&& (rect_text.size.height - (clipper->top_left.y - where->y)) < clipper->size.height)
-	// 	{
-	// 		rect_dest.size = clipper->size;
-	// 	}
-	// }
-	// //le topleft du clipper est en dehors du rect_text
-	// 	//northwest
-	// else if (clipper->top_left.x < where->x
-	// 		&& clipper->top_left.y < where->y)	
-	// {
-	// 	//rect_text en entier dans clipper;
-	// 	if (clipper->size.width + clipper->top_left.x > where->x + rect_text.size.width
-	// 		&& clipper->size.height + clipper->top_left.y > where->y + rect_text.size.height)
-	// 	{
-	// 		rect_dest = rect_text;
-	// 	}
-	// 	//les cas restants : on prend toujours le clipper
-	// 	else
-	// 	{
-	// 		rect_dest = *clipper;
-	// 	}
-	// }
+	printf("rect dest : \n top : (%d,%d)\n size : (%d,%d)\n",rect_dest.top_left.x,rect_dest.top_left.y,rect_dest.size.width,rect_dest.size.height);
+	if (clipper!=NULL) {
+		ei_rect_t *inter_clip=inter_rect(rect_dest,*clipper);
+		if (inter_clip!=NULL) {
+			printf("inter_clip : \n top : (%d,%d)\n size : (%d,%d)\n",inter_clip->top_left.x,inter_clip->top_left.y,inter_clip->size.width,inter_clip->size.height);
+			ei_rect_t *copy=malloc(sizeof(ei_rect_t));
+			*copy=*inter_clip;
+			copy->top_left.x=copy->top_left.x-where->x;
+			copy->top_left.y=copy->top_left.y-where->y;
+			//printf("copy : \n top : (%d,%d)\n size : (%d,%d)\n",copy->top_left.x,copy->top_left.y,copy->size.width,copy->size.height);
+			//printf("rect text : \n top : (%d,%d)\n size : (%d,%d)\n",rect_text.top_left.x,rect_text.top_left.y,rect_text.size.width,rect_text.size.height);
+			ei_rect_t *tmp=inter_rect(*copy,rect_text);
+			//printf("tmp : \n top : (%d,%d)\n size : (%d,%d)\n",tmp->top_left.x,tmp->top_left.y,tmp->size.width,tmp->size.height);
+			rect_text=*tmp;
+			printf("rect text : \n top : (%d,%d)\n size : (%d,%d)\n",rect_text.top_left.x,rect_text.top_left.y,rect_text.size.width,rect_text.size.height);
+			rect_dest=*inter_clip;
+			printf("rect dest : \n top : (%d,%d)\n size : (%d,%d)\n",rect_dest.top_left.x,rect_dest.top_left.y,rect_dest.size.width,rect_dest.size.height);
+			free(copy);
+		}
+	}
 	ei_copy_surface(surface,&rect_dest,surface_text,&rect_text,EI_TRUE);
-
 }
 
 void			ei_fill			(ei_surface_t		surface,
@@ -693,15 +541,18 @@ int			ei_copy_surface		(ei_surface_t		destination,
 	}
 	uint32_t *ptr_src_origin = (uint32_t*) hw_surface_get_buffer(source);
 	uint32_t *ptr_dst_origin = (uint32_t*) hw_surface_get_buffer(destination);
-	ptr_src_origin =ptr_src_origin + src.size.width*src.top_left.y + src.top_left.x;
+	ptr_src_origin =ptr_src_origin + hw_surface_get_size(source).width*src.top_left.y + src.top_left.x;
 	ptr_dst_origin =ptr_dst_origin + hw_surface_get_size(destination).width*dst.top_left.y + dst.top_left.x;
 
+	printf("surf source : (%d,%d)\n",hw_surface_get_size(source).width,hw_surface_get_size(source).height);
+	printf("surf dest : (%d,%d)\n",hw_surface_get_size(destination).width,hw_surface_get_size(destination).height);
 	uint32_t *ptr_src = ptr_src_origin;
 	uint32_t *ptr_dst = ptr_dst_origin;
-
+	printf("bornes y :\n inf : %d\n sup : %d\n", src.top_left.y,src.top_left.y+src.size.height-1);
+	printf("bornes x :\n inf : %d\n sup : %d\n", src.top_left.x,src.top_left.x+src.size.width-1);
 	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++)
 	{
-		for (uint32_t x = src.top_left.x; x < src.top_left.x + src.size.width; x++)
+		for (uint32_t x = dst.top_left.x; x < dst.top_left.x + dst.size.width; x++)
 		{
 			if (alpha == EI_FALSE)
 			{
@@ -711,12 +562,14 @@ int			ei_copy_surface		(ei_surface_t		destination,
 			}
 			else
 			{
+				//printf("Dessin en (%u,%u)\n",x,y);				
+				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
-				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);
 			}
 		}
-		ptr_dst = ptr_dst + (uint32_t)(hw_surface_get_size(destination).width - src.size.width);
+		ptr_dst = ptr_dst + (uint32_t)(hw_surface_get_size(destination).width -src.size.width);
 	}
+	printf("deplacement ptr_dst : %d",hw_surface_get_size(destination).width-src.size.width);
 	return 0;
 }
