@@ -94,8 +94,12 @@ void ei_app_run()
 
 	while (quit_app == EI_FALSE)
 	{
+
 		if (event_cour->type == ei_ev_mouse_buttondown){
 			ei_event_set_active_widget( ei_widget_pick(&(event_cour->param.mouse.where)) );
+			x_last_click = event_cour->param.mouse.where.x;
+			y_last_click = event_cour->param.mouse.where.y;
+			
 		}
 		
 		if (ei_event_get_active_widget() != NULL){

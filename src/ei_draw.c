@@ -323,6 +323,7 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				add_TCA(TCA,*sent_tab);	      
 				sent_tab=sent_tab->next;
 			}
+			free_TC(TC[k]);
 			// On supprime les éléments tels que y_max=k
 			del_TCA(TCA,k);
 			// On trie la TCA 

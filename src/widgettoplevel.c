@@ -1,6 +1,9 @@
 #include "widgettoplevel.h"
 #include "geometry.h"
+#include "ei_application.h"
 #include "ei_draw.h"
+#include "ei_event.h"
+#include "global.h"
 #include "ei_widget.h"
 #include <stdlib.h>
 #include <string.h>
@@ -85,5 +88,52 @@ void ei_toplevel_geomnotifyfunc(struct ei_widget_t* widget, ei_rect_t rect)
 
 void ei_toplevel_handlefunc(struct ei_widget_t* widget,struct ei_event_t* event)
 {
+	ei_linked_rect_t *clipp_cour;
+	//ei_toplevel_t* tl_cour = (ei_toplevel_t*) widget;
+	ei_rect_t *grande_zone=malloc(sizeof(ei_rect_t));
+	
+	/* si on a cliqué su la barre d'en-tete */
+	int new_x, new_y;
+	ei_point_t haut_gauche = widget->screen_location.top_left;
+	
+	if (y_last_click <= widget->screen_location.top_left.x + 25){
+		if ( event->type == ei_ev_mouse_move ){
+			new_x = haut_gauche.x + event->param.mouse.where.x - x_last_click;
+			new_y = haut_gauche.y + event->param.mouse.where.y - y_last_click;
 
+			ei_place(widget,NULL,&new_x,&new_y,NULL,NULL,NULL,NULL,NULL,NULL);
+
+			grande_zone->top_left = haut_gauche;
+			if (new_y >= haut_gauche.y)
+				grande_zone->size.height = widget->screen_location.size.height + new_y - haut_gauche.y;
+			else
+				grande_zone->size.height = widget->screen_location.size.height - new_y + haut_gauche.y;
+
+			if (new_x >= haut_gauche.x)
+				grande_zone->size.width = widget->screen_location.size.width + new_x - haut_gauche.x;
+			else
+				grande_zone->size.width = widget->screen_location.size.width - new_x + haut_gauche.x;
+
+				
+			ei_app_invalidate_rect(grande_zone);
+
+			clipp_cour = list_rect;
+			hw_surface_lock(ei_app_root_surface());
+			while (clipp_cour != NULL)
+			{
+				affiche_widget_rec(root_widget_window, &(clipp_cour->rect));
+				clipp_cour = clipp_cour->next;
+			}
+			ei_app_free_rect(&list_rect);
+			hw_surface_unlock(ei_app_root_surface());
+			hw_surface_update_rects(ei_app_root_surface(), NULL);
+		}
+
+		if  (event->type==ei_ev_mouse_buttonup) {
+			if (ei_event_get_active_widget()!=NULL) {
+				
+			}
+		}
+	}
 }
+
