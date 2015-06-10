@@ -150,11 +150,11 @@ int ei_main(int argc, char** argv)
 	ei_color_t		white		= { 0xff, 0xff, 0xff, 0xff };
 	ei_rect_t*		clipper_ptr	= NULL;
 	ei_point_t     point;
-	point.x = 10;
-	point.y = 10;
+	point.x = 100;
+	point.y = 100;
 
-//	ei_rect_t		clipper		= ei_rect(ei_point(200, 150), ei_size(400, 300));
-//	clipper_ptr		= &clipper;
+	ei_rect_t		clipper		= ei_rect(ei_point(100,100), ei_size(50, 20));
+	clipper_ptr		= &clipper;
 	
 	hw_init();
 		

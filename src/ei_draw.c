@@ -471,32 +471,23 @@ void			ei_draw_text		(ei_surface_t		surface,
 	ei_font_t new_font;
 	if (font==NULL) {
 		new_font=ei_default_font;
-	} else {
-		
+	} else {		
 		new_font=font;
 	}
 	surface_text = hw_text_create_surface(text,new_font,color);
 	ei_rect_t rect_text = hw_surface_get_rect(surface_text);
-	printf("rect text : \n top : (%d,%d)\n size : (%d,%d)\n",rect_text.top_left.x,rect_text.top_left.y,rect_text.size.width,rect_text.size.height);
 	ei_rect_t rect_dest=rect_text;
 	rect_dest.top_left = *where;
-	printf("rect dest : \n top : (%d,%d)\n size : (%d,%d)\n",rect_dest.top_left.x,rect_dest.top_left.y,rect_dest.size.width,rect_dest.size.height);
 	if (clipper!=NULL) {
 		ei_rect_t *inter_clip=inter_rect(rect_dest,*clipper);
 		if (inter_clip!=NULL) {
-			printf("inter_clip : \n top : (%d,%d)\n size : (%d,%d)\n",inter_clip->top_left.x,inter_clip->top_left.y,inter_clip->size.width,inter_clip->size.height);
 			ei_rect_t *copy=malloc(sizeof(ei_rect_t));
 			*copy=*inter_clip;
 			copy->top_left.x=copy->top_left.x-where->x;
 			copy->top_left.y=copy->top_left.y-where->y;
-			//printf("copy : \n top : (%d,%d)\n size : (%d,%d)\n",copy->top_left.x,copy->top_left.y,copy->size.width,copy->size.height);
-			//printf("rect text : \n top : (%d,%d)\n size : (%d,%d)\n",rect_text.top_left.x,rect_text.top_left.y,rect_text.size.width,rect_text.size.height);
-			ei_rect_t *tmp=inter_rect(*copy,rect_text);
-			//printf("tmp : \n top : (%d,%d)\n size : (%d,%d)\n",tmp->top_left.x,tmp->top_left.y,tmp->size.width,tmp->size.height);
+			rect_t *tmp=inter_rect(*copy,rect_text);
 			rect_text=*tmp;
-			printf("rect text : \n top : (%d,%d)\n size : (%d,%d)\n",rect_text.top_left.x,rect_text.top_left.y,rect_text.size.width,rect_text.size.height);
 			rect_dest=*inter_clip;
-			printf("rect dest : \n top : (%d,%d)\n size : (%d,%d)\n",rect_dest.top_left.x,rect_dest.top_left.y,rect_dest.size.width,rect_dest.size.height);
 			free(copy);
 		}
 	}
@@ -544,12 +535,9 @@ int			ei_copy_surface		(ei_surface_t		destination,
 	ptr_src_origin =ptr_src_origin + hw_surface_get_size(source).width*src.top_left.y + src.top_left.x;
 	ptr_dst_origin =ptr_dst_origin + hw_surface_get_size(destination).width*dst.top_left.y + dst.top_left.x;
 
-	printf("surf source : (%d,%d)\n",hw_surface_get_size(source).width,hw_surface_get_size(source).height);
-	printf("surf dest : (%d,%d)\n",hw_surface_get_size(destination).width,hw_surface_get_size(destination).height);
+
 	uint32_t *ptr_src = ptr_src_origin;
 	uint32_t *ptr_dst = ptr_dst_origin;
-	printf("bornes y :\n inf : %d\n sup : %d\n", src.top_left.y,src.top_left.y+src.size.height-1);
-	printf("bornes x :\n inf : %d\n sup : %d\n", src.top_left.x,src.top_left.x+src.size.width-1);
 	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++)
 	{
 		for (uint32_t x = dst.top_left.x; x < dst.top_left.x + dst.size.width; x++)
@@ -562,14 +550,13 @@ int			ei_copy_surface		(ei_surface_t		destination,
 			}
 			else
 			{
-				//printf("Dessin en (%u,%u)\n",x,y);				
-				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
+				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);				
 			}
 		}
+		ptr_src = ptr_src + (uint32_t)(hw_surface_get_size(source).width -src.size.width);
 		ptr_dst = ptr_dst + (uint32_t)(hw_surface_get_size(destination).width -src.size.width);
 	}
-	printf("deplacement ptr_dst : %d",hw_surface_get_size(destination).width-src.size.width);
 	return 0;
 }
