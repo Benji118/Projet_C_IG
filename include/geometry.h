@@ -15,6 +15,7 @@ ei_linked_point_t *rounded_frame(ei_rect_t rectangle,
 				 bool top,
 				 bool bottom);
 
+/* boite a dessin. Dessine un rectangle avec les bords arrondis ou non, un relief ou non. */
 void                    draw_tool        ( ei_surface_t                   surface,
 					     const ei_rect_t                rectangle,
 					     const double                   rayon,

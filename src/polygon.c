@@ -50,7 +50,7 @@ void del_TCA (TCA *a, int y)
 		if (cour->side.ymax==y) {
 			if (prec==cour) {
 				a->head=a->head->next;
-				//free(cour);
+				free(cour);
 				cour=a->head;
 				prec=a->head;
 			} else {
