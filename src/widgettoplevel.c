@@ -26,9 +26,18 @@ void ei_toplevel_drawfunc (struct ei_widget_t* widget,
 {
 	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
 
-	//dessin du toplevel
+	//dessin de la fenetre
 	draw_tool(surface,toplevel->widget.screen_location,0.0,
 		  toplevel->border_size,toplevel->color,ei_relief_raised,clipper);
+
+	//Barre de titre
+	ei_rect_t title_bar;
+	title_bar.top_left    = toplevel->widget.screen_location.top_left;
+	title_bar.size.height = 25;
+	title_bar.size.width   = toplevel->widget.screen_location.size.width;
+	ei_color_t black = {0xff, 0xff, 0xff, 0xff};
+	
+	draw_tool(surface, title_bar, 0.0, 0.0, black, 0, clipper);
 
 	//Offscreen
 	draw_tool(pick_surface,toplevel->widget.screen_location,0.0,
