@@ -52,7 +52,7 @@ void			ei_frame_register_class 	()
 	frame->drawfunc = ei_frame_drawfunc;
 	frame->setdefaultsfunc = ei_frame_setdefaultsfunc;
 	frame->geomnotifyfunc = ei_frame_geomnotifyfunc;
-	//frame->handlefunc = ei_frame_handlefunc;
+	frame->handlefunc = ei_frame_handlefunc;
 
 	ei_widgetclass_register(frame);
 }
@@ -67,7 +67,7 @@ void			ei_button_register_class 	()
 	button->drawfunc = ei_button_drawfunc;
 	button->setdefaultsfunc = ei_button_setdefaultsfunc;
 	button->geomnotifyfunc = ei_button_geomnotifyfunc;
-	//button->handlefunc = ei_button_handlefunc;
+	button->handlefunc = ei_button_handlefunc;
 
 	ei_widgetclass_register(button);
 }

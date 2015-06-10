@@ -36,6 +36,7 @@ void			ei_place			(struct ei_widget_t*	widget,
 		float *rh = malloc(sizeof(int));
 		rh = NULL;
 
+		params->anchor_data = ei_anc_none;
 		params->x = x;
 		params->y = y;
 		params->w = w;
@@ -129,86 +130,88 @@ void ei_placer_run(struct ei_widget_t* widget)
 	
 
 	//traitement anchor
-	if (widget->placer_params->anchor_data == 1)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
-	+ widget->screen_location.size.width/2;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
-	+widget->placer_params->y_data - widget->screen_location.size.height/2;
-	}
-	if(widget->placer_params->anchor_data == 2)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
-	+widget->placer_params->x_data - widget->screen_location.size.width/2;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
-	+widget->placer_params->y_data;
-	}
-	if (widget->placer_params->anchor_data == 3)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->screen_location.size.width*widget->placer_params->rx_data
-	+ widget->placer_params->x_data - widget->screen_location.size.width;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
-	+ widget->placer_params->y_data;
-	}
-	if (widget->placer_params->anchor_data == 4)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->screen_location.size.width*widget->placer_params->rx_data
-	+ widget->placer_params->x_data - widget->screen_location.size.width;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height * widget->placer_params->ry_data
-	+ widget->placer_params->y_data + widget->screen_location.size.height/2;
-	}
-	if (widget->placer_params->anchor_data == 5)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
-	+ widget->placer_params->x_data - widget->screen_location.size.width;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
-	+ widget->placer_params->y_data - widget->screen_location.size.height;
-	}
-	if (widget->placer_params->anchor_data == 6)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
-	+ widget->placer_params->x_data - widget->screen_location.size.height/2;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height*widget->placer_params->y_data
-	+ widget->placer_params->y_data - widget->screen_location.size.height;
-	}
-	if (widget->placer_params->anchor_data == 7)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
-	+ widget->placer_params->x_data;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height * widget->placer_params->ry_data
-	+ widget->placer_params->y_data - widget->screen_location.size.height;
-	}
-	if (widget->placer_params->anchor_data == 8)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
-	+ widget->placer_params->x_data;
-		widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height + widget->placer_params->ry_data
-	+ widget->placer_params->y_data - widget->screen_location.size.height/2;
-	}
-	if (widget->placer_params->anchor_data == 9)
-	{
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
-	+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
-	+ widget->placer_params->x_data;
-		widget->screen_location.top_left.x = widget->parent->screen_location.top_left.y
-	+ widget->parent->screen_location.size.height * widget->placer_params->y_data
-	+ widget->placer_params->y_data;
+	if (widget->placer_params->anchor_data != ei_anc_none){
+		if (widget->placer_params->anchor_data == 1)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
+				+ widget->screen_location.size.width/2;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
+				+widget->placer_params->y_data - widget->screen_location.size.height/2;
+		}
+		if(widget->placer_params->anchor_data == 2)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
+				+widget->placer_params->x_data - widget->screen_location.size.width/2;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
+				+widget->placer_params->y_data;
+		}
+		if (widget->placer_params->anchor_data == 3)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->screen_location.size.width*widget->placer_params->rx_data
+				+ widget->placer_params->x_data - widget->screen_location.size.width;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
+				+ widget->placer_params->y_data;
+		}
+		if (widget->placer_params->anchor_data == 4)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->screen_location.size.width*widget->placer_params->rx_data
+				+ widget->placer_params->x_data - widget->screen_location.size.width;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height * widget->placer_params->ry_data
+				+ widget->placer_params->y_data + widget->screen_location.size.height/2;
+		}
+		if (widget->placer_params->anchor_data == 5)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
+				+ widget->placer_params->x_data - widget->screen_location.size.width;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height*widget->placer_params->ry_data
+				+ widget->placer_params->y_data - widget->screen_location.size.height;
+		}
+		if (widget->placer_params->anchor_data == 6)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
+				+ widget->placer_params->x_data - widget->screen_location.size.height/2;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height*widget->placer_params->y_data
+				+ widget->placer_params->y_data - widget->screen_location.size.height;
+		}
+		if (widget->placer_params->anchor_data == 7)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width*widget->placer_params->rx_data
+				+ widget->placer_params->x_data;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height * widget->placer_params->ry_data
+				+ widget->placer_params->y_data - widget->screen_location.size.height;
+		}
+		if (widget->placer_params->anchor_data == 8)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
+				+ widget->placer_params->x_data;
+			widget->screen_location.top_left.y = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height + widget->placer_params->ry_data
+				+ widget->placer_params->y_data - widget->screen_location.size.height/2;
+		}
+		if (widget->placer_params->anchor_data == 9)
+		{
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.x
+				+ widget->parent->screen_location.size.width * widget->placer_params->rx_data
+				+ widget->placer_params->x_data;
+			widget->screen_location.top_left.x = widget->parent->screen_location.top_left.y
+				+ widget->parent->screen_location.size.height * widget->placer_params->y_data
+				+ widget->placer_params->y_data;
+		}
 	}
 }
 
