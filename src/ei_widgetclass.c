@@ -12,10 +12,12 @@
 
 void			ei_widgetclass_register		(ei_widgetclass_t* widgetclass)
 {
+	//Aucune classe n'a ete enregistrer
 	if (list_class == NULL)
 	{
 		list_class = widgetclass;
 	}
+	//On ajoute une classe à la liste non vide
 	else
 	{
 		widgetclass->next = malloc(sizeof(ei_widgetclass_t));
@@ -45,6 +47,8 @@ ei_widgetclass_t*	ei_widgetclass_from_name	(ei_widgetclass_name_t name)
 
 void			ei_frame_register_class 	()
 {	
+	//Assignation des champs d'une classe pour le type frame
+
 	ei_widgetclass_t* frame = malloc(sizeof(ei_widgetclass_t));
 	strcpy(frame->name,"frame");
 	frame->allocfunc = ei_frame_allocfunc;
@@ -54,12 +58,15 @@ void			ei_frame_register_class 	()
 	frame->geomnotifyfunc = ei_frame_geomnotifyfunc;
 	frame->handlefunc = ei_frame_handlefunc;
 
+	//Ajout dans la liste
 	ei_widgetclass_register(frame);
 }
 
 
 void			ei_button_register_class 	()
 {
+	//Assignation des champs d'une classe pour le type button
+
 	ei_widgetclass_t* button = malloc(sizeof(ei_widgetclass_t));
 	strcpy(button->name,"button");
 	button->allocfunc = ei_button_allocfunc;
@@ -69,12 +76,15 @@ void			ei_button_register_class 	()
 	button->geomnotifyfunc = ei_button_geomnotifyfunc;
 	button->handlefunc = ei_button_handlefunc;
 
+	//Ajout dans la liste
 	ei_widgetclass_register(button);
 }
 
 
 void			ei_toplevel_register_class 	()
 {
+	//Assignation des champs d'une classe pour le type toplevel
+
 	ei_widgetclass_t* toplevel = malloc(sizeof(ei_widgetclass_t));
 	strcpy(toplevel->name,"toplevel");
 	toplevel->allocfunc = ei_toplevel_allocfunc;
@@ -84,5 +94,6 @@ void			ei_toplevel_register_class 	()
 	toplevel->geomnotifyfunc = ei_toplevel_geomnotifyfunc;
 	toplevel->handlefunc = ei_toplevel_handlefunc;
 
+	//Ajout dans la liste
 	ei_widgetclass_register(toplevel);
 }
