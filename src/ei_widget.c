@@ -309,9 +309,11 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 				 ei_size_t**		min_size)
 {
 	ei_toplevel_t* toplevel = (ei_toplevel_t*) widget;
+
 	/* ------------------------------------------------------- */
 	/* Les barres d'en tete font 25px de hauteur  */
 	/* Assignations */
+
 	if (requested_size != NULL)
 		toplevel->widget.requested_size = *requested_size;
 	if (color != NULL)
@@ -322,10 +324,39 @@ void	ei_toplevel_configure	(ei_widget_t*		widget,
 		toplevel->title = *title;
 	if (closable != NULL)
 		toplevel->closable = *closable;
+
 	if (resizable != NULL)
 		toplevel->resizable = *resizable;
+	if (resizable !=ei_axis_none)
+	{
+		//resize button
+		ei_widget_t* resize_button;
+		ei_size_t resize_size;
+		resize_size.width = 5;
+		resize_size.height = 5;
+		ei_anchor_t resize_anchor = ei_anc_southeast;
+		ei_color_t resize_color = toplevel->color;
+		ei_relief_t resize_relief = ei_relief_raised;
+		int resize_border_width = 3;
+		resize_button = ei_widget_create("button",widget);
+		ei_button_configure(resize_button,
+							&resize_size,
+							&resize_color,
+							&resize_border_width,
+							NULL,
+							&resize_relief,
+							NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+		float resize_rx = 0;
+		float resize_ry = 0;
+		int resize_x = 0;
+		int resize_y = 0;
+		ei_place(resize_button,&resize_anchor,&resize_x,&resize_y,NULL,
+			NULL,&resize_rx,&resize_ry,NULL,NULL);
+
+	}
 	if (min_size != NULL)
 		toplevel->min_size = *min_size;
+
 
 	/* Bouton de fermeture */
 	if (*closable == EI_TRUE){
