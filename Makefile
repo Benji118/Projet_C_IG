@@ -68,7 +68,7 @@ endif
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal lines frame button hello_world puzzle two048 circles
+			minimal lines frame button hello_world puzzle two048 circles polygon
 all : ${TARGETS}
 
 
@@ -134,7 +134,7 @@ two048 : ${OBJDIR}/two048.o ${LIBEIBASE}
 ${OBJDIR}/two048.o : ${TESTS}/two048.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/two048.c -o ${OBJDIR}/two048.o
 
-# circle 
+# circles 
 
 circles : ${OBJDIR}/circles.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o circles ${LDFLAGS} ${OBJDIR}/circles.o ${LIBEI} ${LIBS} 
@@ -149,6 +149,7 @@ polygon: ${OBJDIR}/polygon.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/polygon.o : ${TESTS}/polygon.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/polygon.c -o ${OBJDIR}/polygon.o
+
 
 # Building of the library libei
 # Creation des .o

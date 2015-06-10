@@ -24,8 +24,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	
 	/*Creations de la surface_root et de la surface de picking*/
 	main_window_surface = hw_create_window(main_window_size, fullscreen);
-	picking_surface = hw_surface_create(ei_app_root_surface(),
-		main_window_size,EI_FALSE);
+	picking_surface = hw_surface_create(ei_app_root_surface(),main_window_size,EI_FALSE);
 	widget_id_pick = 0;
 		/* Creation du widget racine de type frame */
 	root_widget_window = ei_widget_create("frame",  NULL);

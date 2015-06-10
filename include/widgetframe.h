@@ -21,7 +21,7 @@ typedef struct ei_frame_t {
 	       ei_anchor_t		text_anchor;
 	       ei_font_t		font;
 	       ei_color_t*		text_color;
-	       char*                    img;
+	       ei_surface_t*            img;
 	       ei_point_t	        img_pos;
 	       ei_anchor_t              img_anchor;
 	       ei_rect_t*		img_rect;

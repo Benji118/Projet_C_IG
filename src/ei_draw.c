@@ -62,20 +62,18 @@ void                    ei_draw_polyline        (ei_surface_t                   
 		x2=(uint32_t)sent->next->point.x;
 		y1=(uint32_t)sent->point.y;
 		y2=(uint32_t)sent->next->point.y;
-		//printf("droite entre ( %u ; %u ) et ( %u ; %u).",x1,y1,x2,y2);
 		dx=x2-x1;
-		if ( dx != 0 ){
-			if ( dx > 0 ){
-				dy = y2 - y1;
-				if ( dy != 0 ){
-					if ( dy > 0 ){
+		dy=y2-y1;
+		if (dx!=0) {
+			if (dx>0) {
+				if (dy!=0) {
+					if (dy>0) {
 						//Vecteur oblique 1er cadran
-						if ( dx >= dy ){
+						if (dx>=dy) {
 							//1er octant
 							e=dx;
 							dx=2*e;
 							dy=2*dy;
-
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
@@ -92,14 +90,13 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							e=dy;
 							dx=2*dx;
 							dy=2*e;
-
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1+1;
 								e=e-dx;
-								if (e < 0) {
+								if (e<0) {
 									x1=x1+1;
 									e=e+dy;
 								}
@@ -107,21 +104,20 @@ void                    ei_draw_polyline        (ei_surface_t                   
 						}
 					} else {
 						//Vecteur oblique 4eme cadran
-						if ( dx + dy >= 0 ){
+						if (dx+dy>=0) {
 							//8e octant
 							e=dx;
 							dx=2*e;
 							dy=2*dy;
-
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1+1;
 								e=e+dy;
-								if ( e < 0 ) {
-									y1 = y1 - 1;
-									e = e + dx;
+								if (e<0) {
+									y1=y1-1;
+									e=e+dx;
 								}
 							}
 						} else {
@@ -129,48 +125,44 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							e=dy;
 							dx=2*dx;
 							dy=2*e;
-
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1-1;
 								e=e+dx;
-								if ( e > 0 ) {
-									x1 = x1 + 1;
-									e = e + dy;
+								if (e>0) {
+									x1=x1+1;
+									e=e+dy;
 								}
 							}
 						}
 					}
 				} else {
 					//Vecteur horizontal vers la droite
-					while ( x1 != x2 ){
+					while (x1!=x2) {
 						draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
-						x1 = x1 + 1;
-					}
-				
+						x1=x1+1;
+					}				
 				}
-			} else {
-				dy = y2 - y1;
-				if ( dy != 0 ){
-					if ( dy > 0 ){
+			} else {				
+				if (dy!=0) {
+					if (dy>0) {
 						//2e cadran
-						if ( dx + dy <= 0 ){
+						if (dx+dy<=0) {
 							//4e octant
-							e = dx;
-							dx = 2*e;
-							dy = 2*dy;
-
+							e=dx;
+							dx=2*e;
+							dy=2*dy;
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1-1;
 								e=e+dy;
-								if ( e >= 0 ) {
-									y1 = y1 + 1;
-									e = e + dx;
+								if (e>=0) {
+									y1=y1+1;
+									e=e+dx;
 								}
 							}
 						} else {
@@ -178,87 +170,81 @@ void                    ei_draw_polyline        (ei_surface_t                   
 							e = dy;
 							dx = 2*dx;
 							dy = 2*e;
-
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1+1;
 								e=e+dx;
-								if ( e <= 0 ) {
-									x1 = x1 - 1;
-									e = e + dy;
+								if (e<=0) {
+									x1=x1-1;
+									e=e+dy;
 								}
 							}	
 						}
 					} else {
 						//3e cadran
-						if ( dx <= dy ){
+						if (dx<=dy){
 							//5e octant
-							e = dx;
-							dx = 2*e;
-							dy = 2*dy;
-
+							e=dx;
+							dx=2*e;
+							dy=2*dy;
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (x1!=x2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								x1=x1-1;
 								e=e-dy;
-								if ( e >= 0 ) {
-									y1 = y1 - 1;
-									e = e + dx;
+								if (e>=0) {
+									y1=y1-1;
+									e=e+dx;
 								}
 							}
 						} else {
 							//6e octant
-							e = dy;
-							dy = 2*e;
-							dx = 2*dx;
-
+							e=dy;
+							dy=2*e;
+							dx=2*dx;
 							/* Boucle de traitement, segment par segment */
 							/* Traitement */
 							while (y1!=y2) {
 								draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
 								y1=y1-1;
 								e=e-dx;
-								if ( e >= 0 ) {
-									x1 = x1 - 1;
-									e = e + dy;
+								if (e>=0) {
+									x1=x1-1;
+									e=e+dy;
 								}
 							}
 						}
 					} 
 				} else {
 					//Vecteur horizontal vers la gauche
-					while ( x1 != x2 ){
+					while (x1!=x2) {
 						draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
-						x1 = x1 - 1;
+						x1=x1-1;
 					}
 				}
 			}
 		} else {
-			dy = y2 - y1;
-			if ( dy > 0 ){
+			if (dy>0) {
 				//Vecteur vertical croissant
-				while ( y1 != y2 ){
+				while (y1!=y2) { 
 					draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
-					y1 = y1 + 1;
+					y1=y1+1;
 				}
 			} else {
 				//Vecteur vertical decroissant
-				while ( y1 != y2 ){
+				while (y1!=y2) {
 					draw_pixel(surface,x1,y1,color,pixel_ptr,clipper);
-					y1 = y1 - 1;
+					y1=y1-1;
 				}
 			}
 		}
 		/* Dessiner dans le dernier pixel qui n'est pas pris en compte dans la boucle */
 		draw_pixel(surface,x2,y2,color,pixel_ptr,clipper);
 		
-		/* sent->next != NULL */
-		sent=sent->next;
-       
+		sent=sent->next;       
 	}
 }
 
@@ -284,7 +270,6 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		float x_ymin;
 		// num_scan représente la première scanline d'intersection 
 		int num_scan;
-		//float pente_rec;
 		while (sent->next!=NULL) {
 			p1=sent->point;
 			p2=sent->next->point;
@@ -306,8 +291,6 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				new_side->ymax=y_max;
 				new_side->x_ymin=x_ymin;
 				new_side->inv_pente=((float)p2.x-(float)p1.x)/((float)p2.y-(float)p1.y);
-				//new_side->begin=p1;
-				//new_side->end=p2;
 				new_side->next=NULL;
 				// On remplit TC avec le nouveau côté
 				if (TC[num_scan]!=NULL) {
@@ -316,27 +299,13 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 						sent_tab=sent_tab->next;               
 					}					
 					sent_tab->next=new_side;
-					//printf("ajout dans %d\n",num_scan);
 				} else {
 					TC[num_scan]=new_side;
-					//printf("premier dans %d\n",num_scan);
 				}
 			}		
 			// On change de coté
 			sent=sent->next;
 		}
-		//free(sent);
-		// Verification de TC 
-		/*
-		  for (int j=0; j<size.height; j++) {
-		  printf("Scan numero : %d\n",j);
-		  ei_side_t *sent_verif=TC[j];
-		  while (sent_verif!=NULL) {
-		  printf("ymax : %d xymin : %d\n",sent_verif->ymax, sent_verif->x_ymin);
-		  sent_verif=sent_verif->next;
-		  }
-		  }
-		*/
 
 		// Recuperer l'adresse du pixel (0,0)
 		uint32_t* pixel_ptr=(uint32_t*)hw_surface_get_buffer(surface);
@@ -347,30 +316,18 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 		// Boucle des scanlines
 		for (int k=0; k<size.height; k++) {
 			ei_side_t *sent_tab=TC[k];
-			/* printf("Scan numero : %d\n", k); */
 			while (sent_tab!=NULL) {
 				// A FAIRE : Supression dans TC
 				// A FAIRE : Gérer la libération 
 				// Ajout en tete de TCA 
 				add_TCA(TCA,*sent_tab);	      
-				//printf("c");
 				sent_tab=sent_tab->next;
 			}
-			//free(TC[k]);
 			// On supprime les éléments tels que y_max=k
 			del_TCA(TCA,k);
 			// On trie la TCA 
-			TCA=sort_TCA(TCA);		
-
-			// Verification de TCA a chaque scanline
-			/*
-			  cell_TCA *sent_TCA2=TCA->head;
-			  while (sent_TCA2!=NULL) {
-			  printf("ymax : %d xymin : %d x_inter : %f\n",sent_TCA2->side.ymax, sent_TCA2->side.x_ymin, sent_TCA2->x_inter);
-			  sent_TCA2=sent_TCA2->next;
-			  }
-			*/
-
+			TCA=sort_TCA(TCA);
+			
 			// Remplissage de la scanline
 			cell_TCA *senti_TCA=TCA->head;
 			while (senti_TCA!=NULL && senti_TCA->next != NULL) {
@@ -379,10 +336,8 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 				// Gestion des règles de remplissage
 				int inf=(int) inter1;
 				int sup=(int) inter2;
-				/* printf("inf : %d sup : %d\n",inf,sup); */
 				// Dessin entre deux intersections successives intersections
 				for (int m=inf; m<=sup; m++) {
-					//printf("Dessin en %d %d\n",m,k);
 					draw_pixel(surface,m,k,color,pixel_ptr,clipper);
 				}
 				senti_TCA=senti_TCA->next->next;
@@ -398,7 +353,8 @@ void			ei_draw_polygon		(ei_surface_t			surface,
 	}
 }
 
-static ei_rect_t* inter_rect(ei_rect_t rect1, ei_rect_t rect2) {
+static ei_rect_t* inter_rect(ei_rect_t rect1, ei_rect_t rect2)
+{
 	// On cherche le top left de l'intersection
 	ei_point_t top_inter;
 	ei_size_t size_inter;
@@ -515,19 +471,14 @@ int			ei_copy_surface		(ei_surface_t		destination,
 	ei_rect_t dst;
 	ei_rect_t src;
 
-	if (dst_rect == NULL && src_rect==NULL)
-	{
+	if (dst_rect == NULL && src_rect==NULL)	{
 		dst = hw_surface_get_rect(destination);
 		src = hw_surface_get_rect(source);
-	}
-	else if ((src_rect->size.width == dst_rect->size.width) && 
-		(src_rect->size.height == dst_rect->size.height))
-	{
+	} else if ((src_rect->size.width == dst_rect->size.width) && 
+		(src_rect->size.height == dst_rect->size.height)) {
 		dst = *dst_rect;
 		src = *src_rect;
-	}
-	else
-	{
+	} else {
 		return 1;
 	}
 	uint32_t *ptr_src_origin = (uint32_t*) hw_surface_get_buffer(source);
@@ -535,21 +486,15 @@ int			ei_copy_surface		(ei_surface_t		destination,
 	ptr_src_origin =ptr_src_origin + hw_surface_get_size(source).width*src.top_left.y + src.top_left.x;
 	ptr_dst_origin =ptr_dst_origin + hw_surface_get_size(destination).width*dst.top_left.y + dst.top_left.x;
 
-
 	uint32_t *ptr_src = ptr_src_origin;
 	uint32_t *ptr_dst = ptr_dst_origin;
-	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++)
-	{
-		for (uint32_t x = dst.top_left.x; x < dst.top_left.x + dst.size.width; x++)
-		{
-			if (alpha == EI_FALSE)
-			{
+	for (uint32_t y = src.top_left.y; y < src.top_left.y + src.size.height; y++) {
+		for (uint32_t x = dst.top_left.x; x < dst.top_left.x + dst.size.width; x++) {
+			if (alpha == EI_FALSE) {
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
 				*ptr_dst = *ptr_src;
-			}
-			else
-			{
+			} else {
 				ptr_src = ptr_src + 1;
 				ptr_dst = ptr_dst + 1;
 				*ptr_dst = alpha_effect(destination,source,ptr_dst,ptr_src);				
